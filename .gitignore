@@ -192,24 +192,15 @@ fabric.properties
 # Streamlit secrets
 .streamlit/secrets.toml
 
-# Project specific
-data/
-*.log
-*.csv
-*.dat
-*.out
-*.pid
-*.gz
-*.zip
-*.tar.gz
+# Ignorar todo o diretório data
+data/*
 
-# Permitir arquivos específicos dentro de data/
-!data/**/*.txt      # Permite todos os arquivos .txt dentro de qualquer subdiretório de data/
-!data/**/*.pdf      # Permite todos os arquivos .pdf dentro de qualquer subdiretório de data/
-!data/**/*.doc      # Permite todos os arquivos .doc dentro de qualquer subdiretório de data/
-!data/**/*.jpg      # Permite todos os arquivos .jpg dentro de qualquer subdiretório de data/
-!data/**/*.png      # Permite todos os arquivos .png dentro de qualquer subdiretório de data/
-
+# Permitir arquivos de texto e imagens em qualquer subdiretório de data/
+!data/**.txt
+!data/**.pdf
+!data/**.doc
+!data/**.jpg
+!data/**.png
 
 # Jupyter
 .ipynb_checkpoints
