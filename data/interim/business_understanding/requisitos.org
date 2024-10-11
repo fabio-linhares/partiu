@@ -1,0 +1,21 @@
+* Requisitos Funcionais e Não Funcionais
+
+1. Requisitos Funcionais:
+
+    - Busca de Pacotes: O aplicativo deve permitir a busca por pacotes de viagens com base em critérios como destino, preço e data.
+
+    - Reserva de Pacotes: Os usuários devem poder reservar pacotes diretamente pelo aplicativo.
+
+    - Integração com APIs: O aplicativo deve se integrar com APIs de agências de viagens para obter dados atualizados.
+
+    - Recomendações Personalizadas: O sistema deve fornecer recomendações baseadas em preferências e histórico de busca.
+
+2. Requisitos Não Funcionais:
+
+    - Performance: O aplicativo deve responder às consultas de busca em menos de 2 segundos.
+
+    - Segurança: Os dados dos usuários devem ser protegidos com criptografia e práticas de segurança robustas.
+
+    - Usabilidade: A interface deve ser intuitiva e fácil de usar, com suporte para dispositivos móveis.
+
+    - Escalabilidade: O sistema deve ser capaz de suportar um número crescente de usuários e pacotes de viagens.

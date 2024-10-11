@@ -1,0 +1,11 @@
+* Documento de Análise Inicial do Mercado de Aplicativos de Viagem e Turismo
+
+1. Visão Geral do Mercado: O mercado de aplicativos de viagem tem crescido significativamente com a digitalização e a demanda por soluções mais práticas e personalizadas. Os principais concorrentes incluem plataformas como Decolar.com, Booking.com, Cvc.com.br, entre outros, mais ou menos famosos, que oferecem uma ampla gama de opções, mas frequentemente falham em fornecer uma experiência otimizada para pacotes de viagem específicos e acessíveis.
+
+2. Oportunidades de Mercado:
+
+   -  Pacotes de Viagem Acessíveis: Há uma demanda crescente por pacotes que se ajustem a diferentes orçamentos e preferências.
+   - Turismo em Regiões Menos Conhecidas: Existe um interesse crescente por destinos fora dos roteiros tradicionais, o que pode ser aproveitado para promover o turismo local.
+   -  Tecnologia de Recomendação Personalizada: A personalização e as recomendações baseadas em dados são uma tendência emergente que pode melhorar a experiência do usuário.
+
+3. Concorrência: Os aplicativos existentes têm pontos fortes em termos de variedade e cobertura global, mas podem não oferecer soluções específicas para viagens de baixo custo ou para destinos menos populares. Nossa proposta visa preencher essa lacuna com uma abordagem mais focada e acessível.

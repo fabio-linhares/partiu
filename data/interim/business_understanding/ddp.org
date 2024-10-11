@@ -1,0 +1,14 @@
+* Documento de Definição do Projeto
+
+** Título: Partiu: Aplicativo de Pacotes de Viagens Acessíveis
+
+1. Problema: Muitas pessoas enfrentam dificuldades em encontrar pacotes de viagens que se encaixem em seu orçamento e preferências de forma rápida e simplificada. Isso leva a tempo perdido na busca, frustração e, muitas vezes, à desistência de viajar, impactando negativamente o setor de turismo e o crescimento econômico local.
+
+2. Objetivos:
+
+    - Facilitar a busca e reserva de pacotes de viagens acessíveis.
+    - Aumentar o número de viagens realizadas pelos usuários.
+    - Melhorar a satisfação do usuário com a experiência de busca e reserva.
+    - Fomentar o turismo em regiões menos conhecidas, promovendo o desenvolvimento econômico local.
+
+3. Escopo: O aplicativo permitirá a busca e reserva de pacotes de viagens, oferecendo uma interface amigável e fácil de usar. A aplicação será desenvolvida usando Python, Apus e Streamlit. O sistema integrará APIs de agências de viagens, bases de dados de destinos turísticos, e informações sobre preços e avaliações de usuários.

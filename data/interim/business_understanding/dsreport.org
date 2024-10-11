@@ -1,0 +1,28 @@
+* Data Summary Report
+
+** Data Sources
+*** APIs de Agências de Viagens
+- *Tipo de Dados:* Pacotes de viagem, preços, disponibilidade
+- *Objetivo de Uso:* Fornecer opções de viagem atualizadas e personalizadas aos usuários.
+
+*** Sites de Avaliações de Viagens
+- *Tipo de Dados:* Avaliações de usuários, classificações
+- *Objetivo de Uso:* Melhorar o sistema de recomendação com base em feedbacks reais.
+
+*** Bases de Dados de Destinos Turísticos
+- *Tipo de Dados:* Informações sobre destinos, atrações locais
+- *Objetivo de Uso:* Oferecer descrições detalhadas e recomendações de atividades.
+
+*** Dados Internos do Aplicativo
+- *Tipo de Dados:* Histórico de buscas, preferências dos usuários
+- *Objetivo de Uso:* Personalizar a experiência do usuário e otimizar recomendações.
+
+** Data Collection Plan
+- Estabelecer parcerias com fornecedores de APIs confiáveis.
+- Implementar técnicas de web scraping para dados públicos de avaliações.
+- Criar um sistema de coleta de dados internos respeitando a privacidade dos usuários.
+
+** Data Quality Considerations
+- Verificar a precisão e atualidade dos dados de pacotes de viagem.
+- Implementar processos de limpeza para dados de avaliações.
+- Garantir a conformidade com a LGPD para dados internos.

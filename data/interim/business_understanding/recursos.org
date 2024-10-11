@@ -1,0 +1,11 @@
+* Alocação de Recursos
+
+| Recurso              | Descrição                        | Quantidade | Alocado Para         | Status       |
+|----------------------|----------------------------------|------------|----------------------|--------------|
+| Desenvolvedor Python | Desenvolvimento de Backend        | 2          | Modelagem e Avaliação| Em Andamento |
+| Especialista em Dados| Análise e Processamento de Dados  | 1          | Aquisição e Compreensão | Planejado  |
+| Designer UX/UI       | Design e Experiência do Usuário   | 1          | Implantação          | Planejado    |
+| Analista de Testes   | Testes e Validação                | 1          | Aceitação do Cliente | Planejado    |
+| Infraestrutura TI    | Servidores e Recursos de TI       | -          | Implantação          | Planejado    |
+| Orçamento            | Fundos para despesas do projeto   | -          | Todo o Projeto       | Planejado    |
+

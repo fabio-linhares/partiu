@@ -1,0 +1,23 @@
+
+* Cronograma
+
+| Fase                     | Data de Início | Data de Término | Responsável        | Status       |
+|--------------------------+----------------+-----------------+--------------------+--------------|
+| Compreensão do Problema  | 2024-08-25     | 2024-09-10      | Equipe de Pesquisa | Em Andamento |
+| Aquisição e Compreensão  | 2024-09-11     | 2024-10-10      | Equipe de Dados    | Planejado    |
+| Modelagem e Avaliação    | 2024-10-11     | 2024-11-10      | Equipe de Modelagem| Planejado    |
+| Implantação              | 2024-11-11     | 2024-12-10      | Equipe de TI       | Planejado    |
+| Aceitação do Cliente     | 2024-12-11     | 2024-12-20      | Equipe de Suporte  | Planejado    |
+| Revisão Final            | 2024-12-21     | 2024-12-31      | Equipe de Gestão   | Planejado    |
+
+* Alocação de Recursos
+
+| Recurso              | Descrição                        | Quantidade | Alocado Para         | Status       |
+|----------------------|----------------------------------|------------|----------------------|--------------|
+| Desenvolvedor Python | Desenvolvimento de Backend        | 2          | Modelagem e Avaliação| Em Andamento |
+| Especialista em Dados| Análise e Processamento de Dados  | 1          | Aquisição e Compreensão | Planejado  |
+| Designer UX/UI       | Design e Experiência do Usuário   | 1          | Implantação          | Planejado    |
+| Analista de Testes   | Testes e Validação                | 1          | Aceitação do Cliente | Planejado    |
+| Infraestrutura TI    | Servidores e Recursos de TI       | -          | Implantação          | Planejado    |
+| Orçamento            | Fundos para despesas do projeto   | -          | Todo o Projeto       | Planejado    |
+

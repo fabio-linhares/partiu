@@ -1,0 +1,15 @@
+* Documento de Avaliação de Riscos
+
+1. Riscos Identificados:
+
+    Qualidade dos Dados: Dados imprecisos ou desatualizados podem afetar a confiabilidade das recomendações e reservas.
+    Integração com APIs: Problemas na integração com APIs externas podem levar a falhas na obtenção de informações e reservas.
+    Segurança dos Dados: Vazamentos ou falhas na proteção de dados pessoais dos usuários podem comprometer a privacidade e a confiança.
+    Desempenho: O aplicativo pode enfrentar problemas de desempenho se o número de usuários exceder a capacidade de infraestrutura.
+
+2. Planos de Mitigação:
+
+    Qualidade dos Dados: Implementar processos rigorosos de validação e limpeza de dados.
+    Integração com APIs: Testar extensivamente as integrações e ter planos de contingência para falhas de API.
+    Segurança dos Dados: Adotar práticas de segurança de dados, incluindo criptografia e auditorias regulares.
+    Desempenho: Monitorar continuamente o desempenho e escalar a infraestrutura conforme necessário.
