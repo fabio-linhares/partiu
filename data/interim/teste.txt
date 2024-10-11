@@ -1,0 +1,30 @@
+# Projeto de Ciência de Dados Aplicada: Teste de Performance 2 (TP2)
+
+Nesta segunda etapa do projeto, nosso foco é evoluir significativamente a aplicação desenvolvida anteriormente. O objetivo é implementar funcionalidades mais avançadas, melhorar a interatividade e a eficiência da aplicação, além de integrar dados externos. As atividades propostas visam ampliar as capacidades técnicas e proporcionar uma experiência de usuário mais rica e dinâmica.
+
+## Atividades Propostas
+
+1. **Configuração do Ambiente de Desenvolvimento**
+   - Configurar ambiente com Git para controle de versão e preparação para deploy
+   - Organizar o projeto seguindo a estrutura CRISP-DM
+
+2. **Implementação de Interface de Usuário Dinâmica**
+   - Evoluir a interface Streamlit, adicionando elementos interativos
+   - Criar uma experiência de usuário intuitiva e funcional
+
+3. **Extração de Conteúdo da Web**
+   - Utilizar Beautiful Soup para extrair dados de páginas web
+   - Armazenar dados em arquivos CSV/TXT no diretório data/
+   - Exibir informações relevantes na interface (ex: nuvens de palavras, estatísticas)
+
+4. **Cache e Estado de Sessão**
+   - Implementar cache e estado de sessão no Streamlit
+   - Melhorar a performance e garantir persistência de dados nas interações
+
+5. **Serviço de Upload e Download de Arquivos**
+   - Desenvolver funcionalidade para upload/download de arquivos CSV
+   - Integrar novos dados à aplicação
+
+6. **Documentação**
+   - Completar o Project Charter (escopo, objetivos, stakeholders)
+   - Elaborar o Data Summary Report (fontes de dados e objetivos de uso)

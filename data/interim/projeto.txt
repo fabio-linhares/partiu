@@ -1,0 +1,62 @@
+🔴 Este projeto está alinhado ao item 8 (Trabalho Decente e Crescimento Econômico) 
+dos Objetivos de Desenvolvimento Sustentável (ODS) da Agenda 2030 e utiliza 
+tecnologias como Python, MongoDB e Streamlit.
+
+
+🎈 Definição do problema de negócio: 
+Nossa aplicação resolverá a dificuldade que muitas pessoas têm em encontrar 
+pacotes de viagens que se encaixem em seu orçamento e preferências de forma 
+rápida e simplificada. Isso frequentemente resulta em:
+1. Tempo perdido na busca
+2. Frustração
+3. Potencial desistência de viajar
+4. Impacto negativo no setor de turismo e crescimento econômico local
+
+
+
+✴️ Metas:
+1. Facilitar a realização de viagens a qualquer tempo
+2. Aumentar a quantidade de vendas de pacotes de viagens
+3. Promover o turismo em regiões menos conhecidas
+
+
+
+🎢 Indicadores:
+1. Número de usuários ativos por período
+2. Taxa de conversão (buscas que resultam em compras de pacotes)
+3. Tempo médio gasto pelos usuários para encontrar e reservar um pacote
+4. Número de pacotes de viagens adquiridos através do aplicativo
+5. Diversidade de destinos escolhidos pelos usuários
+
+
+
+👦 Público-Alvo:
+1. Viajantes com orçamento limitado
+2. Pessoas que gostam de viagens espontâneas ou de última hora
+3. Jovens profissionais em busca de experiências únicas
+4. Famílias procurando pacotes que atendam às necessidades de todos
+5. Estudantes em busca de opções econômicas
+6. Pessoas interessadas em destinos menos conhecidos
+7. Indivíduos que valorizam conveniência e rapidez na busca e reserva
+
+
+
+🗃️ Organização do Projeto, conforme o CRISP-DM e o TDSP:
+1. Compreensão do Problema de Negócio
+2. Aquisição e Compreensão de Dados
+3. Modelagem e Avaliação
+4. Implantação
+5. Aceitação do Cliente
+
+
+
+🗂️ Artefatos Produzidos: 
+1. Documento de Definição do Projeto
+2. Análise Inicial do Mercado
+3. Cronograma e Alocação de Recursos
+4. Requisitos Funcionais e Não Funcionais
+5. Documento de Avaliação de Riscos
+3. Organização de Diretórios e Artefatos Iniciais
+
+A estrutura de diretórios segue o ciclo de vida do TDSP, conforme demonstrado abaixo:
+

@@ -1,0 +1,46 @@
+# Projeto Partiu: Aplicativo de Pacotes de Viagens
+
+## Visão Geral
+
+O Projeto Partiu é uma aplicação web interativa desenvolvida com Streamlit, focada em facilitar a busca e reserva de pacotes de viagens acessíveis. Nosso objetivo é simplificar o processo de planejamento de viagens, promovendo o turismo e contribuindo para o crescimento econômico sustentável.
+
+## Problema de Negócio
+
+Muitos viajantes enfrentam dificuldades em encontrar pacotes de viagens que se encaixem em seus orçamentos e preferências. Os aplicativos existentes frequentemente falham em fornecer uma experiência otimizada para pacotes específicos e acessíveis.
+
+## Solução Proposta
+
+Desenvolvemos um aplicativo Streamlit que:
+- Facilita a busca e reserva de pacotes de viagens
+- Oferece recomendações personalizadas
+- Promove destinos menos conhecidos
+- Proporciona uma interface intuitiva e responsiva
+
+## Alinhamento com ODS
+
+Nosso projeto atende ao ODS 8: Trabalho Decente e Crescimento Econômico, promovendo:
+- Crescimento econômico sustentável no setor de turismo
+- Inclusão social através do acesso a viagens mais acessíveis
+- Desenvolvimento de regiões turísticas menos exploradas
+
+## Principais Funcionalidades
+
+1. Sistema de busca e reserva de pacotes de viagens
+2. Recomendações personalizadas baseadas em preferências do usuário
+3. Visualização detalhada de destinos e pacotes
+4. Interface responsiva para dispositivos móveis e desktop
+
+## Metodologia
+
+Seguimos as metodologias CRISP-DM e TDSP para garantir um desenvolvimento estruturado e eficiente.
+
+## Próximos Passos
+
+1. Finalizar a integração com APIs de agências de viagens
+2. Implementar sistema de recomendação avançado
+3. Realizar testes beta com usuários reais
+4. Estabelecer métricas de satisfação do cliente
+
+## Conclusão
+
+O Projeto Partiu representa uma solução inovadora no mercado de aplicativos de viagem, com potencial para transformar a maneira como as pessoas planejam e reservam suas viagens, contribuindo simultaneamente para o desenvolvimento econômico sustentável.
