@@ -195,12 +195,16 @@ fabric.properties
 # Ignorar todo o diretório data
 data/*
 
+# Permitir todos os diretórios dentro de data/
+!data/**/
+
 # Permitir arquivos de texto e imagens em qualquer subdiretório de data/
-!data/**.txt
-!data/**.pdf
-!data/**.doc
-!data/**.jpg
-!data/**.png
+!data/**/*.txt
+!data/**/*.pdf
+!data/**/*.doc
+!data/**/*.jpg
+!data/**/*.png
+
 
 # Jupyter
 .ipynb_checkpoints
