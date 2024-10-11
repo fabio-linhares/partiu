@@ -203,6 +203,14 @@ data/
 *.zip
 *.tar.gz
 
+# Permitir arquivos específicos dentro de data/
+!data/**/*.txt      # Permite todos os arquivos .txt dentro de qualquer subdiretório de data/
+!data/**/*.pdf      # Permite todos os arquivos .pdf dentro de qualquer subdiretório de data/
+!data/**/*.doc      # Permite todos os arquivos .doc dentro de qualquer subdiretório de data/
+!data/**/*.jpg      # Permite todos os arquivos .jpg dentro de qualquer subdiretório de data/
+!data/**/*.png      # Permite todos os arquivos .png dentro de qualquer subdiretório de data/
+
+
 # Jupyter
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
