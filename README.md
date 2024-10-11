@@ -1,7 +1,7 @@
 <h1 style="text-align: center;">Partiu - Aplicativo de Pacotes de Viagens Para Quem Quer Escapar das Visitas Indesejadas</h1>
 
 
-![partiu_image](./static/images/.backgound/capa1.png)
+![partiu_image](./images/.backgound/capa1.png)
 
 <div style="text-align: right;">
 Imagem criada por Inteligência Artificial.
