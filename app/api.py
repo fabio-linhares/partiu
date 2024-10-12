@@ -304,7 +304,8 @@ async def get_random_title(database: str, collection: str):
 
 
 @app.post("/login")
-async def login(username: str, password: str):
+async def login(username: str = Form(...), password: str = Form(...)):
+    logger.info(f"Tentativa de login para usuário: {username}")
     try:
         connection_string = get_connection_string()
         client = MongoClient(connection_string)
@@ -313,12 +314,14 @@ async def login(username: str, password: str):
         
         user = users_collection.find_one({"username": username})
         if user and user['password'] == password:  # Na prática, use hash+salt
-            return {"status": "success", "user": json.loads(json.dumps(user, default=str))}
+            logger.info("Login bem-sucedido")
+            return {"status": "success", "user": user_data}
         else:
             return {"status": "failed"}
+        
     except Exception as e:
-        logger.error(f"Login error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Erro durante o login: {str(e)}")
+        raise HTTPException(status_code=400, detail="Falha na autenticação")
     finally:
         if 'client' in locals():
             client.close()
