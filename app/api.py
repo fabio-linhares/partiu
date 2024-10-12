@@ -14,7 +14,12 @@
 # OS Version     : 6.11.3-zen1-1-zen
 ###############################################################################
 
-from fastapi import FastAPI, HTTPException, Form, Body
+from fastapi import FastAPI, HTTPException, Depends
+
+from fastapi.security import OAuth2PasswordRequestForm
+from pymongo import MongoClient
+from bson import json_util
+
 from pydantic import BaseModel
 from utils.database import (create_document,
                             read_documents, 
@@ -35,6 +40,7 @@ from config.variaveis_globais import streamlit_secret, API_BASE_URL
 from pymongo import MongoClient
 from pymongo.errors import PyMongoError
 from utils.database import get_connection_string
+from utils.mongo2 import load_database_config
 
 app = FastAPI()
 
@@ -109,17 +115,23 @@ def get_sections_from_api(database, collection):
 def authenticate_user(db, username: str, password: str):
     users_collection = db[config['collections_users']]
     user = users_collection.find_one({"username": username})
-    if user and user['password'] == password:  
+    if user and user['password'] == password:  # Na prática, use hash+salt
         return user
     return None
 
 
+# Função para obter a string de conexão do MongoDB
+def get_connection_string():
+    return load_database_config(streamlit_secret)
+
+# Função para obter a conexão com o MongoDB
 def get_db():
     client = MongoClient(get_connection_string())
     try:
         yield client[config['database_user']]
     finally:
         client.close()
+
 
 
 #################################################################################
@@ -326,7 +338,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: MongoClien
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(status_code=400, detail="Credenciais inválidas")
-    
+ 
     user_dict = json.loads(json_util.dumps(user))
     user_dict.pop('password', None)
     
