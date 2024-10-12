@@ -57,9 +57,11 @@ if config_vars.get('environment_env') == 'dev':
 ############################         VARIÁVEIS        ###########################
 #################################################################################
 
-menu_dados = []
-dev_data = user_data = get_user_data(database_name=config_vars['database_user'], 
+dev_data = get_user_data(database_name=config_vars['database_user'], 
                                      collection_name=config_vars['collections_dev'])
+
+menu_dados = get_sections_from_api(config_vars['database_main'], 
+                                   config_vars['collections_menu'])
 
 #################################################################################
 ############################         DATABASE         ###########################
@@ -72,28 +74,15 @@ dev_data = user_data = get_user_data(database_name=config_vars['database_user'],
 ############################           MENUS          ###########################
 #################################################################################
 
-
-st.write(f"Database: {config_vars['database_main']}")
-st.write(f"Collection: {config_vars['collections_menu']}")
-menu_dados = get_sections_from_api(config_vars['database_main'], 
-                                   config_vars['collections_menu'])
-
 st.sidebar.image(infnet_image, use_column_width=True)
 st.sidebar.header("Seções do Menu")
 
 if menu_dados:
     sections = [item['section'] for item in menu_dados]
     selected_section = st.sidebar.selectbox("Selecione uma seção", sections)
-
-    # questões para a seção selecionada
-    selected_questions = next((item['questions'] for item in menu_dados if item['section'] == selected_section), [])
-
-    st.write(f"## {selected_section}")
-    for question in selected_questions:
-        st.write(question)
 else:
     st.sidebar.warning("Nenhuma seção encontrada ou erro ao carregar dados.")
-
+    selected_section = None
 
 st.sidebar.image(mec_image, use_column_width=True)
 
@@ -152,7 +141,13 @@ with main_tab2:
 #################################################################################
 
     with sub_tab_a3:
-        pass
+        if selected_section:
+            selected_questions = next((item['questions'] for item in menu_dados if item['section'] == selected_section), [])
+            st.write(f"## {selected_section}")
+            for question in selected_questions:
+                st.write(question)
+        else:
+            st.write("Por favor, selecione uma seção no menu lateral.")
         
 
 #################################################################################
