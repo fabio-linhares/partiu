@@ -27,6 +27,7 @@ from bson import ObjectId
 import json
 import requests
 import logging
+import random
 import streamlit as st
 
 from config.variaveis_globais import streamlit_secret, API_BASE_URL
@@ -96,6 +97,7 @@ def get_sections_from_api(database, collection):
         if hasattr(e, 'response'):
             st.error(f"Detalhes do erro: {e.response.text}")
         return []
+
 
 
 #################################################################################
@@ -252,6 +254,40 @@ async def get_sections(database: str, collection: str):
         sections = list(coll.find({}, {"section": 1, "questions": 1, "_id": 0}))
         logger.info(f"Found {len(sections)} sections")
         return {"sections": json.loads(json.dumps(sections, default=str))}
+    except PyMongoError as e:
+        logger.error(f"MongoDB error: {e}")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+        raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
+    finally:
+        if 'client' in locals():
+            client.close()
+
+
+@app.get("/random_title/{database}/{collection}")
+async def get_random_title(database: str, collection: str):
+    try:
+        logger.info(f"Fetching random title from database: {database}, collection: {collection}")
+        connection_string = get_connection_string()
+        logger.info(f"Connection string (without password): {connection_string.replace(config['database_access_password'], '****')}")
+        client = MongoClient(connection_string)
+        db = client[database]
+        coll = db[collection]
+        logger.info(f"Connected to database and collection")
+        
+        total_docs = coll.count_documents({})
+        logger.info(f"Total documents in collection: {total_docs}")
+        
+        if total_docs == 0:
+            logger.warning("No titles found in the collection")
+            raise HTTPException(status_code=404, detail="No titles found in the collection")
+        
+        random_index = random.randint(0, total_docs - 1)
+        random_title = coll.find().limit(1).skip(random_index).next()
+        logger.info(f"Random title selected: {random_title['titulo']}")
+        
+        return {"titulo": random_title['titulo']}
     except PyMongoError as e:
         logger.error(f"MongoDB error: {e}")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")

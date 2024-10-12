@@ -36,6 +36,7 @@ from utils.background import get_random_image
 from utils.globals import create_global_variables
 from utils.database import get_user_data
 from utils.mongo2 import load_database_config
+from utils.title import get_random_title
 
 #################################################################################
 ############################       SECRETS.TOML       ###########################
@@ -52,6 +53,7 @@ if config_vars.get('environment_env') == 'dev':
     uri = load_database_config(streamlit_secret)
     print("URI do banco de dados:", uri)
 
+#config_vars['collections_dev']
 
 #################################################################################
 ############################         VARIÁVEIS        ###########################
@@ -69,7 +71,14 @@ menu_dados = get_sections_from_api(config_vars['database_main'],
 ############################           TÍTULO         ###########################
 #################################################################################
 
-#st.set_page_config(page_title=page_title, page_icon=page_icon, layout=page_layout)
+st.set_page_config(page_title=config_vars['app_title'], page_icon=config_vars['app_icon'], layout=config_vars['app_layout'])
+
+st.write(f"Database: {config_vars['database_main']}")
+st.write(f"Collection: {config_vars['collections_title']}")
+random_title = get_random_title(config_vars['database_main'], config_vars['collections_title'])
+
+st.title(random_title)
+
 
 
 #################################################################################
