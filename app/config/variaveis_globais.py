@@ -17,6 +17,8 @@ arquivo_de_palavras = os.path.join(os.path.dirname(__file__), '../../data/extern
 arquivo_de_resposta1 = os.path.join(os.path.dirname(__file__), '../../data/interim/answers/resposta1.txt')
 arquivo_de_resposta2 = os.path.join(os.path.dirname(__file__), '../../data/interim/answers/resposta2.txt')
 arquivo_de_resposta3 = os.path.join(os.path.dirname(__file__), '../../data/interim/answers/resposta3.txt')
+arquivo_de_resposta4 = os.path.join(os.path.dirname(__file__), '../../data/interim/answers/resposta4.txt')
+
 
 API_BASE_URL = "http://179.124.242.238:8000"
 
