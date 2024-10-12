@@ -15,7 +15,7 @@
 ###############################################################################
 
 import logging
-from api import app, api_request
+from api import app
 
 # Configuração de logging
 logging.basicConfig(level=logging.INFO)
