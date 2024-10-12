@@ -12,3 +12,7 @@ requests
 wordcloud
 pandas
 altair
+selenium
+beautifulsoup4
+undetected-chromedriver
+lxml
