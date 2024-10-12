@@ -73,10 +73,10 @@ menu_dados = get_sections_from_api(config_vars['database_main'],
 
 st.set_page_config(page_title=config_vars['app_title'], page_icon=config_vars['app_icon'], layout=config_vars['app_layout'])
 
-st.write(f"Database: {config_vars['database_main']}")
-st.write(f"Collection: {config_vars['collections_title']}")
+if 'used_titles' not in st.session_state:
+    st.session_state.used_titles = []
+    
 random_title = get_random_title(config_vars['database_main'], config_vars['collections_title'])
-
 st.title(random_title)
 
 

@@ -7,9 +7,7 @@ from config.variaveis_globais import streamlit_secret
 
 config_vars = create_global_variables(streamlit_secret)
 
-if 'used_titles' not in st.session_state:
-    st.session_state.used_titles = []
-    
+
 def get_random_title(database, collection):
     try:
         result = api_request("GET", f"/random_title/{database}/{collection}")
