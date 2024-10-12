@@ -82,9 +82,15 @@ def api_request(method, endpoint, data=None):
 def get_sections_from_api(database, collection):
     try:
         result = api_request("GET", f"/get_sections/{database}/{collection}")
-        return result['sections']
+        if 'sections' in result:
+            return result['sections']
+        else:
+            st.error(f"Resposta inesperada da API: {result}")
+            return []
     except Exception as e:
         st.error(f"Erro ao buscar seções: {str(e)}")
+        if hasattr(e, 'response'):
+            st.error(f"Detalhes do erro: {e.response.text}")
         return []
 
 
@@ -234,10 +240,17 @@ async def read_user_data():
 async def get_sections(database: str, collection: str):
     try:
         logger.info(f"Fetching sections from database: {database}, collection: {collection}")
-        db = get_database(database)
+        client = MongoClient(get_connection_string())
+        db = client[database]
         coll = db[collection]
-        sections = list(coll.find({}, {"section": 1, "questions": 1}))
+        sections = list(coll.find({}, {"section": 1, "questions": 1, "_id": 0}))
+        logger.info(f"Found {len(sections)} sections")
         return {"sections": json.loads(json.dumps(sections, default=str))}
+    except PyMongoError as e:
+        logger.error(f"MongoDB error: {e}")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
     except Exception as e:
-        logger.error(f"Error fetching sections: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Unexpected error: {e}")
+        raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
+    finally:
+        client.close()
