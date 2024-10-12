@@ -302,9 +302,11 @@ async def get_random_title(database: str, collection: str):
         if 'client' in locals():
             client.close()
 
-#async def login(username: str = Body(...), password: str = Body(...)):
+
+#async def login(username: str = Form(...), password: str = Form(...)):
+#
 @app.post("/login")
-async def login(username: str = Form(...), password: str = Form(...)):
+async def login(username: str = Body(...), password: str = Body(...)):
 
     logger.info(f"Tentativa de login para usuário: {username}")
     try:
