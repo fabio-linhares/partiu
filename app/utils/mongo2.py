@@ -6,3 +6,4 @@ def load_database_config(file_path):
     uri = f"{db_access['protocol']}://{db_access['user']}:{db_access['password']}@{db_access['host']}:{db_access['port']}/{db_access['database']}"
     return uri
 
+

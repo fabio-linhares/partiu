@@ -39,6 +39,58 @@ logger = logging.getLogger(__name__)
 class Document(BaseModel):
     data: dict
 
+
+#################################################################################
+############################         FUNCTIONS        ###########################
+#################################################################################
+
+def api_request(method, endpoint, data=None):
+    """
+    Realiza uma requisição à API.
+
+    Args:
+        method (str): Método HTTP (GET, POST, PUT, DELETE).
+        endpoint (str): Endpoint da API.
+        data (dict, optional): Dados para enviar na requisição. Padrão é None.
+
+    Returns:
+        dict: Resposta da API em formato JSON.
+
+    Raises:
+        Exception: Se ocorrer um erro durante a requisição.
+    """
+    url = f"{API_BASE_URL}{endpoint}"
+    try:
+        if method == "GET":
+            response = requests.get(url)
+        elif method == "POST":
+            response = requests.post(url, json=data)
+        elif method == "PUT":
+            response = requests.put(url, json=data)
+        elif method == "DELETE":
+            response = requests.delete(url)
+        
+        response.raise_for_status()
+        return response.json()
+    except requests.RequestException as e:
+        logger.error(f"API request error: {e}")
+        raise Exception(f"Error: {e}")
+    
+
+def get_sections_from_api(database, collection):
+    try:
+        result = api_request("GET", f"/get_sections/{database}/{collection}")
+        return result['sections']
+    except Exception as e:
+        st.error(f"Erro ao buscar seções: {str(e)}")
+        return []
+
+
+
+#################################################################################
+############################           ROTAS          ###########################
+#################################################################################
+
 @app.post("/create/{collection}")
 async def create(collection: str, document: Document):
     """
@@ -159,39 +211,7 @@ async def get_main_collection():
     except Exception as e:
         logger.error(f"Error getting main collection: {e}")
         raise HTTPException(status_code=500, detail=str(e))
-
-def api_request(method, endpoint, data=None):
-    """
-    Realiza uma requisição à API.
-
-    Args:
-        method (str): Método HTTP (GET, POST, PUT, DELETE).
-        endpoint (str): Endpoint da API.
-        data (dict, optional): Dados para enviar na requisição. Padrão é None.
-
-    Returns:
-        dict: Resposta da API em formato JSON.
-
-    Raises:
-        Exception: Se ocorrer um erro durante a requisição.
-    """
-    url = f"{API_BASE_URL}{endpoint}"
-    try:
-        if method == "GET":
-            response = requests.get(url)
-        elif method == "POST":
-            response = requests.post(url, json=data)
-        elif method == "PUT":
-            response = requests.put(url, json=data)
-        elif method == "DELETE":
-            response = requests.delete(url)
-        
-        response.raise_for_status()
-        return response.json()
-    except requests.RequestException as e:
-        logger.error(f"API request error: {e}")
-        raise Exception(f"Error: {e}")
-    
+   
 @app.get("/user_data")
 async def read_user_data():
     """
@@ -205,4 +225,17 @@ async def read_user_data():
         return {"user_data": json.loads(json.dumps(user_data, default=str))}
     except Exception as e:
         logger.error(f"Error getting user data: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    
+
+@app.get("/get_sections/{database}/{collection}")
+async def get_sections(database: str, collection: str):
+    try:
+        logger.info(f"Fetching sections from database: {database}, collection: {collection}")
+        db = get_database(database)
+        coll = db[collection]
+        sections = list(coll.find({}, {"section": 1, "questions": 1}))
+        return {"sections": json.loads(json.dumps(sections, default=str))}
+    except Exception as e:
+        logger.error(f"Error fetching sections: {e}")
         raise HTTPException(status_code=500, detail=str(e))

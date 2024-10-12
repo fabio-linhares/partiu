@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 import streamlit as st
 
 # Local modules
-from api import api_request
+from api import api_request, get_sections_from_api
 from config.variaveis_globais import (
     streamlit_secret, 
     image_directory, 
@@ -72,8 +72,30 @@ dev_data = user_data = get_user_data(database_name=config_vars['database_user'],
 ############################           MENUS          ###########################
 #################################################################################
 
+
+database_name = config_vars['database_main'] 
+collection_name = config_vars['collections_menu'] 
+
+menu_dados = get_sections_from_api(database_name, collection_name)
+
 st.sidebar.image(infnet_image, use_column_width=True)
 st.sidebar.header("Seções do Menu")
+
+# cria o menu no sidebar
+if menu_dados:
+    sections = [item['section'] for item in menu_dados]
+    selected_section = st.sidebar.selectbox("Selecione uma seção", sections)
+
+    # questões para a seção selecionada
+    selected_questions = next((item['questions'] for item in menu_dados if item['section'] == selected_section), [])
+
+    st.write(f"## {selected_section}")
+    for question in selected_questions:
+        st.write(question)
+else:
+    st.sidebar.warning("Nenhuma seção encontrada.")
+
+
 st.sidebar.image(mec_image, use_column_width=True)
 
 st.sidebar.markdown(
