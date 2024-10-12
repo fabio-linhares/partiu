@@ -1,0 +1,21 @@
+## Extração de Dados com Beautiful Soup e Selenium
+
+Implementamos um script robusto para extrair dados de pacotes de viagem do site Decolar.com utilizando Beautiful Soup em conjunto com Selenium. O processo inclui:
+
+1. **Configuração do WebDriver**: Utilizamos o `undetected_chromedriver` para evitar detecção de automação.
+
+2. **Navegação Dinâmica**: 
+   - Tratamento de popups de LGPD.
+   - Clique automático em "Ver mais ofertas" para carregar conteúdo adicional.
+
+3. **Extração de Dados**: 
+   - Utilizamos Beautiful Soup para parsear o HTML.
+   - Extraímos informações detalhadas de cada oferta, incluindo título, preço, descrição, datas, e mais.
+
+4. **Armazenamento de Dados**:
+   - Os dados são salvos em formato JSON em `data/external/dados_completos.json`.
+   - Uma versão legível é salva em `data/external/dados_completos.txt`.
+
+## Utilização dos Dados na Interface
+
+Os dados extraídos são utilizados para alimentar a interface da aplicação Streamlit, oferecendo visualizações interativas:

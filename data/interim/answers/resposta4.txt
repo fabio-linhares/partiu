@@ -1,0 +1,77 @@
+Para atender à demanda de melhorar a performance da aplicação e garantir a persistência dos dados em aplicações interativas, implementamos estratégias de cache e estado de sessão utilizando as funcionalidades do Streamlit. Essas implementações permitem que os dados sejam mantidos ao longo das interações do usuário, proporcionando uma experiência mais fluida.
+
+## Cache
+
+Utilizamos o decorador `@st.cache_data` do Streamlit para otimizar o carregamento de dados e operações custosas. Isso foi aplicado em várias funções:
+
+1. **Carregamento de Dados da API:**
+   ```python
+   @st.cache_data
+   def get_sections_from_api(database_name, collection_name):
+        ...
+   ```
+
+2. **Dados do Usuário:**
+   ```python
+   @st.cache_data
+   def get_user_data(database_name, collection_name):
+       ...
+   ```
+
+3. **Carregamento de Imagens:**
+   ```python
+   @st.cache_data
+   def get_cached_random_image(image_directory):
+       return get_random_image(image_directory)
+   ```
+
+4. **Requisições à API:**
+   ```python
+   @st.cache_data(ttl=3600)  # Cache por 1 hora
+   def api_request_cached(method, endpoint, data=None):
+       return api_request(method, endpoint, data)
+   ```
+
+5. **Leitura de Arquivos:**
+   ```python
+   @st.cache_data
+   def read_markdown_file(file_path):
+       with open(file_path, 'r', encoding='utf-8') as file:
+           return file.read()
+   ```
+
+Estas implementações de cache melhoram significativamente o tempo de carregamento e a responsividade da aplicação, reduzindo a necessidade de reprocessamento de dados que não mudam frequentemente.
+
+## Estado de Sessão
+
+Utilizamos `st.session_state` para manter o estado entre recarregamentos da página, garantindo a persistência de dados importantes:
+
+1. **Títulos Utilizados:**
+   ```python
+   if 'used_titles' not in st.session_state:
+       st.session_state.used_titles = []
+   ```
+
+2. **Seção Selecionada:**
+   ```python
+   if 'selected_section' not in st.session_state:
+       st.session_state.selected_section = None
+
+   selected_section = st.sidebar.selectbox(
+       config_vars['sections_sidemenumsg'], 
+       sections, 
+       key='selected_section'
+   )
+   ```
+
+O uso do estado de sessão permite que a aplicação mantenha informações cruciais entre as interações do usuário, mesmo após recarregamentos da página, proporcionando uma experiência mais consistente e fluida.
+
+## Benefícios
+
+- **Melhoria de Performance:** Redução significativa no tempo de carregamento de dados e operações repetitivas.
+- **Persistência de Dados:** Manutenção do estado da aplicação entre interações do usuário.
+- **Experiência do Usuário Aprimorada:** Interações mais rápidas e consistentes.
+- **Eficiência no Uso de Recursos:** Redução de chamadas desnecessárias ao servidor e otimização do uso de memória.
+
+Cremos que estas implementações não só atendem diretamente à necessidade de melhora na performance, como garante a persistência dos dados, o que resulta em uma aplicação Streamlit mais eficiente e uma experiência de usuário mais fluida e responsiva.
+```

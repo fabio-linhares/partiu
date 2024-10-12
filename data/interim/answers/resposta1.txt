@@ -1,0 +1,37 @@
+Para atender aos requisitos de configuração do ambiente de desenvolvimento, incluindo Git para controle de versão e preparação para deploy, além de seguir a estrutura do CRISP-DM, foram realizadas as seguintes ações:
+
+## 1. Controle de Versão com Git
+
+- O projeto foi inicializado e está sendo gerenciado usando Git.
+- Um repositório remoto foi criado no GitHub: [https://github.com/fabio-linhares/partiu](https://github.com/fabio-linhares/partiu)
+- Isso permite um controle de versão eficiente e colaboração no desenvolvimento do projeto.
+
+## 2. Ambiente de Desenvolvimento
+
+- Foi criado um script shell para automatizar a configuração do ambiente de desenvolvimento.
+- O script cria um ambiente virtual Conda, garantindo isolamento e reprodutibilidade.
+- Arquivos essenciais do projeto são gerados automaticamente pelo script.
+
+## 3. Estrutura do Projeto CRISP-DM
+
+A estrutura de diretórios do projeto segue as recomendações do CRISP-DM, como pode ser visto no README do repositório GitHub. Isso inclui:
+
+- Diretórios para diferentes fases do projeto (ex: data, notebooks, src)
+- Separação clara entre dados brutos, processados e externos
+- Organização de código-fonte, notebooks e documentação
+
+## 4. Preparação para Deploy
+
+- O projeto foi implantado em um servidor pessoal, demonstrando prontidão para deploy.
+- Uvicorn (servidor ASGI) está rodando em: [http://179.124.242.238:8000/](http://179.124.242.238:8000/)
+- A aplicação Streamlit está acessível em: [http://179.124.242.238:8501](http://179.124.242.238:8501)
+
+## 5. Escalabilidade e Eficiência
+
+- A utilização de ambientes virtuais permite fácil replicação e escalabilidade.
+- A estrutura organizada do projeto facilita a manutenção e expansão futura.
+- A separação entre backend (Uvicorn) e frontend (Streamlit) permite escalabilidade independente.
+
+## Conclusão
+
+A configuração realizada atende aos requisitos solicitados, proporcionando um ambiente de desenvolvimento robusto, com controle de versão, preparação para deploy e uma estrutura organizada seguindo o CRISP-DM. Esta abordagem garante eficiência no desenvolvimento e facilita a escalabilidade futura do projeto.
