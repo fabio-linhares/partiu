@@ -94,9 +94,9 @@ if not st.session_state.logged_in:
         password = st.text_input("Senha", type="password")
         if st.button("Login"):
             result = login_user(username, password)
-            if result and result.get('status') == 'success':
+            if result.get('status') == 'success':
                 st.session_state.logged_in = True
-                st.session_state.user = result['user']
+                st.session_state.user = result.get('user', {})
                 st.experimental_rerun()
             else:
                 st.error(f"Erro de login: {result.get('detail', 'Usuário ou senha incorretos')}")

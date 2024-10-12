@@ -71,7 +71,8 @@ def api_request(method, endpoint, data=None):
         if method == "GET":
             response = requests.get(url)
         elif method == "POST":
-            response = requests.post(url, json=data)
+            #response = requests.post(url, json=data)
+            response = requests.post(url, data=data) 
         elif method == "PUT":
             response = requests.put(url, json=data)
         elif method == "DELETE":
@@ -81,7 +82,10 @@ def api_request(method, endpoint, data=None):
         return response.json()
     except requests.RequestException as e:
         logger.error(f"API request error: {e}")
-        raise Exception(f"Error: {e}")
+        if hasattr(e, 'response') and e.response is not None:
+            return {"status": "error", "detail": e.response.text}
+        return {"status": "error", "detail": str(e)}
+        #raise Exception(f"Error: {e}")
     
 @st.cache_data(ttl=3600) # 1 hora
 def api_request_cached(method, endpoint, data=None):
@@ -102,6 +106,20 @@ def get_sections_from_api(database, collection):
             st.error(f"Detalhes do erro: {e.response.text}")
         return []
 
+def authenticate_user(db, username: str, password: str):
+    users_collection = db[config['collections_users']]
+    user = users_collection.find_one({"username": username})
+    if user and user['password'] == password:  
+        return user
+    return None
+
+
+def get_db():
+    client = MongoClient(get_connection_string())
+    try:
+        yield client[config['database_user']]
+    finally:
+        client.close()
 
 
 #################################################################################
@@ -303,28 +321,13 @@ async def get_random_title(database: str, collection: str):
             client.close()
 
 
-#async def login(username: str = Form(...), password: str = Form(...)):
-#
 @app.post("/login")
-async def login(username: str = Body(...), password: str = Body(...)):
-
-    logger.info(f"Tentativa de login para usuário: {username}")
-    try:
-        connection_string = get_connection_string()
-        client = MongoClient(connection_string)
-        db = client[config['database_user']]
-        users_collection = db[config['collections_users']]
-        
-        user = users_collection.find_one({"username": username})
-        if user and user['password'] == password:  # Na prática, use hash+salt
-            logger.info("Login bem-sucedido")
-            return {"status": "success", "user": user_data}
-        else:
-            return {"status": "failed"}
-        
-    except Exception as e:
-        logger.error(f"Erro durante o login: {str(e)}")
-        raise HTTPException(status_code=400, detail="Falha na autenticação")
-    finally:
-        if 'client' in locals():
-            client.close()
+async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: MongoClient = Depends(get_db)):
+    user = authenticate_user(db, form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(status_code=400, detail="Credenciais inválidas")
+    
+    user_dict = json.loads(json_util.dumps(user))
+    user_dict.pop('password', None)
+    
+    return {"status": "success", "user": user_dict}
