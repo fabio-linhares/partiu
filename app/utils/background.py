@@ -1,5 +1,5 @@
 ###############################################################################
-# Script Name    : random_image_selector.py
+# Script Name    : utils/background.py
 # Description    : Seleciona uma imagem aleatória de um diretório especificado
 # Args           : directory (str): Caminho para o diretório contendo as imagens
 # Author         : Fábio Linhares (zerocopia)
