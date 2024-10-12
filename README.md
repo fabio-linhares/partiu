@@ -24,125 +24,82 @@ O aplicativo visa resolver a dificuldade que muitas pessoas enfrentam ao procura
 
 ## Principais Pacotes Utilizados
 
-O projeto utiliza uma série de pacotes para diversas finalidades, organizados da seguinte forma:
+O projeto utiliza uma série de pacotes para diferentes finalidades, organizados da seguinte forma:
 
 ### 1. Desenvolvimento de Aplicações Web e Frameworks
-- **streamlit** (1.38.0): Principal pacote para construção de aplicações web interativas baseadas em dados.
-- **streamlit-aggrid** (1.0.5): Componente adicional para incorporar tabelas interativas no Streamlit.
-- **streamlit-folium** (0.18.0): Integração do Streamlit com o Folium para visualização de mapas.
+- **streamlit**: Principal pacote para construção de aplicações web interativas baseadas em dados.
+- **fastapi**: Framework leve para construção de APIs web.
+- **uvicorn**: Servidor ASGI rápido utilizado para rodar aplicações FastAPI.
 
-### 2. Análise de Dados
-- **numpy** (1.26.4): Biblioteca fundamental para computação numérica.
-- **pandas** (2.2.3): Manipulação e análise de dados em formato de tabelas.
-- **scipy** (1.12.0): Biblioteca para computação científica.
-- **scikit-learn** (1.4.1.post1): Pacote para modelagem de aprendizado de máquina.
-- **seaborn** (0.13.2): Visualizações estatísticas.
-- **matplotlib** (3.8.3): Biblioteca de gráficos e visualizações.
-- **altair** (4.2.2): Biblioteca para visualização de dados declarativa.
-- **joblib** (1.4.2): Ferramenta para serialização e execução paralela de jobs.
-- **plotly** (5.20.0): Criação de gráficos interativos.
-- **folium** (0.15.1): Visualização de dados geoespaciais.
-- **geopandas** (0.14.3): Manipulação de dados geoespaciais.
+### 2. Análise de Dados e Visualização
+- **numpy**: Biblioteca fundamental para computação numérica.
+- **pandas**: Manipulação e análise de dados em formato de tabelas.
+- **matplotlib**: Biblioteca de gráficos e visualizações.
+- **plotly**: Criação de gráficos interativos.
 
-### 3. Web Scraping e HTTP
-- **Scrapy** (2.11.2): Framework de web scraping.
-- **beautifulsoup4** (4.12.3): Extração de dados de arquivos HTML e XML.
-- **requests** (2.31.0): Biblioteca para requisições HTTP.
-- **aiohttp** (3.10.6): Cliente HTTP assíncrono.
-- **httpx** (0.27.2): Alternativa ao `requests`, com suporte a requisições HTTP assíncronas.
+### 3. Manipulação de Configurações e Banco de Dados
+- **toml**: Utilizado para leitura de arquivos de configuração, como `secrets.toml`.
+- **pymongo**: Interface Python para o MongoDB, permitindo manipulação de bancos de dados NoSQL.
 
-### 4. Aprendizado de Máquina e Ciência de Dados
-- **numba** (0.60.0): Otimização de código numérico em Python, utilizando compilação JIT.
-- **onnxruntime** (1.19.2): Para executar modelos treinados em ONNX.
-- **pyarrow** (17.0.0): Manipulação de dados tabulares e integração com armazenamento de dados.
-- **rembg** (2.0.59): Remoção de fundo de imagens utilizando aprendizado de máquina.
+### 4. Modelagem de Dados e Validação
+- **pydantic**: Utilizado para validação de dados e definição de modelos no FastAPI.
 
-### 5. Visualização de Dados
-- **mplsoccer** (1.4.0): Visualização de dados esportivos.
-- **shapely** (2.0.6): Manipulação e análise de formas geométricas.
-- **wordcloud** (1.9.3): Geração de nuvens de palavras.
+### 5. Web Scraping e HTTP
+- **requests**: Biblioteca para requisições HTTP, facilitando a comunicação com APIs.
 
-### 6. Testes e Qualidade do Código
-- **pytest** (8.1.1): Framework de testes.
-- **flake8** (7.0.0): Verificador de estilo de código Python.
-- **black** (24.3.0): Formatador automático de código Python.
-
-### 7. Segurança e Criptografia
-- **cryptography** (43.0.1): Implementações de protocolos criptográficos.
-
-Esses pacotes compõem o núcleo funcional do projeto, cobrindo desde a manipulação de dados até a criação de interfaces web interativas e automação de tarefas, como web scraping.
+Esses pacotes compõem o núcleo funcional do projeto, cobrindo desde a criação de APIs web até a manipulação de dados e interações com bancos de dados NoSQL.
 
 ## Estrutura do Repositório
 
 ```bash
 partiu/
 ├── app/
-│   ├── main.py
+│   ├── api.py
+│   ├── app.py
 │   ├── components/
+│   ├── config/
 │   ├── pages/
 │   └── utils/
 ├── data/
-│   ├── raw/
-│   └── processed/
-├── docs/
-│   ├── business_understanding/
-│   └── data_understanding/
+│   ├── external/
+│   ├── interim/
+│   ├── processed/
+│   └── raw/
+├── images/
 ├── notebooks/
-├── src/
-│   ├── data/
-│   ├── features/
-│   ├── models/
-│   └── visualization/
-├── .streamlit/
-│   └── secrets.toml
+│   ├── exploratory/
+│   └── final/
 ├── tests/
-├── .gitignore
+├── LICENSE
 ├── README.md
-├── requirements.txt
-└── setup.py
-```
+├── setup.py
+└── requirements.txt
+
 
 ### Justificativa: o tal do CRISP-DM
 
-- **`app/`**: Diretório que contém o código principal da aplicação, que pode ser uma interface interativa construída com o Streamlit.
-     - **`main.py`**: Arquivo de entrada principal da aplicação.
-     - **`components/`**: Para armazenar componentes reutilizáveis da interface do usuário, como widgets personalizados ou layouts.
-     - **`pages/`**: Organização para múltiplas páginas da aplicação, facilitando o gerenciamento de diferentes seções ou visões da interface.
-     - **`utils/`**: Funções utilitárias gerais, usadas em diferentes partes da aplicação para abstrair funcionalidades recorrentes.
+- **`app/`**: Diretório que contém o código principal da aplicação.
+  - **`api.py`**: Arquivo que define as rotas e funções da API construída com FastAPI.
+  - **`app.py`**: Principal arquivo da aplicação Streamlit.
+  - **`components/`**: Armazena componentes reutilizáveis da interface do usuário.
+  - **`config/`**: Armazena variáveis de ambiente para diferentes ambientes (dev, val, prod).
+  - **`pages/`**: Organização para as diferentes páginas da aplicação.
+  - **`utils/`**: Funções utilitárias como manipulação de dados e interação com o banco de dados.
 
 - **`data/`**:
-  - **`raw/`**: Diretório destinado a armazenar os dados brutos, não tratados, como recebidos de fontes externas.
-  - **`processed/`**: Armazena os dados após serem limpos, transformados e preparados para uso no projeto.
-  
-- **`docs/`**:
-  - **`business_understanding/`**: Contém a documentação relacionada ao entendimento do problema de negócio, os objetivos gerais do projeto e as premissas adotadas.
-  - **`data_understanding/`**: Relatórios e análises que explicam a origem, a estrutura e a qualidade dos dados, além de insights iniciais sobre os dados usados.
+  - **`raw/`**: Dados brutos.
+  - **`processed/`**: Dados processados.
+  - **`interim/`**: Armazena dados e arquivos intermediários, como documentação do projeto.
 
-- **`notebooks/`**: Armazena notebooks Jupyter para exploração de dados, análise inicial e desenvolvimento de protótipos, permitindo fácil compartilhamento e documentação de processos exploratórios.
+- **`images/`**: Diretório para armazenar imagens utilizadas no projeto.
 
-- **`src/`**: Diretório principal de código-fonte modular do projeto.
-  - **`data/`**: Scripts para a coleta, limpeza e transformação de dados.
-  - **`features/`**: Implementação de funções para a extração e engenharia de features, fundamentais para o treinamento de modelos.
-  - **`models/`**: Implementações dos algoritmos de machine learning, incluindo treinamento, validação e avaliação dos modelos.
-  - **`visualization/`**: Funções e scripts para gerar gráficos e visualizações, que auxiliam na análise e interpretação dos dados.
+- **`notebooks/`**: Notebooks Jupyter para exploração de dados e análise.
 
-- **`.streamlit/`**:
-  - **`secrets.toml`**: Arquivo de configuração que armazena segredos e credenciais, como chaves de API, de forma segura para uso dentro da aplicação Streamlit.
+- **`tests/`**: Diretório dedicado a testes automatizados.
 
-- **`tests/`**: Diretório dedicado a testes automatizados, incluindo testes unitários e de integração, para garantir a robustez e qualidade do código à medida que ele evolui.
+- **`LICENSE`**, **`README.md`**, **`setup.py`**: Documentação do projeto e arquivos de configuração.
 
-- **`.gitignore`**: Arquivo que define quais arquivos e diretórios devem ser ignorados pelo sistema de controle de versão git, como dados sensíveis ou artefatos gerados automaticamente.
-
-- **`README.md`**: Documentação principal do projeto, onde são descritas as instruções de instalação, uso, e uma visão geral do propósito e estrutura do projeto.
-
-- **`requirements.txt`**: Lista de dependências de bibliotecas e pacotes Python necessários para rodar o projeto, facilitando a configuração do ambiente.
-
-- **`setup.py`**: Arquivo de configuração utilizado para empacotar o projeto como um pacote Python, permitindo sua fácil distribuição e instalação.
-
-
-Nossa ideia com essa organização, além de respeitar as diretrizes do **CRISP-DM**, é fornecer uma organização clara e modular para o projeto, separando claramente a aplicação web (**`app/`**), o processamento de dados e modelagem (**`src/`**), documentação (**`docs/`**), e testes (**`tests/`**), o que, a nosso ver, segue as boas práticas de desenvolvimento de software em ciência de dados, permitindo fácil manutenção, colaboração e escalabilidade do projeto.
-
-
+Essa organização segue as diretrizes do **CRISP-DM** e as boas práticas de desenvolvimento de software, separando de forma clara as funções da aplicação e mantendo a modularidade para facilitar a colaboração e manutenção.
 
 ## Instalação e Configuração
 
