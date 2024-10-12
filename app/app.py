@@ -73,8 +73,9 @@ dev_data = user_data = get_user_data(database_name=config_vars['database_user'],
 #################################################################################
 
 
-
-menu_dados = get_sections_from_api(config_vars['database_main'] , 
+st.write(f"Database: {config_vars['database_main']}")
+st.write(f"Collection: {config_vars['collections_menu']}")
+menu_dados = get_sections_from_api(config_vars['database_main'], 
                                    config_vars['collections_menu'])
 
 st.sidebar.image(infnet_image, use_column_width=True)
@@ -82,7 +83,7 @@ st.sidebar.header("Seções do Menu")
 
 if menu_dados:
     sections = [item['section'] for item in menu_dados]
-    selected_section = st.sidebar.selectbox("Selecione uma seção", sections
+    selected_section = st.sidebar.selectbox("Selecione uma seção", sections)
 
     # questões para a seção selecionada
     selected_questions = next((item['questions'] for item in menu_dados if item['section'] == selected_section), [])

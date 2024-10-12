@@ -31,6 +31,10 @@ import streamlit as st
 
 from config.variaveis_globais import streamlit_secret, API_BASE_URL
 
+from pymongo import MongoClient
+from pymongo.errors import PyMongoError
+from utils.database import get_connection_string
+
 app = FastAPI()
 
 config = create_global_variables(streamlit_secret)
@@ -92,7 +96,6 @@ def get_sections_from_api(database, collection):
         if hasattr(e, 'response'):
             st.error(f"Detalhes do erro: {e.response.text}")
         return []
-
 
 
 #################################################################################
@@ -240,9 +243,12 @@ async def read_user_data():
 async def get_sections(database: str, collection: str):
     try:
         logger.info(f"Fetching sections from database: {database}, collection: {collection}")
-        client = MongoClient(get_connection_string())
+        connection_string = get_connection_string()
+        logger.info(f"Connection string (without password): {connection_string.replace(config['database_access_password'], '****')}")
+        client = MongoClient(connection_string)
         db = client[database]
         coll = db[collection]
+        logger.info(f"Connected to database and collection")
         sections = list(coll.find({}, {"section": 1, "questions": 1, "_id": 0}))
         logger.info(f"Found {len(sections)} sections")
         return {"sections": json.loads(json.dumps(sections, default=str))}
@@ -253,4 +259,5 @@ async def get_sections(database: str, collection: str):
         logger.error(f"Unexpected error: {e}")
         raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
     finally:
-        client.close()
+        if 'client' in locals():
+            client.close()
