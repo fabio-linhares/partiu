@@ -30,13 +30,21 @@ from config.variaveis_globais import (
     mec_image, 
     arquivo_de_apresentacao, 
     arquivo_de_teste, 
-    arquivo_de_rubrica
+    arquivo_de_rubrica,
+    arquivo_de_resposta1,
+    arquivo_de_resposta2,
+    arquivo_de_resposta3,
+    arquivo_de_palavras
 )
 from utils.background import get_random_image
 from utils.globals import create_global_variables
 from utils.database import get_user_data
 from utils.mongo2 import load_database_config
 from utils.title import get_random_title
+from utils.frescuras import (gerar_nuvem_palavras,
+                             exibir_estatisticas,
+                             exibir_grafico_precos,
+                             exibir_tabela_ofertas)
 
 #################################################################################
 ############################       SECRETS.TOML       ###########################
@@ -149,6 +157,48 @@ with main_tab2:
             st.write(f"## {selected_section}")
             for question in selected_questions:
                 st.write(question)
+
+            if selected_section == "Configuração do Ambiente de Desenvolvimento":
+                with open(arquivo_de_resposta1, 'r', encoding='utf-8') as file:
+                    texto_em_markdown = file.read()
+                    st.markdown(texto_em_markdown)
+
+            elif selected_section == "Implementação de Interface de Usuário Dinâmica":
+                with open(arquivo_de_resposta2, 'r', encoding='utf-8') as file:
+                    texto_em_markdown = file.read()
+                    st.markdown(texto_em_markdown)
+
+            elif selected_section == "Extração de Conteúdo da Web para Alimentar a Aplicação":
+                with open(arquivo_de_resposta3, 'r', encoding='utf-8') as file:
+                    texto_em_markdown = file.read()
+                    st.markdown(texto_em_markdown)
+
+                    with open(arquivo_de_palavras, 'r', encoding='utf-8') as file:
+                        dados = json.load(file)
+
+                    st.markdown(f"###### Nuvem de Palavras dos Pacotes de Viagem:")
+                    gerar_nuvem_palavras(dados)
+
+                    st.markdown(f"###### Estatísticas básicas:")
+                    exibir_estatisticas(dados)
+
+                    st.markdown(f"###### Tabela de Ofertas:")
+                    exibir_tabela_ofertas(dados)
+
+                    st.markdown(f"###### Preços dos Pacotes de Vigens:")
+                    exibir_grafico_precos(dados)
+
+
+                    st.markdown(f"###### Últimos dados extraídos:")
+                    
+                    with st.expander("Exibir dados do arquivo JSON"):
+                        st.json(dados)  
+                                        
+                
+
+                
+
+
         else:
             st.write("Por favor, selecione uma seção no menu lateral.")
         
