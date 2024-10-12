@@ -14,7 +14,7 @@
 # OS Version     : 6.11.3-zen1-1-zen
 ###############################################################################
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Form, Body
 from pydantic import BaseModel
 from utils.database import (create_document,
                             read_documents, 
@@ -302,9 +302,10 @@ async def get_random_title(database: str, collection: str):
         if 'client' in locals():
             client.close()
 
-
+#async def login(username: str = Body(...), password: str = Body(...)):
 @app.post("/login")
 async def login(username: str = Form(...), password: str = Form(...)):
+
     logger.info(f"Tentativa de login para usuário: {username}")
     try:
         connection_string = get_connection_string()
