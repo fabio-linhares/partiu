@@ -16,7 +16,11 @@
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from utils.database import create_document, read_documents, update_document, delete_document
+from utils.database import (create_document,
+                            read_documents, 
+                            update_document, 
+                            delete_document, 
+                            get_user_data)
 from utils.globals import create_global_variables
 from bson import ObjectId
 import json
@@ -178,3 +182,18 @@ def api_request(method, endpoint, data=None):
     except requests.RequestException as e:
         logger.error(f"API request error: {e}")
         raise Exception(f"Error: {e}")
+    
+@app.get("/user_data")
+async def read_user_data():
+    """
+    Recupera os dados do usuário.
+
+    Returns:
+        dict: Dados do usuário.
+    """
+    try:
+        user_data = get_user_data()
+        return {"user_data": json.loads(json.dumps(user_data, default=str))}
+    except Exception as e:
+        logger.error(f"Error getting user data: {e}")
+        raise HTTPException(status_code=500, detail=str(e))

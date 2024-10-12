@@ -22,9 +22,6 @@ import matplotlib.pyplot as plt
 import streamlit as st
 
 # Local modules
-from utils.background import get_random_image
-from utils.globals import create_global_variables
-from utils.mongo2 import load_database_config
 from api import api_request
 from config.variaveis_globais import (
     streamlit_secret, 
@@ -35,6 +32,11 @@ from config.variaveis_globais import (
     arquivo_de_teste, 
     arquivo_de_rubrica
 )
+from utils.background import get_random_image
+from utils.globals import create_global_variables
+from utils.main import get_user_data_from_api
+from utils.mongo2 import load_database_config
+
 
 #################################################################################
 ############################            API           ###########################
@@ -46,7 +48,7 @@ from config.variaveis_globais import (
 #################################################################################
 
 menu_dados = []
-
+user_data = get_user_data_from_api()
 
 #################################################################################
 ############################       SECRETS.TOML       ###########################
@@ -118,14 +120,14 @@ with main_tab1:
 with main_tab2:
 
     # abas secundárias
-    sub_tab1, sub_tab2, sub_tab3 = st.tabs(["Atividades", "Competências", "Respostas"])
+    sub_tab_a1, sub_tab_a2, sub_tab_a3 = st.tabs(["Atividades", "Competências", "Respostas"])
 
-    with sub_tab1:
+    with sub_tab_a1:
         with open(arquivo_de_teste, 'r', encoding='utf-8') as file:
             texto_em_markdown = file.read()
             st.markdown(texto_em_markdown)
 
-    with sub_tab2:
+    with sub_tab_a2:
         with open(arquivo_de_rubrica, 'r', encoding='utf-8') as file:
             texto_em_markdown = file.read()
             st.markdown(texto_em_markdown)
@@ -134,7 +136,7 @@ with main_tab2:
 ############################        RESPOSTAS         ###########################
 #################################################################################
 
-    with sub_tab3:
+    with sub_tab_a3:
         pass
         
 
@@ -142,79 +144,100 @@ with main_tab2:
 ############################           APP            ###########################
 #################################################################################
 with main_tab3:
-    # Seleção de operação
-    operation = st.selectbox("Select operation", ["Create", "Read", "Update", "Delete", "Get Main Collection"])
 
-    if operation == "Create":
-        collection = st.text_input("Collection name")
-        data = st.text_area("Document data (JSON format)")
-        if st.button("Create Document"):
-            try:
-                json_data = json.loads(data)
-                result = api_request("POST", f"/create/{collection}", {"data": json_data})
-                if result:
-                    st.success(f"Document created with ID: {result['id']}")
-            except json.JSONDecodeError:
-                st.error("Invalid JSON format")
-            except Exception as e:
-                st.error(f"An error occurred: {str(e)}")
+    # abas secundárias
+    sub_tab_b1, sub_tab_b2, sub_tab_b3 = st.tabs(["Home", "Opt2", "API Teste"])
 
-    elif operation == "Read":
-        collection = st.text_input("Collection name")
-        limit = st.number_input("Limit", min_value=1, value=10)
-        if st.button("Read Documents"):
-            try:
-                result = api_request("GET", f"/read/{collection}?limit={limit}")
-                if result:
-                    st.json(result)
-            except Exception as e:
-                st.error(f"An error occurred: {str(e)}")
+    with sub_tab_b1:
+        pass
 
-    elif operation == "Update":
-        collection = st.text_input("Collection name")
-        doc_id = st.text_input("Document ID")
-        data = st.text_area("Updated data (JSON format)")
-        if st.button("Update Document"):
-            try:
-                json_data = json.loads(data)
-                result = api_request("PUT", f"/update/{collection}/{doc_id}", {"data": json_data})
-                if result:
-                    st.success("Document updated successfully")
-            except json.JSONDecodeError:
-                st.error("Invalid JSON format")
-            except Exception as e:
-                st.error(f"An error occurred: {str(e)}")
 
-    elif operation == "Delete":
-        collection = st.text_input("Collection name")
-        doc_id = st.text_input("Document ID")
-        if st.button("Delete Document"):
-            try:
-                result = api_request("DELETE", f"/delete/{collection}/{doc_id}")
-                if result:
-                    st.success("Document deleted successfully")
-            except Exception as e:
-                st.error(f"An error occurred: {str(e)}")
+    with sub_tab_b2:                
+        pass
 
-    elif operation == "Get Main Collection":
-        if st.button("Get Main Collection"):
-            try:
-                result = api_request("GET", "/main_collection")
-                if result:
-                    st.json(result)
-            except Exception as e:
-                st.error(f"An error occurred: {str(e)}")
-            
+    with sub_tab_b3:
         
+        operation = st.selectbox("Select operation", ["Create", "Read", "Update", "Delete", "Get Main Collection"])
+
+        if operation == "Create":
+            collection = st.text_input("Collection name")
+            data = st.text_area("Document data (JSON format)")
+            if st.button("Create Document"):
+                try:
+                    json_data = json.loads(data)
+                    result = api_request("POST", f"/create/{collection}", {"data": json_data})
+                    if result:
+                        st.success(f"Document created with ID: {result['id']}")
+                except json.JSONDecodeError:
+                    st.error("Invalid JSON format")
+                except Exception as e:
+                    st.error(f"An error occurred: {str(e)}")
+
+        elif operation == "Read":
+            collection = st.text_input("Collection name")
+            limit = st.number_input("Limit", min_value=1, value=10)
+            if st.button("Read Documents"):
+                try:
+                    result = api_request("GET", f"/read/{collection}?limit={limit}")
+                    if result:
+                        st.json(result)
+                except Exception as e:
+                    st.error(f"An error occurred: {str(e)}")
+
+        elif operation == "Update":
+            collection = st.text_input("Collection name")
+            doc_id = st.text_input("Document ID")
+            data = st.text_area("Updated data (JSON format)")
+            if st.button("Update Document"):
+                try:
+                    json_data = json.loads(data)
+                    result = api_request("PUT", f"/update/{collection}/{doc_id}", {"data": json_data})
+                    if result:
+                        st.success("Document updated successfully")
+                except json.JSONDecodeError:
+                    st.error("Invalid JSON format")
+                except Exception as e:
+                    st.error(f"An error occurred: {str(e)}")
+
+        elif operation == "Delete":
+            collection = st.text_input("Collection name")
+            doc_id = st.text_input("Document ID")
+            if st.button("Delete Document"):
+                try:
+                    result = api_request("DELETE", f"/delete/{collection}/{doc_id}")
+                    if result:
+                        st.success("Document deleted successfully")
+                except Exception as e:
+                    st.error(f"An error occurred: {str(e)}")
+
+        elif operation == "Get Main Collection":
+            if st.button("Get Main Collection"):
+                try:
+                    result = api_request("GET", "/main_collection")
+                    if result:
+                        st.json(result)
+                except Exception as e:
+                    st.error(f"An error occurred: {str(e)}")
+
+
 #################################################################################
 ############################           RODAPÉ         ###########################
 #################################################################################
 
-# st.markdown(
-#     """
-#     <div style="text-align: center;">
-#         <p style="font-size: 12px;">Desenvolvido por {} | Contato: {}.</p>
-#     </div>
-#     """.format(dev_author, dev_mail),
-#     unsafe_allow_html=True
-# )
+if user_data:
+    # Aqui você pode extrair informações específicas do user_data
+    # e atribuí-las a variáveis individuais, se necessário
+    user_name = user_data.get('name', 'Unknown')
+    user_email = user_data.get('email', 'No email')
+    # ... outras informações que você queira extrair
+else:
+    st.error("Não foi possível recuperar os dados do usuário.")
+    
+st.markdown(
+    """
+    <div style="text-align: center;">
+        <p style="font-size: 12px;">Desenvolvido por {} | Contato: {}.</p>
+    </div>
+    """.format(user_name, user_email),
+    unsafe_allow_html=True
+)

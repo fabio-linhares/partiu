@@ -154,3 +154,15 @@ def delete_document(collection_name, query):
     except PyMongoError as e:
         logger.error(f"Failed to delete document from {collection_name}: {e}")
         raise
+
+def get_user_data():
+    """
+    Recupera dados do usuário da coleção específica.
+
+    Returns:
+        dict: Dados do usuário.
+    """
+    db = get_database()
+    collection = db[config['collections_dev']]
+    user_data = collection.find_one({})  # queremos o primeiro documento
+    return user_data

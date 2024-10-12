@@ -11,4 +11,4 @@ arquivo_de_apresentacao = os.path.join(os.path.dirname(__file__), '../../data/in
 arquivo_de_teste = os.path.join(os.path.dirname(__file__), '../../data/interim/teste.txt')
 arquivo_de_rubrica = os.path.join(os.path.dirname(__file__), '../../data/interim/rubricas.txt')
 
-API_BASE_URL = "http://localhost:8000"
+API_BASE_URL = "http://179.124.242.238:8000"
