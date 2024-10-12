@@ -63,11 +63,13 @@ dev_data = get_user_data(database_name=config_vars['database_user'],
 menu_dados = get_sections_from_api(config_vars['database_main'], 
                                    config_vars['collections_menu'])
 
-#################################################################################
-############################         DATABASE         ###########################
-#################################################################################
 
 
+#################################################################################
+############################           TÍTULO         ###########################
+#################################################################################
+
+#st.set_page_config(page_title=page_title, page_icon=page_icon, layout=page_layout)
 
 
 #################################################################################
@@ -75,11 +77,11 @@ menu_dados = get_sections_from_api(config_vars['database_main'],
 #################################################################################
 
 st.sidebar.image(infnet_image, use_column_width=True)
-st.sidebar.header("Seções do Menu")
+st.sidebar.header(config_vars['sections_sidemenu'])
 
 if menu_dados:
     sections = [item['section'] for item in menu_dados]
-    selected_section = st.sidebar.selectbox("Selecione uma seção", sections)
+    selected_section = st.sidebar.selectbox(config_vars['sections_sidemenumsg'], sections)
 else:
     st.sidebar.warning("Nenhuma seção encontrada ou erro ao carregar dados.")
     selected_section = None
@@ -89,15 +91,11 @@ st.sidebar.image(mec_image, use_column_width=True)
 st.sidebar.markdown(
     """
     <div style="text-align: justify;">
-        <strong>Instruções</strong>: <p>Após escolher uma das opções no menu acima, os dados correspondentes são exibidos na aba principal da página.</p>
+        <strong>{}</strong>: <p>{}</p>
     </div>
-    """,
+    """.format(config_vars['sections_sidemenuchamada'], config_vars['sections_sidemenuinstrucao']),
     unsafe_allow_html=True
 )
-
-#################################################################################
-############################           TÍTULO         ###########################
-#################################################################################
 
 
 #################################################################################
