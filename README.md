@@ -74,6 +74,7 @@ partiu/
 ├── README.md
 ├── setup.py
 └── requirements.txt
+```
 
 
 ### Justificativa: o tal do CRISP-DM
