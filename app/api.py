@@ -60,6 +60,8 @@ async def create(collection: str, document: Document):
     except Exception as e:
         logger.error(f"Error creating document: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+    
+
 
 @app.get("/read/{collection}")
 async def read(collection: str, limit: int = 10):
@@ -77,11 +79,18 @@ async def read(collection: str, limit: int = 10):
         HTTPException: Se ocorrer um erro durante a leitura dos documentos.
     """
     try:
+        logger.info(f"Received request to read from collection: {collection}")
         documents = read_documents(collection, limit=limit)
+        logger.info(f"Successfully read {len(documents)} documents")
         return {"documents": json.loads(json.dumps(documents, default=str))}
+    except PyMongoError as e:
+        logger.error(f"MongoDB error reading documents: {e}")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
     except Exception as e:
-        logger.error(f"Error reading documents: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Unexpected error reading documents: {e}")
+        raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
+    
+
 
 @app.put("/update/{collection}/{id}")
 async def update(collection: str, id: str, document: Document):

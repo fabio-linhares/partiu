@@ -112,10 +112,17 @@ def read_documents(collection_name, query=None, limit=None):
         PyMongoError: Se houver falha na leitura dos documentos.
     """
     try:
+        logger.info(f"Attempting to read documents from collection: {collection_name}")
         collection = get_collection(collection_name)
-        return list(collection.find(query, limit=limit))
+        logger.info(f"Query: {query}, Limit: {limit}")
+        documents = list(collection.find(query, limit=limit))
+        logger.info(f"Found {len(documents)} documents")
+        return documents
     except PyMongoError as e:
         logger.error(f"Failed to read documents from {collection_name}: {e}")
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error reading documents from {collection_name}: {e}")
         raise
 
 def update_document(collection_name, query, update):

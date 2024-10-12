@@ -175,8 +175,12 @@ with main_tab3:
                     result = api_request("GET", f"/read/{collection}?limit={limit}")
                     if result:
                         st.json(result)
+                    else:
+                        st.warning("No documents found or empty result.")
                 except Exception as e:
                     st.error(f"An error occurred: {str(e)}")
+                    if hasattr(e, 'response'):
+                        st.error(f"Response content: {e.response.content}")
 
         elif operation == "Update":
             collection = st.text_input("Collection name")
