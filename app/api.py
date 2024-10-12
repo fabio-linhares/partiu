@@ -83,6 +83,10 @@ def api_request(method, endpoint, data=None):
         logger.error(f"API request error: {e}")
         raise Exception(f"Error: {e}")
     
+@st.cache_data(ttl=3600) # 1 hora
+def api_request_cached(method, endpoint, data=None):
+    return api_request(method, endpoint, data)
+    
 
 def get_sections_from_api(database, collection):
     try:
