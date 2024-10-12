@@ -21,20 +21,6 @@ from api import app, api_request
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def get_user_data_from_api():
-    """
-    Recupera os dados do usuário através da API.
-
-    Returns:
-        dict: Dados do usuário ou None se ocorrer um erro.
-    """
-    try:
-        result = api_request("GET", "/user_data")
-        return result['user_data']
-    except Exception as e:
-        logger.error(f"Error retrieving user data: {e}")
-        return None
-
 if __name__ == "__main__":
     import uvicorn
     
@@ -42,3 +28,5 @@ if __name__ == "__main__":
     uvicorn_config = uvicorn.Config(app, host="0.0.0.0", port=8000, log_level="info")
     server = uvicorn.Server(uvicorn_config)
     server.run()
+
+

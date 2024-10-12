@@ -1,5 +1,5 @@
 ###############################################################################
-# Script Name    : database.py
+# Script Name    : utils/database.py
 # Description    : Funções para operações CRUD no MongoDB
 # Args           : Vários, dependendo da função (veja docstrings)
 # Author         : Fábio Linhares (zerocopia)
@@ -39,9 +39,12 @@ def get_connection_string():
             f"{config['database_access_password']}@{config['database_access_host']}:"
             f"{config['database_access_port']}/{config['database_access_database']}")
 
-def get_database():
+def get_database(database_name=None):
     """
     Estabelece conexão com o banco de dados MongoDB.
+
+    Args:
+        database_name (str, optional): Nome do banco de dados. Se None, usa o banco padrão.
 
     Returns:
         pymongo.database.Database: Objeto de banco de dados MongoDB.
@@ -51,22 +54,25 @@ def get_database():
     """
     try:
         client = MongoClient(get_connection_string())
+        if database_name:
+            return client[database_name]
         return client[config['database_main']]
     except PyMongoError as e:
         logger.error(f"Failed to connect to database: {e}")
         raise
 
-def get_collection(collection_name):
+def get_collection(collection_name, database_name=None):
     """
     Obtém uma coleção específica do banco de dados.
 
     Args:
         collection_name (str): Nome da coleção.
+        database_name (str, optional): Nome do banco de dados. Se None, usa o banco padrão.
 
     Returns:
         pymongo.collection.Collection: Objeto de coleção MongoDB.
     """
-    db = get_database()
+    db = get_database(database_name)
     return db[collection_name]
 
 def create_document(collection_name, document):
@@ -155,14 +161,23 @@ def delete_document(collection_name, query):
         logger.error(f"Failed to delete document from {collection_name}: {e}")
         raise
 
-def get_user_data():
+def get_user_data(database_name=None, collection_name=None):
     """
     Recupera dados do usuário da coleção específica.
+
+    Args:
+        database_name (str, optional): Nome do banco de dados. Se None, usa o banco padrão.
+        collection_name (str, optional): Nome da coleção. Se None, usa a coleção padrão.
 
     Returns:
         dict: Dados do usuário.
     """
-    db = get_database()
-    collection = db[config['collections_dev']]
-    user_data = collection.find_one({})  # queremos o primeiro documento
-    return user_data
+    try:
+        db_name = database_name or config['database_user']
+        coll_name = collection_name or config['collections_dev']
+        collection = get_collection(coll_name, db_name)
+        user_data = collection.find_one({})  # queremos o primeiro documento
+        return user_data
+    except PyMongoError as e:
+        logger.error(f"Failed to retrieve user data: {e}")
+        raise

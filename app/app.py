@@ -34,21 +34,8 @@ from config.variaveis_globais import (
 )
 from utils.background import get_random_image
 from utils.globals import create_global_variables
-from utils.main import get_user_data_from_api
+from utils.database import get_user_data
 from utils.mongo2 import load_database_config
-
-
-#################################################################################
-############################            API           ###########################
-#################################################################################
-
-
-#################################################################################
-############################         VARIÁVEIS        ###########################
-#################################################################################
-
-menu_dados = []
-user_data = get_user_data_from_api()
 
 #################################################################################
 ############################       SECRETS.TOML       ###########################
@@ -66,6 +53,13 @@ if config_vars.get('environment_env') == 'dev':
     print("URI do banco de dados:", uri)
 
 
+#################################################################################
+############################         VARIÁVEIS        ###########################
+#################################################################################
+
+menu_dados = []
+dev_data = user_data = get_user_data(database_name=config_vars['database_user'], 
+                                     collection_name=config_vars['collections_dev'])
 
 #################################################################################
 ############################         DATABASE         ###########################
@@ -224,20 +218,18 @@ with main_tab3:
 ############################           RODAPÉ         ###########################
 #################################################################################
 
-if user_data:
-    # Aqui você pode extrair informações específicas do user_data
-    # e atribuí-las a variáveis individuais, se necessário
-    user_name = user_data.get('name', 'Unknown')
-    user_email = user_data.get('email', 'No email')
-    # ... outras informações que você queira extrair
+if dev_data:
+    user_name = dev_data.get('nome', 'zerocopia')
+    user_email = dev_data.get('email_aluno', 'zerodevsystem@gmail.com')
+
+    st.markdown(
+                """
+                <div style="text-align: center;">
+                    <p style="font-size: 12px;">Desenvolvido por {} | Contato: {}.</p>
+                </div>
+                """.format(user_name, user_email),
+                unsafe_allow_html=True
+)
+
 else:
     st.error("Não foi possível recuperar os dados do usuário.")
-    
-st.markdown(
-    """
-    <div style="text-align: center;">
-        <p style="font-size: 12px;">Desenvolvido por {} | Contato: {}.</p>
-    </div>
-    """.format(user_name, user_email),
-    unsafe_allow_html=True
-)
