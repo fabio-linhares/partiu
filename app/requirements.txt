@@ -1,0 +1,11 @@
+matplotlib
+numpy
+pandas
+plotly
+streamlit
+toml
+pymongo
+fastapi
+uvicorn
+pydantic
+requests
