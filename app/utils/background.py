@@ -16,6 +16,7 @@
 
 import os
 import random
+import streamlit as st
 
 def get_random_image(directory):
     """
@@ -43,3 +44,7 @@ def get_random_image(directory):
     if not image_files:
         raise ValueError(f"Nenhuma imagem encontrada no diretório {directory}")
     return os.path.join(directory, random.choice(image_files))
+
+@st.cache_data
+def get_cached_random_image(image_directory):
+    return get_random_image(image_directory)
