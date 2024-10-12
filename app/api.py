@@ -301,3 +301,24 @@ async def get_random_title(database: str, collection: str):
     finally:
         if 'client' in locals():
             client.close()
+
+
+@app.post("/login")
+async def login(username: str, password: str):
+    try:
+        connection_string = get_connection_string()
+        client = MongoClient(connection_string)
+        db = client[config['database_user']]
+        users_collection = db[config['collections_users']]
+        
+        user = users_collection.find_one({"username": username})
+        if user and user['password'] == password:  # Na prática, use hash+salt
+            return {"status": "success", "user": json.loads(json.dumps(user, default=str))}
+        else:
+            return {"status": "failed"}
+    except Exception as e:
+        logger.error(f"Login error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if 'client' in locals():
+            client.close()
