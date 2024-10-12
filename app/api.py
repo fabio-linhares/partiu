@@ -23,9 +23,11 @@ from utils.database import (create_document,
                             get_user_data)
 from utils.globals import create_global_variables
 from bson import ObjectId
+
 import json
 import requests
 import logging
+import streamlit as st
 
 from config.variaveis_globais import streamlit_secret, API_BASE_URL
 
