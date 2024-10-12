@@ -65,8 +65,6 @@ dev_data = get_user_data(database_name=config_vars['database_user'],
 menu_dados = get_sections_from_api(config_vars['database_main'], 
                                    config_vars['collections_menu'])
 
-
-
 #################################################################################
 ############################           TÍTULO         ###########################
 #################################################################################
@@ -78,8 +76,6 @@ if 'used_titles' not in st.session_state:
     
 random_title = get_random_title(config_vars['database_main'], config_vars['collections_title'])
 st.title(random_title)
-
-
 
 #################################################################################
 ############################           MENUS          ###########################
