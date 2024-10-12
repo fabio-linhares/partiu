@@ -21,4 +21,5 @@ arquivo_de_resposta4 = os.path.join(os.path.dirname(__file__), '../../data/inter
 
 
 API_BASE_URL = "http://179.124.242.238:8000"
+url_decolar = "https://www.decolar.com/pacotes/viagens-baratas/pacotes-prontos"
 
