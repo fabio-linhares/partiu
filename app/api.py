@@ -15,7 +15,6 @@
 ###############################################################################
 
 from fastapi import FastAPI, HTTPException, Depends
-
 from fastapi.security import OAuth2PasswordRequestForm
 from pymongo import MongoClient
 from bson import json_util
@@ -41,6 +40,9 @@ from pymongo import MongoClient
 from pymongo.errors import PyMongoError
 from utils.database import get_connection_string
 from utils.mongo2 import load_database_config
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
@@ -112,25 +114,25 @@ def get_sections_from_api(database, collection):
             st.error(f"Detalhes do erro: {e.response.text}")
         return []
 
-def authenticate_user(db, username: str, password: str):
-    users_collection = db[config['collections_users']]
-    user = users_collection.find_one({"username": username})
-    if user and user['password'] == password:  # Na prática, use hash+salt
-        return user
-    return None
+# Carregue suas configurações
+config = create_global_variables(streamlit_secret)
 
-
-# Função para obter a string de conexão do MongoDB
 def get_connection_string():
     return load_database_config(streamlit_secret)
 
-# Função para obter a conexão com o MongoDB
 def get_db():
     client = MongoClient(get_connection_string())
     try:
         yield client[config['database_user']]
     finally:
         client.close()
+
+def authenticate_user(db, username: str, password: str):
+    users_collection = db[config['collections_users']]
+    user = users_collection.find_one({"username": username})
+    if user and user['password'] == password:  # Na prática, use hash+salt
+        return user
+    return None
 
 
 
@@ -335,11 +337,18 @@ async def get_random_title(database: str, collection: str):
 
 @app.post("/login")
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: MongoClient = Depends(get_db)):
+    logger.info(f"Tentativa de login para usuário: {form_data.username}")
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
+        logger.warning(f"Falha na autenticação para usuário: {form_data.username}")
         raise HTTPException(status_code=400, detail="Credenciais inválidas")
- 
+    
     user_dict = json.loads(json_util.dumps(user))
     user_dict.pop('password', None)
     
+    logger.info(f"Login bem-sucedido para usuário: {form_data.username}")
     return {"status": "success", "user": user_dict}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
