@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 import streamlit as st
 
 # Local modules
-from api import api_request, get_sections_from_api
+from api import api_request, get_sections_from_api, api_request_cached
 from config.variaveis_globais import (
     streamlit_secret, 
     image_directory, 
@@ -34,11 +34,13 @@ from config.variaveis_globais import (
     arquivo_de_resposta1,
     arquivo_de_resposta2,
     arquivo_de_resposta3,
+    arquivo_de_resposta4,
     arquivo_de_palavras
 )
-from utils.background import get_random_image
+from utils.background import get_random_image, get_cached_random_image
 from utils.globals import create_global_variables
 from utils.database import get_user_data
+from utils.markdown import read_markdown_file
 from utils.mongo2 import load_database_config
 from utils.title import get_random_title
 from utils.frescuras import (gerar_nuvem_palavras,
@@ -92,9 +94,14 @@ st.title(random_title)
 st.sidebar.image(infnet_image, use_column_width=True)
 st.sidebar.header(config_vars['sections_sidemenu'])
 
+if 'selected_section' not in st.session_state:
+    st.session_state.selected_section = None
+
 if menu_dados:
     sections = [item['section'] for item in menu_dados]
-    selected_section = st.sidebar.selectbox(config_vars['sections_sidemenumsg'], sections)
+    selected_section = st.sidebar.selectbox(config_vars['sections_sidemenumsg'], 
+                                            sections,    
+                                            key='selected_section')
 else:
     st.sidebar.warning("Nenhuma seção encontrada ou erro ao carregar dados.")
     selected_section = None
@@ -115,7 +122,7 @@ st.sidebar.markdown(
 ############################          IMAGENS         ###########################
 #################################################################################
 
-random_image_path = get_random_image(image_directory)
+random_image_path = get_cached_random_image(image_directory)
 capa_site = random_image_path
 st.image(capa_site, use_column_width=True)
 
@@ -128,24 +135,23 @@ main_tab1, main_tab2, main_tab3 = st.tabs(["O Projeto", "O Teste", "O App"])
 
 with main_tab1:
 
-    with open(arquivo_de_apresentacao, 'r', encoding='utf-8') as file:
-        texto_em_markdown = file.read()
-        st.markdown(texto_em_markdown)
-             
+    texto_em_markdown = read_markdown_file(arquivo_de_apresentacao)
+    st.markdown(texto_em_markdown)
+            
 with main_tab2:
 
     # abas secundárias
     sub_tab_a1, sub_tab_a2, sub_tab_a3 = st.tabs(["Atividades", "Competências", "Respostas"])
 
     with sub_tab_a1:
-        with open(arquivo_de_teste, 'r', encoding='utf-8') as file:
-            texto_em_markdown = file.read()
-            st.markdown(texto_em_markdown)
+
+        texto_em_markdown = read_markdown_file(arquivo_de_teste)
+        st.markdown(texto_em_markdown)
 
     with sub_tab_a2:
-        with open(arquivo_de_rubrica, 'r', encoding='utf-8') as file:
-            texto_em_markdown = file.read()
-            st.markdown(texto_em_markdown)
+
+        texto_em_markdown = read_markdown_file(arquivo_de_rubrica)
+        st.markdown(texto_em_markdown)
 
 #################################################################################
 ############################        RESPOSTAS         ###########################
@@ -159,41 +165,44 @@ with main_tab2:
                 st.write(question)
 
             if selected_section == "Configuração do Ambiente de Desenvolvimento":
-                with open(arquivo_de_resposta1, 'r', encoding='utf-8') as file:
-                    texto_em_markdown = file.read()
-                    st.markdown(texto_em_markdown)
+
+                texto_em_markdown = read_markdown_file(arquivo_de_resposta1)
+                st.markdown(texto_em_markdown)
 
             elif selected_section == "Implementação de Interface de Usuário Dinâmica":
-                with open(arquivo_de_resposta2, 'r', encoding='utf-8') as file:
-                    texto_em_markdown = file.read()
-                    st.markdown(texto_em_markdown)
+
+                texto_em_markdown = read_markdown_file(arquivo_de_resposta2)
+                st.markdown(texto_em_markdown)
 
             elif selected_section == "Extração de Conteúdo da Web para Alimentar a Aplicação":
-                with open(arquivo_de_resposta3, 'r', encoding='utf-8') as file:
-                    texto_em_markdown = file.read()
-                    st.markdown(texto_em_markdown)
 
-                    with open(arquivo_de_palavras, 'r', encoding='utf-8') as file:
-                        dados = json.load(file)
+                texto_em_markdown = read_markdown_file(arquivo_de_resposta3)
+                st.markdown(texto_em_markdown)
+                
+                with open(arquivo_de_palavras, 'r', encoding='utf-8') as file:
+                    dados = json.load(file)
 
-                    st.markdown(f"###### Nuvem de Palavras dos Pacotes de Viagem:")
-                    gerar_nuvem_palavras(dados)
+                st.markdown(f"###### Nuvem de Palavras dos Pacotes de Viagem:")
+                gerar_nuvem_palavras(dados)
 
-                    st.markdown(f"###### Estatísticas básicas:")
-                    exibir_estatisticas(dados)
+                st.markdown(f"###### Estatísticas básicas:")
+                exibir_estatisticas(dados)
 
-                    st.markdown(f"###### Tabela de Ofertas:")
-                    exibir_tabela_ofertas(dados)
+                st.markdown(f"###### Tabela de Ofertas:")
+                exibir_tabela_ofertas(dados)
 
-                    st.markdown(f"###### Preços dos Pacotes de Vigens:")
-                    exibir_grafico_precos(dados)
+                st.markdown(f"###### Preços dos Pacotes de Vigens:")
+                exibir_grafico_precos(dados)
 
+                st.markdown(f"###### Últimos dados extraídos:")
+                
+                with st.expander("Exibir dados do arquivo JSON"):
+                    st.json(dados)  
 
-                    st.markdown(f"###### Últimos dados extraídos:")
-                    
-                    with st.expander("Exibir dados do arquivo JSON"):
-                        st.json(dados)  
-                                        
+            elif selected_section == "Cache e Estado de Sessão":
+
+                texto_em_markdown = read_markdown_file(arquivo_de_resposta4)
+                st.markdown(texto_em_markdown)
                 
 
                 
@@ -228,7 +237,7 @@ with main_tab3:
             if st.button("Create Document"):
                 try:
                     json_data = json.loads(data)
-                    result = api_request("POST", f"/create/{collection}", {"data": json_data})
+                    result = api_request_cached("POST", f"/create/{collection}", {"data": json_data})
                     if result:
                         st.success(f"Document created with ID: {result['id']}")
                 except json.JSONDecodeError:
@@ -241,7 +250,7 @@ with main_tab3:
             limit = st.number_input("Limit", min_value=1, value=10)
             if st.button("Read Documents"):
                 try:
-                    result = api_request("GET", f"/read/{collection}?limit={limit}")
+                    result = api_request_cached("GET", f"/read/{collection}?limit={limit}")
                     if result:
                         st.json(result)
                     else:
@@ -258,7 +267,7 @@ with main_tab3:
             if st.button("Update Document"):
                 try:
                     json_data = json.loads(data)
-                    result = api_request("PUT", f"/update/{collection}/{doc_id}", {"data": json_data})
+                    result = api_request_cached("PUT", f"/update/{collection}/{doc_id}", {"data": json_data})
                     if result:
                         st.success("Document updated successfully")
                 except json.JSONDecodeError:
@@ -271,7 +280,7 @@ with main_tab3:
             doc_id = st.text_input("Document ID")
             if st.button("Delete Document"):
                 try:
-                    result = api_request("DELETE", f"/delete/{collection}/{doc_id}")
+                    result = api_request_cached("DELETE", f"/delete/{collection}/{doc_id}")
                     if result:
                         st.success("Document deleted successfully")
                 except Exception as e:
@@ -280,7 +289,7 @@ with main_tab3:
         elif operation == "Get Main Collection":
             if st.button("Get Main Collection"):
                 try:
-                    result = api_request("GET", "/main_collection")
+                    result = api_request_cached("GET", "/main_collection")
                     if result:
                         st.json(result)
                 except Exception as e:
