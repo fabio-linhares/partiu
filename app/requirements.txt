@@ -16,3 +16,4 @@ selenium
 beautifulsoup4
 undetected-chromedriver
 lxml
+python-multipart
