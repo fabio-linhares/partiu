@@ -14,13 +14,13 @@
 # OS Version     : 6.11.3-zen1-1-zen
 ###############################################################################
 
-import os
 import logging
+
 from pymongo import MongoClient
 from pymongo.errors import PyMongoError
-from bson import ObjectId
 from utils.globals import create_global_variables
 from config.variaveis_globais import streamlit_secret
+
 
 config = create_global_variables(streamlit_secret)
 
