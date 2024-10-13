@@ -48,6 +48,8 @@ app = FastAPI()
 config_vars = create_global_variables(streamlit_secret)
 
 
+
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -310,8 +312,12 @@ async def login(username: str = Form(...), password: str = Form(...)):
     try:
         connection_string = get_connection_string()
         client = MongoClient(connection_string)
-        db = client[config_vars['database_main']]  # Use 'main' em vez de 'user'
-        users_collection = db[config_vars['collections_users']]  # Use 'users' em vez de 'collections_users'
+        db = client[config_vars['database']['main']]  # Use 'main' em vez de 'user'
+        users_collection = db[config_vars['collections']['users']]  # Use 'users' em vez de 'collections_users'
+
+        print(config_vars['collections_users'])
+
+
 
         user = users_collection.find_one({"username": username})
         if user:
