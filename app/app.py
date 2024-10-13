@@ -224,53 +224,63 @@ with main_tab3:
     # abas secundárias
     sub_tab_b1, sub_tab_b2, sub_tab_b3 = st.tabs(["Home", "Área Restrita", "API Teste"])
 
-
-
     with sub_tab_b1:
         st.title("Pacotes de Viagem Disponíveis")
 
-        if st.session_state.get('logged_in', False) and st.session_state.get('user'):
-            st.write(f"Bem-vindo, {st.session_state.user['profile']['first_name']}!")
-            if st.button("Logout", key="logout_home"):
-                st.session_state.logged_in = False
-                st.session_state.user = None
-                st.rerun()
-        else:
-            st.write("Faça login para selecionar pacotes de viagem.")
+        # Área de login/logout
+        col1, col2 = st.columns([3, 1])
+        with col2:
+            if not st.session_state.get('logged_in', False):
+                with st.expander("Login"):
+                    username = st.text_input("Usuário", key="username_home")
+                    password = st.text_input("Senha", type="password", key="password_home")
+                    if st.button("Login", key="login_button_home"):
+                        result = login_user(username, password)
+                        if result.get('status') == 'success':
+                            st.session_state.logged_in = True
+                            st.session_state.user = result.get('user', {})
+                            st.rerun()
+                        else:
+                            st.error(f"Erro de login: {result.get('detail', 'Usuário ou senha incorretos')}")
+            else:
+                st.write(f"Bem-vindo, {st.session_state.user['profile']['first_name']}!")
+                if st.button("Logout", key="logout_home"):
+                    st.session_state.logged_in = False
+                    st.session_state.user = None
+                    st.rerun()
 
-        pacotes = get_pacotes_viagem()
-        
-        # Criar um layout de grade para os cards
-        cols = st.columns(3)  # Você pode ajustar o número de colunas conforme necessário
-        
-        for i, pacote in enumerate(pacotes):
-            with cols[i % 3]:
-                # Criar um card para cada pacote
-                with st.container():
-                    # Tentar carregar a imagem
-                    try:
-                        response = requests.get(f"https:{pacote['imagem']}")
-                        img = Image.open(io.BytesIO(response.content))
-                        st.image(img, use_column_width=True)
-                    except:
-                        st.image("https://via.placeholder.com/300x200?text=Imagem+não+disponível", use_column_width=True)
-                    
-                    st.subheader(pacote['titulo'])
-                    st.write(f"Preço: R$ {pacote['preco_atual']}")
-                    st.write(f"Duração: {pacote['duracao']}")
-                    st.write(f"Datas: {pacote['datas']}")
-                    
-                    if pacote.get('economia'):
-                        st.write(f"Economia: {pacote['economia']}")
-                    
-                    # Mostrar o botão apenas se o usuário estiver logado
-                    if st.session_state.get('logged_in', False):
-                        if st.button("Selecionar", key=f"select_{i}"):
-                            st.success(f"Ótimo! Você selecionou o pacote de viagens {pacote['titulo']}!")
-                    else:
-                        st.info("Faça login para selecionar este pacote", icon="ℹ️")
-
-
+        with col1:
+            pacotes = get_pacotes_viagem()
+            
+            # Criar um layout de grade para os cards
+            cols = st.columns(3)  # Você pode ajustar o número de colunas conforme necessário
+            
+            for i, pacote in enumerate(pacotes):
+                with cols[i % 3]:
+                    # Criar um card para cada pacote
+                    with st.container():
+                        # Tentar carregar a imagem
+                        try:
+                            response = requests.get(f"https:{pacote['imagem']}")
+                            img = Image.open(io.BytesIO(response.content))
+                            st.image(img, use_column_width=True)
+                        except:
+                            st.image("https://via.placeholder.com/300x200?text=Imagem+não+disponível", use_column_width=True)
+                        
+                        st.subheader(pacote['titulo'])
+                        st.write(f"Preço: R$ {pacote['preco_atual']}")
+                        st.write(f"Duração: {pacote['duracao']}")
+                        st.write(f"Datas: {pacote['datas']}")
+                        
+                        if pacote.get('economia'):
+                            st.write(f"Economia: {pacote['economia']}")
+                        
+                        # Mostrar o botão apenas se o usuário estiver logado
+                        if st.session_state.get('logged_in', False):
+                            if st.button("Selecionar", key=f"select_{i}"):
+                                st.success(f"Ótimo! Você selecionou o pacote de viagens {pacote['titulo']}!")
+                        else:
+                            st.info("Faça login para selecionar este pacote", icon="ℹ️")
 
     with sub_tab_b2:
         if not st.session_state.logged_in:
