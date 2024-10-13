@@ -21,6 +21,10 @@ import json
 import matplotlib.pyplot as plt
 import streamlit as st
 
+import requests
+from PIL import Image
+import io
+
 # Local modules
 from api import api_request, get_sections_from_api, api_request_cached
 from config.variaveis_globais import (
@@ -40,13 +44,14 @@ from config.variaveis_globais import (
 from utils.background import get_random_image, get_cached_random_image
 from utils.globals import create_global_variables
 from utils.database import get_user_data
+from utils.loadfile import load_json_data, save_uploaded_file
 from utils.markdown import read_markdown_file
 from utils.mongo2 import load_database_config
+from utils.scrapy  import get_pacotes_viagem
 from utils.scraper import run_scraper
 from utils.security import login_user
 from utils.title import get_random_title
 from utils.frescuras import (gerar_nuvem_palavras,
-                             exibir_estatisticas,
                              exibir_grafico_precos,
                              exibir_tabela_ofertas)
 
@@ -219,15 +224,53 @@ with main_tab3:
     # abas secundárias
     sub_tab_b1, sub_tab_b2, sub_tab_b3 = st.tabs(["Home", "Área Restrita", "API Teste"])
 
+
+
     with sub_tab_b1:
-        if st.session_state.logged_in and st.session_state.user:
-            st.write(f"Bem-vindo, {st.session_state.user['profile']['first_name']}")
+        st.title("Pacotes de Viagem Disponíveis")
+
+        if st.session_state.get('logged_in', False) and st.session_state.get('user'):
+            st.write(f"Bem-vindo, {st.session_state.user['profile']['first_name']}!")
             if st.button("Logout", key="logout_home"):
                 st.session_state.logged_in = False
                 st.session_state.user = None
                 st.rerun()
         else:
-            st.write("Bem-vindo à página inicial")
+            st.write("Faça login para selecionar pacotes de viagem.")
+
+        pacotes = get_pacotes_viagem()
+        
+        # Criar um layout de grade para os cards
+        cols = st.columns(3)  # Você pode ajustar o número de colunas conforme necessário
+        
+        for i, pacote in enumerate(pacotes):
+            with cols[i % 3]:
+                # Criar um card para cada pacote
+                with st.container():
+                    # Tentar carregar a imagem
+                    try:
+                        response = requests.get(f"https:{pacote['imagem']}")
+                        img = Image.open(io.BytesIO(response.content))
+                        st.image(img, use_column_width=True)
+                    except:
+                        st.image("https://via.placeholder.com/300x200?text=Imagem+não+disponível", use_column_width=True)
+                    
+                    st.subheader(pacote['titulo'])
+                    st.write(f"Preço: R$ {pacote['preco_atual']}")
+                    st.write(f"Duração: {pacote['duracao']}")
+                    st.write(f"Datas: {pacote['datas']}")
+                    
+                    if pacote.get('economia'):
+                        st.write(f"Economia: {pacote['economia']}")
+                    
+                    # Mostrar o botão apenas se o usuário estiver logado
+                    if st.session_state.get('logged_in', False):
+                        if st.button("Selecionar", key=f"select_{i}"):
+                            st.success(f"Ótimo! Você selecionou o pacote de viagens {pacote['titulo']}!")
+                    else:
+                        st.info("Faça login para selecionar este pacote", icon="ℹ️")
+
+
 
     with sub_tab_b2:
         if not st.session_state.logged_in:
@@ -257,24 +300,57 @@ with main_tab3:
 ########################     OPERAÇÕES ADMINISTRATIVAS     ######################
 #################################################################################
                 #
-                with open(arquivo_de_palavras, 'r', encoding='utf-8') as file:
-                    dados = json.load(file)
+                if 'dados' not in st.session_state:
+                    st.session_state.dados = None
 
-                if st.button("Executar Scraper"):
-                    with st.spinner("Executando o scraper..."):
-                        run_scraper()
-                    st.success("Scraping concluído!")
+                option = st.radio(
+                    "Escolha uma opção:",
+                    ("Carregar arquivo JSON existente", "Executar novo scraping")
+                )
 
-                st.markdown(f"###### Tabela de Ofertas:")
-                exibir_tabela_ofertas(dados)
+                if option == "Carregar arquivo JSON existente":
+                    uploaded_file = st.file_uploader("Escolha um arquivo JSON", type="json")
+                    if uploaded_file is not None:
+                        # Salva o arquivo uploadado no local desejado
+                        if save_uploaded_file(uploaded_file):
+                            st.success(f"Arquivo JSON salvo com sucesso em {arquivo_de_palavras}")
+                        # Carrega os dados do arquivo salvo
+                        with open(arquivo_de_palavras, 'r', encoding='utf-8') as file:
+                            st.session_state.dados = json.load(file)
 
-                exibir_grafico_precos(dados)
+                if option == "Executar novo scraping":
+                    if st.button("Executar Scraper"):
+                        with st.spinner("Executando o scraper..."):
+                            run_scraper()
+                        st.success("Scraping concluído!")
+                        # Carregando os dados do arquivo gerado pelo scraper
+                        with open(arquivo_de_palavras, 'r', encoding='utf-8') as file:
+                            st.session_state.dados = json.load(file)
 
-                st.markdown(f"###### Últimos dados extraídos:")
-                
-                with st.expander("Exibir dados do arquivo JSON"):
-                    st.json(dados)  
+                # Exibição dos dados
+                if st.session_state.dados is not None:
+                    st.markdown("##### Tabela de Ofertas:")
+                    exibir_tabela_ofertas(st.session_state.dados)
 
+                    st.markdown("##### Gráfico de Preços:")
+                    exibir_grafico_precos(st.session_state.dados)
+
+                    with st.expander("Exibir dados do arquivo JSON"):
+                        st.json(st.session_state.dados)
+
+                    # Botão de download
+                    with open(arquivo_de_palavras, 'r', encoding='utf-8') as file:
+                        json_string = file.read()
+                    
+                    st.download_button(
+                        label="Clique para baixar o JSON",
+                        data=json_string,
+                        file_name="dados_scraping.json",
+                        mime="application/json"
+                    )
+
+                else:
+                    st.info("Carregue um arquivo JSON ou execute o scraper para visualizar os dados.")
 
 
 
