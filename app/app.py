@@ -98,7 +98,7 @@ if not st.session_state.logged_in:
             if result.get('status') == 'success':
                 st.session_state.logged_in = True
                 st.session_state.user = result.get('user', {})
-                st.experimental_rerun()
+                st.rerun()  # Alterado de st.experimental_rerun() para st.rerun()
             else:
                 st.error(f"Erro de login: {result.get('detail', 'Usuário ou senha incorretos')}")
 else:
@@ -140,7 +140,7 @@ else:
 
     if st.sidebar.button("Logout"):
         st.session_state.logged_in = False
-        st.experimental_rerun()
+        st.rerun()  
 
 #################################################################################
 ############################          IMAGENS         ###########################
