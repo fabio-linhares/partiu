@@ -306,11 +306,12 @@ async def get_random_title(database: str, collection: str):
 
 @app.post("/login")
 async def login(username: str = Form(...), password: str = Form(...)):
+    logger.info(f"Config vars: {config_vars}")
     try:
         connection_string = get_connection_string()
         client = MongoClient(connection_string)
-        db = client[config_vars['database_user']]
-        users_collection = db[config_vars['collections_users']]
+        db = client[config_vars['database_main']]  # Use 'main' em vez de 'user'
+        users_collection = db[config_vars['collections_users']]  # Use 'users' em vez de 'collections_users'
 
         user = users_collection.find_one({"username": username})
         if user:
