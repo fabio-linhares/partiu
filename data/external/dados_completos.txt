@@ -1,470 +1,458 @@
 Titulo: Foz do Iguaçu
-Preco_atual: 2.498
+Preco_atual: 2.503
 Duracao: 6 Dias / 5 Noites
 Datas: A partir de sáb 26 outAté qui 31 out
-Imagem: //media.staticontent.com/media/pictures/322a67ae-e872-4079-b6e8-51d1a1e0f485/300x200
+Imagem: //media.staticontent.com/media/pictures/17012a14-8783-4dc0-902d-0b280f1ed9c9/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Rio de Janeiro
-Preco_atual: 1.252
+Preco_atual: 3.104
 Duracao: 6 Dias / 5 Noites
-Datas: A partir de sáb 02 novAté qui 07 nov
-Imagem: //media.staticontent.com/media/pictures/3acb7a88-612c-4b7b-b0fe-39c3215101ae/300x200
+Datas: A partir de sáb 28 dezAté qui 02 jan
+Imagem: //media.staticontent.com/media/pictures/d4cdb747-26f3-4c7c-ade8-95d13065e3f7/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Florianópolis
-Preco_atual: 1.656
+Preco_atual: 1.696
 Duracao: 5 Dias / 4 Noites
 Datas: A partir de sáb 04 janAté qua 08 jan
 Preco_original: R$ 1.891
-Economia: Economize  R$235
-Imagem: //media.staticontent.com/media/pictures/1046335a-636d-4ce6-b0da-2109b6ba0248/300x200
+Economia: Economize  R$195
+Imagem: //media.staticontent.com/media/pictures/c0483d77-b722-4c01-b18d-ac5ce20a6ace/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Curitiba
-Preco_atual: 994
+Preco_atual: 1.170
 Duracao: 6 Dias / 5 Noites
 Datas: A partir de sáb 02 novAté qui 07 nov
-Preco_original: R$ 1.078
-Economia: Economize  R$84
 Imagem: //media.staticontent.com/media/pictures/5a50e8a3-6b6f-497c-8e26-dab9da9cd7e4/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Penha
-Preco_atual: 1.588
+Preco_atual: 1.605
 Duracao: 6 Dias / 5 Noites
 Datas: A partir de sáb 01 marAté qui 06 mar
-Imagem: //media.staticontent.com/media/pictures/bfd3c0b3-4ce3-4f73-8a35-b1dfbadf6e2e/300x200
+Imagem: //media.staticontent.com/media/pictures/81126061-75fe-4a22-bb07-767ecbb630ac/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Vitória Básico
-Preco_atual: 949
+Preco_atual: 975
 Duracao: 6 Dias / 5 Noites
 Datas: A partir de sáb 07 dezAté qui 12 dez
 Preco_original: R$ 1.204
-Economia: Economize  R$255
+Economia: Economize  R$229
 Imagem: //media.staticontent.com/media/pictures/ae9ee71f-152d-4c4f-9654-240863945f22/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Porto de Galinhas
-Preco_atual: 2.527
+Preco_atual: 2.587
 Duracao: 6 Dias / 5 Noites
 Datas: A partir de ter 24 dezAté dom 29 dez
-Preco_original: R$ 2.735
-Economia: Economize  R$208
 Imagem: //media.staticontent.com/media/pictures/481c99be-bcac-4f3c-a4c3-28335e546b4c/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Natal
-Preco_atual: 2.098
+Preco_atual: 2.216
 Duracao: 6 Dias / 5 Noites
-Datas: A partir de sáb 02 novAté qui 07 nov
-Imagem: //media.staticontent.com/media/pictures/b7011468-597f-4a3e-a2d7-c09401930a26/300x200
+Datas: A partir de sex 08 novAté qua 13 nov
+Imagem: //media.staticontent.com/media/pictures/777ec92d-a954-41d8-b97b-db4d45bb3ee8/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Fortaleza
-Preco_atual: 5.035
+Preco_atual: 5.086
 Duracao: 6 Dias / 5 Noites
 Datas: A partir de sáb 28 dezAté qui 02 jan
-Imagem: //media.staticontent.com/media/pictures/72f799dd-6583-45ae-8384-d0a8e1f57d37/300x200
+Imagem: //media.staticontent.com/media/pictures/f3aa7dad-51d8-4b25-bfcb-ae420ed60ad6/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Foz do Iguaçu
-Preco_atual: 1.096
+Preco_atual: 1.104
 Duracao: 6 Dias / 5 Noites
 Datas: A partir de sáb 01 fevAté qui 06 fev
-Imagem: //media.staticontent.com/media/pictures/883b3fe4-afa9-4e34-8bd2-865262d3e9af/300x200
+Imagem: //media.staticontent.com/media/pictures/322a67ae-e872-4079-b6e8-51d1a1e0f485/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Recife
-Preco_atual: 2.046
+Preco_atual: 2.098
 Duracao: 6 Dias / 5 Noites
 Datas: A partir de qui 21 novAté ter 26 nov
-Imagem: //media.staticontent.com/media/pictures/4ef0a28f-9faa-4b33-950c-bd901eb976f0/300x200
+Imagem: //media.staticontent.com/media/pictures/9806439d-a56e-4866-9990-73b9121a0593/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Salvador Básico
-Preco_atual: 2.117
+Preco_atual: 2.168
 Duracao: 6 Dias / 5 Noites
 Datas: A partir de dom 20 outAté sex 25 out
 Preco_original: R$ 2.417
-Economia: Economize  R$300
+Economia: Economize  R$249
 Imagem: //media.staticontent.com/media/pictures/408861fa-25f7-4b7b-a395-a5311e7c51f2/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Cusco
-Preco_atual: 3.283
+Preco_atual: 3.369
 Duracao: 8 Dias / 7 Noites
 Datas: A partir de sáb 04 janAté sáb 11 jan
 Preco_original: R$ 3.667
-Economia: Economize  R$384
-Imagem: //media.staticontent.com/media/pictures/7ea0a151-40eb-43b4-b347-ea4ed90753b8/300x200
+Economia: Economize  R$298
+Imagem: //media.staticontent.com/media/pictures/048500a2-13b6-4255-ba14-3d550dddee9e/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Ushuaia Básico
-Preco_atual: 3.106
+Preco_atual: 3.144
 Duracao: 8 Dias / 7 Noites
 Datas: A partir de sáb 07 dezAté sáb 14 dez
-Imagem: //media.staticontent.com/media/pictures/f89e45a4-3aef-4725-a58a-da9adfc10c5f/300x200
+Imagem: //media.staticontent.com/media/pictures/9d93526a-4307-4a99-8b0f-64e0f1670f97/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Punta Cana
-Preco_atual: 8.144
+Preco_atual: 8.338
 Duracao: 8 Dias / 7 Noites
 Datas: A partir de sáb 04 janAté sáb 11 jan
 Preco_original: R$ 9.250
-Economia: Economize  R$1.106
-Imagem: //media.staticontent.com/media/pictures/e953f0b4-ff8a-4622-9a3d-0c0c81a7df71/300x200
+Economia: Economize  R$912
+Imagem: //media.staticontent.com/media/pictures/318decc6-aec7-4e27-b1c7-4b9684876ae9/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Santiago
-Preco_atual: 1.816
+Preco_atual: 1.833
 Duracao: 6 Dias / 5 Noites
 Datas: A partir de sáb 01 fevAté qui 06 fev
 Preco_original: R$ 2.119
-Economia: Economize  R$303
+Economia: Economize  R$286
 Imagem: //media.staticontent.com/media/pictures/e4ac53e7-3999-43c1-af24-b5cc82f2c2c7/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Orlando
-Preco_atual: 5.203
-Duracao: 8 Dias / 7 Noites
-Datas: A partir de seg 16 dezAté seg 23 dez
-Imagem: //media.staticontent.com/media/pictures/14ba0f1c-357e-4512-9e48-37de92b7de03/300x200
-Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
-
----
-
-Titulo: Paris
-Preco_atual: 4.733
-Duracao: 9 Dias / 8 Noites
-Datas: A partir de seg 04 novAté ter 12 nov
-Imagem: //media.staticontent.com/media/pictures/dfcd5bca-1919-43f0-a4b9-7606fc7367f1/300x200
-Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
-
----
-
-Titulo: Cancun
-Preco_atual: 4.029
-Duracao: 8 Dias / 7 Noites
-Datas: A partir de qui 20 fevAté qui 27 fev
-Preco_original: R$ 4.993
-Economia: Economize  R$964
-Imagem: //media.staticontent.com/media/pictures/20dfad88-d164-4079-95a4-0edbfff13aa7/300x200
-Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
-
----
-
-Titulo: Recife
-Preco_atual: 2.411
-Duracao: 6 Dias / 5 Noites
-Datas: A partir de sáb 26 outAté qui 31 out
-Preco_original: R$ 2.590
-Economia: Economize  R$179
-Imagem: //media.staticontent.com/media/pictures/dbd43a5d-95af-4819-a934-3004a19f09b5/300x200
-Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
-
----
-
-Titulo: Foz do Iguaçu
-Preco_atual: 1.096
-Duracao: 6 Dias / 5 Noites
-Datas: A partir de sáb 01 fevAté qui 06 fev
-Imagem: //media.staticontent.com/media/pictures/b4444507-55af-4b6a-9210-5e698f66ef38/300x200
-Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
-
----
-
-Titulo: Belo Horizonte
-Preco_atual: 1.635
-Duracao: 6 Dias / 5 Noites
-Datas: A partir de qui 24 outAté ter 29 out
-Preco_original: R$ 1.845
-Economia: Economize  R$210
-Imagem: //media.staticontent.com/media/pictures/e8b89ca1-2eb4-4575-ada3-64ea2f301c7e/300x200
-Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
-
----
-
-Titulo: Rio de Janeiro
-Preco_atual: 1.742
-Duracao: 6 Dias / 5 Noites
-Datas: A partir de sáb 19 outAté qui 24 out
-Preco_original: R$ 1.909
-Economia: Economize  R$167
-Imagem: //media.staticontent.com/media/pictures/57fcebe7-e3e6-4465-8f39-32d5f9f73e46/300x200
-Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
-
----
-
-Titulo: Curitiba
-Preco_atual: 1.082
-Duracao: 6 Dias / 5 Noites
-Datas: A partir de sáb 02 novAté qui 07 nov
-Preco_original: R$ 1.302
-Economia: Economize  R$220
-Imagem: //media.staticontent.com/media/pictures/a9a93927-737d-4669-91f8-11d57da862f3/300x200
-Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
-
----
-
-Titulo: Orlando
-Preco_atual: 5.203
+Preco_atual: 5.232
 Duracao: 8 Dias / 7 Noites
 Datas: A partir de seg 16 dezAté seg 23 dez
 Imagem: //media.staticontent.com/media/pictures/0275d4b2-7dab-4234-a42b-f1f9c3aadfc0/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
+
+---
+
+Titulo: Paris
+Preco_atual: 4.754
+Duracao: 9 Dias / 8 Noites
+Datas: A partir de seg 04 novAté ter 12 nov
+Imagem: //media.staticontent.com/media/pictures/f5ed452c-10e3-4271-a9de-8d6d9d81cb44/300x200
+Data_extracao: 2024-10-13
+Hora_extracao: 01:47:33
+
+---
+
+Titulo: Cancun
+Preco_atual: 6.086
+Duracao: 8 Dias / 7 Noites
+Datas: A partir de sex 10 janAté sex 17 jan
+Preco_original: R$ 6.908
+Economia: Economize  R$822
+Imagem: //media.staticontent.com/media/pictures/c1250c50-6a6e-4088-8bc0-ddcd64634b09/300x200
+Data_extracao: 2024-10-13
+Hora_extracao: 01:47:33
+
+---
+
+Titulo: Recife
+Preco_atual: 2.470
+Duracao: 6 Dias / 5 Noites
+Datas: A partir de sáb 26 outAté qui 31 out
+Imagem: //media.staticontent.com/media/pictures/b2a7e055-9a8e-4586-a1f4-168075674901/300x200
+Data_extracao: 2024-10-13
+Hora_extracao: 01:47:33
+
+---
+
+Titulo: Foz do Iguaçu
+Preco_atual: 1.104
+Duracao: 6 Dias / 5 Noites
+Datas: A partir de sáb 01 fevAté qui 06 fev
+Imagem: //media.staticontent.com/media/pictures/883b3fe4-afa9-4e34-8bd2-865262d3e9af/300x200
+Data_extracao: 2024-10-13
+Hora_extracao: 01:47:33
+
+---
+
+Titulo: Belo Horizonte
+Preco_atual: 1.169
+Duracao: 6 Dias / 5 Noites
+Datas: A partir de sáb 01 marAté qui 06 mar
+Preco_original: R$ 1.542
+Economia: Economize  R$373
+Imagem: //media.staticontent.com/media/pictures/a4fad098-99e3-497c-958a-c55ab60fc0cb/300x200
+Data_extracao: 2024-10-13
+Hora_extracao: 01:47:33
+
+---
+
+Titulo: Rio de Janeiro
+Preco_atual: 1.784
+Duracao: 6 Dias / 5 Noites
+Datas: A partir de sáb 19 outAté qui 24 out
+Preco_original: R$ 1.909
+Economia: Economize  R$125
+Imagem: //media.staticontent.com/media/pictures/a9d30f6a-5b5a-45b9-8b30-1f5ed0d2dffb/300x200
+Data_extracao: 2024-10-13
+Hora_extracao: 01:47:33
+
+---
+
+Titulo: Curitiba
+Preco_atual: 1.299
+Duracao: 6 Dias / 5 Noites
+Datas: A partir de sáb 02 novAté qui 07 nov
+Preco_original: R$ 1.504
+Economia: Economize  R$205
+Imagem: //media.staticontent.com/media/pictures/5a50e8a3-6b6f-497c-8e26-dab9da9cd7e4/300x200
+Data_extracao: 2024-10-13
+Hora_extracao: 01:47:33
+
+---
+
+Titulo: Orlando
+Preco_atual: 5.232
+Duracao: 8 Dias / 7 Noites
+Datas: A partir de seg 16 dezAté seg 23 dez
+Imagem: //media.staticontent.com/media/pictures/14ba0f1c-357e-4512-9e48-37de92b7de03/300x200
+Data_extracao: 2024-10-13
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Caldas Novas
-Preco_atual: 2.895
+Preco_atual: 2.912
 Duracao: 4 Dias / 3 Noites
 Datas: A partir de qui 09 janAté dom 12 jan
-Preco_original: R$ 3.098
-Economia: Economize  R$203
-Imagem: //media.staticontent.com/media/pictures/db1e7a39-b51e-4dbb-bbfa-e977e0c90b27/300x200
+Imagem: //media.staticontent.com/media/pictures/49636221-434c-43b6-aa70-08055ea8132b/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Florianópolis com ingresso Beto Carrero
-Preco_atual: 3.365
+Preco_atual: 3.399
 Duracao: 5 Dias / 4 Noites
 Datas: A partir de ter 31 dezAté sáb 04 jan
 Preco_original: R$ 3.761
-Economia: Economize  R$396
-Imagem: //media.staticontent.com/media/pictures/6edad522-3a87-4b06-8ad0-787fc53cbe61/300x200
+Economia: Economize  R$362
+Imagem: //media.staticontent.com/media/pictures/1046335a-636d-4ce6-b0da-2109b6ba0248/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Buenos Aires
-Preco_atual: 2.735
+Preco_atual: 1.834
 Duracao: 6 Dias / 5 Noites
-Datas: A partir de sáb 01 marAté qui 06 mar
-Imagem: //media.staticontent.com/media/pictures/286c86eb-6b54-4d6f-ac7f-75f4690c808d/300x200
+Datas: A partir de sex 03 janAté qua 08 jan
+Imagem: //media.staticontent.com/media/pictures/f099f3d9-36f4-4450-9ca0-3f95335c6e3c/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Mendoza
-Preco_atual: 5.073
+Preco_atual: 5.155
 Duracao: 8 Dias / 7 Noites
 Datas: A partir de qua 16 outAté qua 23 out
-Imagem: //media.staticontent.com/media/pictures/93e0bd9a-f075-4e97-8f05-6e9285e1d151/300x200
+Imagem: //media.staticontent.com/media/pictures/c066e0ff-a07a-4660-9c5f-957c20218606/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Montevidéu
-Preco_atual: 2.984
+Preco_atual: 3.059
 Duracao: 6 Dias / 5 Noites
 Datas: A partir de sáb 11 janAté qui 16 jan
 Preco_original: R$ 3.402
-Economia: Economize  R$418
-Imagem: //media.staticontent.com/media/pictures/168d9c61-3241-4409-a191-8ee127555158/300x200
+Economia: Economize  R$343
+Imagem: //media.staticontent.com/media/pictures/8e57af5e-42d7-4a92-834b-71d366a9c96a/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Punta Cana
-Preco_atual: 8.060
+Preco_atual: 8.164
 Duracao: 8 Dias / 7 Noites
 Datas: A partir de seg 13 janAté seg 20 jan
 Preco_original: R$ 9.412
-Economia: Economize  R$1.352
+Economia: Economize  R$1.248
 Imagem: //media.staticontent.com/media/pictures/9075eb95-5b99-489d-af25-f6f8c058d053/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Cartagena de Indias
-Preco_atual: 4.905
-Duracao: 7 Dias / 6 Noites
-Datas: A partir de dom 15 dezAté sáb 21 dez
-Preco_original: R$ 5.678
-Economia: Economize  R$773
-Imagem: //media.staticontent.com/media/pictures/6b25df5b-55d0-482d-8008-fcba968e8a3e/300x200
+Preco_atual: 4.324
+Duracao: 6 Dias / 5 Noites
+Datas: A partir de sáb 01 marAté qui 06 mar
+Preco_original: R$ 4.815
+Economia: Economize  R$491
+Imagem: //media.staticontent.com/media/pictures/31081cbb-f0cd-4cdc-9718-b209c2350d03/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Cancún
-Preco_atual: 6.801
+Preco_atual: 6.866
 Duracao: 8 Dias / 7 Noites
 Datas: A partir de seg 13 janAté seg 20 jan
-Imagem: //media.staticontent.com/media/pictures/fce9e5ee-24b8-48d0-91ea-63d0aafc79c1/300x200
+Imagem: //media.staticontent.com/media/pictures/20dfad88-d164-4079-95a4-0edbfff13aa7/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: San Andrés
-Preco_atual: 6.991
-Duracao: 7 Dias / 6 Noites
-Datas: A partir de seg 13 janAté dom 19 jan
-Preco_original: R$ 8.311
-Economia: Economize  R$1.320
-Imagem: //media.staticontent.com/media/pictures/4a24066c-ab0a-4d80-964e-60f1661653a0/300x200
+Preco_atual: 5.728
+Duracao: 5 Dias / 4 Noites
+Datas: A partir de sáb 01 marAté qua 05 mar
+Preco_original: R$ 6.460
+Economia: Economize  R$732
+Imagem: //media.staticontent.com/media/pictures/24988134-97e6-428a-8e49-527fd4075157/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Maragogi
-Preco_atual: 5.028
+Preco_atual: 5.156
 Duracao: 6 Dias / 5 Noites
 Datas: A partir de sáb 01 marAté qui 06 mar
 Preco_original: R$ 6.028
-Economia: Economize  R$1.000
+Economia: Economize  R$872
 Imagem: //media.staticontent.com/media/pictures/61ed5ec9-f1c4-4168-b819-37c618683376/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Porto de Galinhas
-Preco_atual: 5.224
+Preco_atual: 5.357
 Duracao: 6 Dias / 5 Noites
 Datas: A partir de sáb 04 janAté qui 09 jan
 Preco_original: R$ 6.606
-Economia: Economize  R$1.382
-Imagem: //media.staticontent.com/media/pictures/e275c6e9-55df-48a9-9615-dff3c85fa62f/300x200
+Economia: Economize  R$1.249
+Imagem: //media.staticontent.com/media/pictures/481c99be-bcac-4f3c-a4c3-28335e546b4c/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Morro de São Paulo
-Preco_atual: 3.885
+Preco_atual: 3.933
 Duracao: 6 Dias / 5 Noites
 Datas: A partir de sáb 07 dezAté qui 12 dez
 Imagem: //media.staticontent.com/media/pictures/93d89974-4213-4a4e-a4d7-44ece00574b7/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Fortaleza
-Preco_atual: 2.872
+Preco_atual: 2.902
 Duracao: 8 Dias / 7 Noites
 Datas: A partir de qui 19 dezAté qui 26 dez
-Imagem: //media.staticontent.com/media/pictures/1c823f96-0d4d-43ff-8b49-e34efdb7b39e/300x200
+Imagem: //media.staticontent.com/media/pictures/c60242ca-46c3-4fcc-9ddf-6f2e1856627d/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Maceió
-Preco_atual: 2.962
+Preco_atual: 3.037
 Duracao: 6 Dias / 5 Noites
 Datas: A partir de sáb 04 janAté qui 09 jan
-Preco_original: R$ 3.198
-Economia: Economize  R$236
-Imagem: //media.staticontent.com/media/pictures/0e3e5beb-cc37-4e63-96d5-a17761cc6f2f/300x200
+Imagem: //media.staticontent.com/media/pictures/46e90850-ad8d-441b-ae51-586e9e3b6f3e/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Natal
-Preco_atual: 1.846
+Preco_atual: 1.896
 Duracao: 6 Dias / 5 Noites
 Datas: A partir de sáb 07 dezAté qui 12 dez
 Preco_original: R$ 2.063
-Economia: Economize  R$217
-Imagem: //media.staticontent.com/media/pictures/a6b0a095-9abc-4f5a-b957-cb3b6223b35e/300x200
+Economia: Economize  R$167
+Imagem: //media.staticontent.com/media/pictures/af1d2da6-6299-45f9-a104-d915a800654a/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Maceió
-Preco_atual: 1.727
+Preco_atual: 3.424
 Duracao: 6 Dias / 5 Noites
-Datas: A partir de sáb 07 dezAté qui 12 dez
-Preco_original: R$ 2.115
-Economia: Economize  R$388
+Datas: A partir de qui 02 janAté ter 07 jan
+Preco_original: R$ 3.856
+Economia: Economize  R$432
 Imagem: //media.staticontent.com/media/pictures/e8185e9c-c138-4500-af05-64502174d95b/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
 Titulo: Natal
-Preco_atual: 2.052
+Preco_atual: 2.073
 Duracao: 6 Dias / 5 Noites
 Datas: A partir de sex 14 fevAté qua 19 fev
-Preco_original: R$ 2.197
-Economia: Economize  R$145
-Imagem: //media.staticontent.com/media/pictures/5a955bb0-bdb1-4f13-b48e-3be866a6cb08/300x200
+Imagem: //media.staticontent.com/media/pictures/af1d2da6-6299-45f9-a104-d915a800654a/300x200
 Data_extracao: 2024-10-13
-Hora_extracao: 00:49:31
+Hora_extracao: 01:47:33
 
 ---
 
