@@ -92,6 +92,7 @@ if not st.session_state.logged_in:
     with col2:
         username = st.text_input("Usuário")
         password = st.text_input("Senha", type="password")
+        
         if st.button("Login"):
             result = login_user(username, password)
             if result.get('status') == 'success':
