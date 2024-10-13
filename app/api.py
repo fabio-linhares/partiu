@@ -14,12 +14,7 @@
 # OS Version     : 6.11.3-zen1-1-zen
 ###############################################################################
 
-from fastapi import FastAPI, HTTPException, Depends
-from fastapi.security import OAuth2PasswordBearer
-from fastapi.security import OAuth2PasswordRequestForm
-from jose import jwt
-from datetime import datetime, timedelta
-from typing import Optional
+from fastapi import FastAPI, HTTPException
 from pymongo import MongoClient
 
 from pydantic import BaseModel
@@ -27,7 +22,8 @@ from utils.database import (create_document,
                             read_documents, 
                             update_document, 
                             delete_document, 
-                            get_user_data)
+                            get_user_data,
+                            get_connection_string)
 from utils.globals import create_global_variables
 from bson import ObjectId
 
@@ -43,7 +39,6 @@ from pymongo import MongoClient
 from pymongo.errors import PyMongoError
 from utils.database import get_connection_string
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -59,9 +54,6 @@ logger = logging.getLogger(__name__)
 class Document(BaseModel):
     data: dict
 
-SECRET_KEY = "123456" 
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
 #################################################################################
@@ -88,8 +80,7 @@ def api_request(method, endpoint, data=None):
         if method == "GET":
             response = requests.get(url)
         elif method == "POST":
-            #response = requests.post(url, json=data)
-            response = requests.post(url, data=data) 
+            response = requests.post(url, json=data)
         elif method == "PUT":
             response = requests.put(url, json=data)
         elif method == "DELETE":
@@ -125,39 +116,9 @@ def get_sections_from_api(database, collection):
 
 
 
-def authenticate_user(username: str, password: str):
-    try:
-        client = MongoClient(config_vars['database_uri'])
-        db = client[config_vars['database_user']]
-        users_collection = db[config_vars['collections_users']]
-        
-        user = users_collection.find_one({"username": username})
-        if user:
-            # Como a senha está vazia na coleção, vamos apenas verificar se o usuário existe
-            return user
-        return None
-    except Exception as e:
-        print(f"Error authenticating user: {e}")
-        return None
-    finally:
-        if 'client' in locals():
-            client.close()
 
-def get_current_user(token: str = Depends(oauth2_scheme)):
-    # Implemente a lógica para verificar o token e retornar o usuário atual
-    # Este é apenas um exemplo simplificado
-    user = {"username": "admin", "role": "admin"}
-    return user
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
+
 
 #################################################################################
 ############################           ROTAS          ###########################
@@ -357,20 +318,38 @@ async def get_random_title(database: str, collection: str):
         if 'client' in locals():
             client.close()
 
+
 @app.post("/login")
-async def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = authenticate_user(form_data.username, form_data.password)
-    if not user:
-        raise HTTPException(
-            status_code=401,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user["username"]}, expires_delta=access_token_expires
-    )
-    return {"access_token": access_token, "token_type": "bearer"}
+async def login(username: str, password: str):
+    try:
+        connection_string = get_connection_string()
+        client = MongoClient(connection_string)
+        db = client[config_vars['database_user']]
+        users_collection = db[config_vars['collections_users']]
+
+        user = users_collection.find_one({"username": username})
+        if user:
+            # Como a senha está vazia, vamos apenas verificar se o usuário existe
+            if user['password'] == '':
+                return {
+                    "status": "success",
+                    "user": {
+                        "username": user['username'],
+                        "email": user['email'],
+                        "roles": user['roles'],
+                        "profile": user['profile']
+                    }
+                }
+            else:
+                raise HTTPException(status_code=401, detail="Invalid credentials")
+        else:
+            raise HTTPException(status_code=401, detail="User not found")
+    except Exception as e:
+        logger.error(f"Login error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if 'client' in locals():
+            client.close()
 
 
 
