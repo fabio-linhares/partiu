@@ -15,8 +15,7 @@
 ###############################################################################
 
 from fastapi import FastAPI, HTTPException, Depends
-from fastapi.security import OAuth2PasswordRequestForm
-OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from werkzeug.security import generate_password_hash
 from pymongo import MongoClient
 from bson import json_util
