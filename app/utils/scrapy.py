@@ -9,10 +9,15 @@ from bs4 import BeautifulSoup
 import json
 import undetected_chromedriver as uc
 from datetime import datetime
+import requests
+from PIL import Image
+import io
 
 from config.variaveis_globais import (
-                        url_decolar,
-                        arquivo_de_palavras)
+    url_decolar,
+    arquivo_de_palavras,
+    API_BASE_URL
+)
 
 def extrair_dados_completos(url):
     options = uc.ChromeOptions()
@@ -117,4 +122,15 @@ def extrair_dados_completos(url):
     finally:
         driver.quit()
 
-extrair_dados_completos(url_decolar)
+
+def get_pacotes_viagem():
+    try:
+        response = requests.get(f"{API_BASE_URL}/read/pacotes_viagem")
+        response.raise_for_status()
+        return response.json()['documents']
+    except requests.RequestException as e:
+        st.error(f"Erro ao buscar pacotes de viagem: {e}")
+        return []
+    
+
+#extrair_dados_completos(url_decolar)
