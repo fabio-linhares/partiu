@@ -15,7 +15,8 @@
 ###############################################################################
 
 from fastapi import FastAPI, HTTPException, Depends
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordBearer
+from werkzeug.security import generate_password_hash
 from pymongo import MongoClient
 from bson import json_util
 
@@ -40,6 +41,10 @@ from pymongo import MongoClient
 from pymongo.errors import PyMongoError
 from utils.database import get_connection_string
 from utils.mongo2 import load_database_config
+
+from werkzeug.security import check_password_hash
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -127,13 +132,20 @@ def get_db():
     finally:
         client.close()
 
+
+
 def authenticate_user(db, username: str, password: str):
     users_collection = db[config['collections_users']]
     user = users_collection.find_one({"username": username})
-    if user and user['password'] == password:  # Na prática, use hash+salt
+    if user and check_password_hash(user['password'], password):
         return user
     return None
 
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    # Implemente a lógica para verificar o token e retornar o usuário atual
+    # Este é apenas um exemplo simplificado
+    user = {"username": "admin", "role": "admin"}
+    return user
 
 
 #################################################################################
@@ -348,6 +360,22 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: MongoClien
     
     logger.info(f"Login bem-sucedido para usuário: {form_data.username}")
     return {"status": "success", "user": user_dict}
+
+@app.post("/admin/update_password")
+async def update_user_password(username: str, new_password: str, current_user: dict = Depends(get_current_user)):
+    if current_user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Não autorizado")
+    
+    db = get_db()
+    users_collection = db[config['collections_users']]
+    hashed_password = generate_password_hash(new_password)
+    result = users_collection.update_one({"username": username}, {"$set": {"password": hashed_password}})
+    
+    if result.modified_count > 0:
+        return {"message": f"Senha atualizada com sucesso para o usuário {username}"}
+    else:
+        raise HTTPException(status_code=404, detail=f"Usuário {username} não encontrado")
+
 
 if __name__ == "__main__":
     import uvicorn
