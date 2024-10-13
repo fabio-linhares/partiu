@@ -128,7 +128,7 @@ def get_connection_string():
 def get_db():
     client = MongoClient(get_connection_string())
     try:
-        yield client[config['database_user']]
+        yield client[config['database_main']]
     finally:
         client.close()
 
@@ -360,6 +360,8 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: MongoClien
     
     logger.info(f"Login bem-sucedido para usuário: {form_data.username}")
     return {"status": "success", "user": user_dict}
+
+
 
 @app.post("/admin/update_password")
 async def update_user_password(username: str, new_password: str, current_user: dict = Depends(get_current_user)):
