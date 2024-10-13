@@ -10,9 +10,12 @@ import json
 import undetected_chromedriver as uc
 from datetime import datetime
 
+import requests
+
 from config.variaveis_globais import (
     url_decolar,
-    arquivo_de_palavras
+    arquivo_de_palavras,
+    API_BASE_URL
 )
 
 def extrair_dados_completos(url):
@@ -27,9 +30,8 @@ def extrair_dados_completos(url):
     
     try:
         driver.get(url)
-        time.sleep(10)  # Aumentado o tempo de espera inicial
+        time.sleep(10)  
 
-        # Tenta fechar o banner de LGPD, se existir
         try:
             lgpd_banner = WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.CLASS_NAME, "lgpd-banner"))
@@ -103,13 +105,14 @@ def extrair_dados_completos(url):
         with open(arquivo_de_palavras, 'w', encoding='utf-8') as json_file:
             json.dump(dados, json_file, ensure_ascii=False, indent=4)
 
-        # Salvar em arquivo de texto
-        with open('data/external/dados_completos.txt', 'w', encoding='utf-8') as arquivo:
-            for dado in dados:
-                for key, value in dado.items():
-                    if value:
-                        arquivo.write(f"{key.capitalize()}: {value}\n")
-                arquivo.write("\n---\n\n")
+        # salva no mongo
+        for dado in dados:
+            try:
+                response = requests.post(f"{API_BASE_URL}/create/pacotes_viagem", json={"data": dado})
+                response.raise_for_status()
+                print(f"Inserido com sucesso: {dado['titulo']}")
+            except requests.RequestException as e:
+                print(f"Erro ao inserir {dado['titulo']}: {e}")
         
         print(f"Extraídos {len(dados)} itens.")
 
