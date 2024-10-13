@@ -80,7 +80,8 @@ def api_request(method, endpoint, data=None):
         if method == "GET":
             response = requests.get(url)
         elif method == "POST":
-            response = requests.post(url, json=data)
+            #response = requests.post(url, json=data)
+            response = requests.post(url, data=data)  
         elif method == "PUT":
             response = requests.put(url, json=data)
         elif method == "DELETE":
