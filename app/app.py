@@ -213,6 +213,14 @@ with main_tab2:
                 texto_em_markdown = read_markdown_file(arquivo_de_resposta4)
                 st.markdown(texto_em_markdown)
 
+            elif selected_section == "Serviço de Upload e Download de Arquivos":
+
+                st.markdown(f"###### Foi implementado no APP")
+
+            elif selected_section == "Finalização do Project Charter e Data Summary Report":
+                pass
+
+
         else:
             st.write("Por favor, selecione uma seção no menu lateral.")
             
@@ -361,9 +369,6 @@ with main_tab3:
 
                 else:
                     st.info("Carregue um arquivo JSON ou execute o scraper para visualizar os dados.")
-
-
-
 
             else:
                 st.warning("Você não tem permissão para acessar esta área")
