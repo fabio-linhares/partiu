@@ -14,7 +14,7 @@
 # OS Version     : 6.11.3-zen1-1-zen
 ###############################################################################
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Form, HTTPException
 from pymongo import MongoClient
 
 from pydantic import BaseModel
