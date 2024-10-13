@@ -15,10 +15,12 @@
 ###############################################################################
 
 from fastapi import FastAPI, HTTPException, Depends
-from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
-from werkzeug.security import generate_password_hash
+from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordRequestForm
+from jose import jwt
+from datetime import datetime, timedelta
+from typing import Optional
 from pymongo import MongoClient
-from bson import json_util
 
 from pydantic import BaseModel
 from utils.database import (create_document,
@@ -40,9 +42,6 @@ from config.variaveis_globais import streamlit_secret, API_BASE_URL
 from pymongo import MongoClient
 from pymongo.errors import PyMongoError
 from utils.database import get_connection_string
-from utils.mongo2 import load_database_config
-
-from werkzeug.security import check_password_hash
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -51,13 +50,18 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
-config = create_global_variables(streamlit_secret)
+config_vars = create_global_variables(streamlit_secret)
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class Document(BaseModel):
     data: dict
+
+SECRET_KEY = "123456" 
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
 #################################################################################
@@ -119,27 +123,25 @@ def get_sections_from_api(database, collection):
             st.error(f"Detalhes do erro: {e.response.text}")
         return []
 
-# Carregue suas configurações
-config = create_global_variables(streamlit_secret)
 
-def get_connection_string():
-    return load_database_config(streamlit_secret)
 
-def get_db():
-    client = MongoClient(get_connection_string())
+def authenticate_user(username: str, password: str):
     try:
-        yield client[config['database_main']]
+        client = MongoClient(config_vars['database_uri'])
+        db = client[config_vars['database_user']]
+        users_collection = db[config_vars['collections_users']]
+        
+        user = users_collection.find_one({"username": username})
+        if user:
+            # Como a senha está vazia na coleção, vamos apenas verificar se o usuário existe
+            return user
+        return None
+    except Exception as e:
+        print(f"Error authenticating user: {e}")
+        return None
     finally:
-        client.close()
-
-
-
-def authenticate_user(db, username: str, password: str):
-    users_collection = db[config['collections_users']]
-    user = users_collection.find_one({"username": username})
-    if user and check_password_hash(user['password'], password):
-        return user
-    return None
+        if 'client' in locals():
+            client.close()
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
     # Implemente a lógica para verificar o token e retornar o usuário atual
@@ -147,6 +149,15 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     user = {"username": "admin", "role": "admin"}
     return user
 
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
 
 #################################################################################
 ############################           ROTAS          ###########################
@@ -266,7 +277,7 @@ async def get_main_collection():
         HTTPException: Se ocorrer um erro ao recuperar os documentos.
     """
     try:
-        main_collection = config['collections_main']
+        main_collection = config_vars['collections_main']
         documents = read_documents(main_collection)
         return {"documents": json.loads(json.dumps(documents, default=str))}
     except Exception as e:
@@ -294,7 +305,7 @@ async def get_sections(database: str, collection: str):
     try:
         logger.info(f"Fetching sections from database: {database}, collection: {collection}")
         connection_string = get_connection_string()
-        logger.info(f"Connection string (without password): {connection_string.replace(config['database_access_password'], '****')}")
+        logger.info(f"Connection string (without password): {connection_string.replace(config_vars['database_access_password'], '****')}")
         client = MongoClient(connection_string)
         db = client[database]
         coll = db[collection]
@@ -318,7 +329,7 @@ async def get_random_title(database: str, collection: str):
     try:
         logger.info(f"Fetching random title from database: {database}, collection: {collection}")
         connection_string = get_connection_string()
-        logger.info(f"Connection string (without password): {connection_string.replace(config['database_access_password'], '****')}")
+        logger.info(f"Connection string (without password): {connection_string.replace(config_vars['database_access_password'], '****')}")
         client = MongoClient(connection_string)
         db = client[database]
         coll = db[collection]
@@ -346,37 +357,21 @@ async def get_random_title(database: str, collection: str):
         if 'client' in locals():
             client.close()
 
-
 @app.post("/login")
-async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: MongoClient = Depends(get_db)):
-    logger.info(f"Tentativa de login para usuário: {form_data.username}")
-    user = authenticate_user(db, form_data.username, form_data.password)
+async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    user = authenticate_user(form_data.username, form_data.password)
     if not user:
-        logger.warning(f"Falha na autenticação para usuário: {form_data.username}")
-        raise HTTPException(status_code=400, detail="Credenciais inválidas")
-    
-    user_dict = json.loads(json_util.dumps(user))
-    user_dict.pop('password', None)
-    
-    logger.info(f"Login bem-sucedido para usuário: {form_data.username}")
-    return {"status": "success", "user": user_dict}
+        raise HTTPException(
+            status_code=401,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user["username"]}, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
 
-
-
-@app.post("/admin/update_password")
-async def update_user_password(username: str, new_password: str, current_user: dict = Depends(get_current_user)):
-    if current_user["role"] != "admin":
-        raise HTTPException(status_code=403, detail="Não autorizado")
-    
-    db = get_db()
-    users_collection = db[config['collections_users']]
-    hashed_password = generate_password_hash(new_password)
-    result = users_collection.update_one({"username": username}, {"$set": {"password": hashed_password}})
-    
-    if result.modified_count > 0:
-        return {"message": f"Senha atualizada com sucesso para o usuário {username}"}
-    else:
-        raise HTTPException(status_code=404, detail=f"Usuário {username} não encontrado")
 
 
 if __name__ == "__main__":
