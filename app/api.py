@@ -61,27 +61,12 @@ class Document(BaseModel):
 #################################################################################
 
 def api_request(method, endpoint, data=None):
-    """
-    Realiza uma requisição à API.
-
-    Args:
-        method (str): Método HTTP (GET, POST, PUT, DELETE).
-        endpoint (str): Endpoint da API.
-        data (dict, optional): Dados para enviar na requisição. Padrão é None.
-
-    Returns:
-        dict: Resposta da API em formato JSON.
-
-    Raises:
-        Exception: Se ocorrer um erro durante a requisição.
-    """
     url = f"{API_BASE_URL}{endpoint}"
     try:
         if method == "GET":
             response = requests.get(url)
         elif method == "POST":
-            #response = requests.post(url, json=data)
-            response = requests.post(url, data=data)  
+            response = requests.post(url, data=data)
         elif method == "PUT":
             response = requests.put(url, json=data)
         elif method == "DELETE":
@@ -94,7 +79,6 @@ def api_request(method, endpoint, data=None):
         if hasattr(e, 'response') and e.response is not None:
             return {"status": "error", "detail": e.response.text}
         return {"status": "error", "detail": str(e)}
-        #raise Exception(f"Error: {e}")
     
 @st.cache_data(ttl=3600) # 1 hora
 def api_request_cached(method, endpoint, data=None):
@@ -321,7 +305,7 @@ async def get_random_title(database: str, collection: str):
 
 
 @app.post("/login")
-async def login(username: str, password: str):
+async def login(username: str = Form(...), password: str = Form(...)):
     try:
         connection_string = get_connection_string()
         client = MongoClient(connection_string)
