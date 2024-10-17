@@ -9,7 +9,7 @@
 # Created        : 2024-10-11
 # Last Modified  :
 # Shell Version  : 5.2.37(1)-release
-# OS Name        : Garuda Linux
+# OS Name        : Arch Linux
 # OS Type        : GNU/Linux
 # OS Version     : 6.11.3-zen1-1-zen
 ###############################################################################
@@ -45,6 +45,7 @@ from utils.background import get_random_image, get_cached_random_image
 from utils.globals import create_global_variables
 from utils.database import get_user_data
 from utils.loadfile import load_json_data, save_uploaded_file
+from utils.mail import enviar_email
 from utils.markdown import read_markdown_file
 from utils.mongo2 import load_database_config
 from utils.scrapy  import get_pacotes_viagem
@@ -260,14 +261,14 @@ with main_tab3:
         with col1:
             pacotes = get_pacotes_viagem()
             
-            # Criar um layout de grade para os cards
-            cols = st.columns(3)  # Você pode ajustar o número de colunas conforme necessário
+            # layout de grade para os cards
+            cols = st.columns(3) 
             
             for i, pacote in enumerate(pacotes):
                 with cols[i % 3]:
-                    # Criar um card para cada pacote
+
                     with st.container():
-                        # Tentar carregar a imagem
+
                         try:
                             response = requests.get(f"https:{pacote['imagem']}")
                             img = Image.open(io.BytesIO(response.content))
@@ -283,10 +284,38 @@ with main_tab3:
                         if pacote.get('economia'):
                             st.write(f"Economia: {pacote['economia']}")
                         
-                        # Mostrar o botão apenas se o usuário estiver logado
+                        # mostrar o botão apenas se o usuário estiver logado
                         if st.session_state.get('logged_in', False):
                             if st.button("Selecionar", key=f"select_{i}"):
                                 st.success(f"Ótimo! Você selecionou o pacote de viagens {pacote['titulo']}!")
+
+#################################################################################
+############################           EMAIL          ###########################
+#################################################################################
+                            
+                                if config_vars['apikey_sendgrid']:
+
+
+                                    subject = st.text_input("Assunto do email", "Teste de envio de email via SendGrid SMTP")
+                                    html_content = st.text_area("Conteúdo do email (HTML)", "<strong>Este é um teste de envio de email usando SendGrid SMTP.</strong>")
+
+                                    with st.spinner("Efetuando a reserva..."):
+                                        resultado = enviar_email(config_vars['apikey_sendgrid'], config_vars['mail_sender'], st.session_state.user['mail'], config_vars['mail_subject'], config_vars['mail_content1'])
+                                        
+                                        if resultado["status"] == "success":
+                                            st.success(resultado["message"])
+                                            st.info("Um e-mail de confirmação foi enviado para você.", icon="ℹ️")
+          
+                                        else:
+                                            st.error(f"Erro ao enviar email: {resultado['message']}")
+                                       
+                                else:
+                                    st.error("Senha SMTP do SendGrid não encontrada. Verifique o arquivo de configuração.")
+
+                                st.write("""
+                                Nota: O email enviado pode cair na caixa de spam. Verifique lá se não o encontrar na caixa de entrada.
+                                """)  
+
                         else:
                             st.info("Faça login para selecionar este pacote", icon="ℹ️")
 
