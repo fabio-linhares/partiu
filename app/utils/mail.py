@@ -2,9 +2,6 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-import streamlit as st
-from datetime import date
-
 def enviar_email(smtp_password, from_email, to_email, subject, html_content):
     message = MIMEMultipart("alternative")
     message["Subject"] = subject
