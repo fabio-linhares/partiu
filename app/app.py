@@ -248,14 +248,17 @@ with main_tab3:
                         if result.get('status') == 'success':
                             st.session_state.logged_in = True
                             st.session_state.user = result.get('user', {})
+                            st.session_state.user_email = result.get('user', {}).get('email', '')
                             st.rerun()
                         else:
                             st.error(f"Erro de login: {result.get('detail', 'Usuário ou senha incorretos')}")
             else:
                 st.write(f"Bem-vindo, {st.session_state.user['profile']['first_name']}!")
+
                 if st.button("Logout", key="logout_home"):
                     st.session_state.logged_in = False
-                    st.session_state.user = None
+                    st.session_state.user = None        # limpa o usuário no logout
+                    st.session_state.user_email = None  # limpa o email no logout
                     st.rerun()
 
         with col1:
@@ -286,8 +289,9 @@ with main_tab3:
                         
                         # mostrar o botão apenas se o usuário estiver logado
                         if st.session_state.get('logged_in', False):
+                            user_email = st.session_state.user_email
                             if st.button("Selecionar", key=f"select_{i}"):
-                                st.success(f"Ótimo! Você selecionou o pacote de viagens {pacote['titulo']}!")
+                                #st.success(f"Ótimo! Você selecionou o pacote de viagens {pacote['titulo']}!")
 
 #################################################################################
 ############################           EMAIL          ###########################
@@ -295,15 +299,11 @@ with main_tab3:
                             
                                 if config_vars['apikey_sendgrid']:
 
-
-                                    subject = st.text_input("Assunto do email", "Teste de envio de email via SendGrid SMTP")
-                                    html_content = st.text_area("Conteúdo do email (HTML)", "<strong>Este é um teste de envio de email usando SendGrid SMTP.</strong>")
-
                                     with st.spinner("Efetuando a reserva..."):
-                                        resultado = enviar_email(config_vars['apikey_sendgrid'], config_vars['mail_sender'], st.session_state.user['mail'], config_vars['mail_subject'], config_vars['mail_content1'])
+                                        resultado = enviar_email(config_vars['apikey_sendgrid'], config_vars['mail_sender'], user_email, config_vars['mail_subjectp1'], config_vars['mail_content1'])
                                         
                                         if resultado["status"] == "success":
-                                            st.success(resultado["message"])
+                                            #st.success(resultado["message"])
                                             st.info("Um e-mail de confirmação foi enviado para você.", icon="ℹ️")
           
                                         else:
