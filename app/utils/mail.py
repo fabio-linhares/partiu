@@ -1,22 +1,23 @@
+import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-import os
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
 
-def enviar_email(smtp_password_, from_email_, to_email_, subject_, html_content_):
+def enviar_email(smtp_password, from_email, to_email, subject, html_content):
+    message = MIMEMultipart("alternative")
+    message["Subject"] = subject
+    message["From"] = from_email
+    message["To"] = to_email
 
-    message = Mail(
-    from_email = from_email_,
-    to_emails = to_email_,
-    subject = subject_,
-    html_content = html_content_)
+    part = MIMEText(html_content, "html")
+    message.attach(part)
 
     try:
-        sg = smtp_password_
-        response = sg.send(message)
-        print(response.status_code)
-        print(response.body)
-        print(response.headers)
+        with smtplib.SMTP("smtp.sendgrid.net", 587) as server:
+            server.starttls()
+            server.login("apikey", smtp_password)
+            server.sendmail(from_email, to_email, message.as_string())
+        return {"status": "success", "message": "Email enviado com sucesso!"}
     except Exception as e:
-        print(e.message)
+        return {"status": "error", "message": str(e)}
+    
+
