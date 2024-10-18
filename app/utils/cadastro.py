@@ -1,6 +1,15 @@
 import streamlit as st
+import re
+import unicodedata
 from datetime import datetime
 from api import api_request
+
+def normalize_username(username):
+    # Remover acentos
+    username = unicodedata.normalize('NFKD', username).encode('ASCII', 'ignore').decode('ASCII')
+    # Converter para minúsculas e remover caracteres especiais
+    username = re.sub(r'[^a-z0-9]', '', username.lower())
+    return username
 
 def render_cadastro_form():
     st.markdown(f"##### Cadastre-se! É rápido e fácil.")
@@ -8,7 +17,8 @@ def render_cadastro_form():
     with st.form("register_form"):
         col1, col2 = st.columns(2)
         with col1:
-            username = st.text_input("Nome de usuário")
+            raw_username = st.text_input("Nome de usuário")
+            username = normalize_username(raw_username)  # Normalizar o nome de usuário
             email = st.text_input("E-mail")
             password = st.text_input("Senha", type="password")
             confirm_password = st.text_input("Confirme a senha", type="password")
@@ -23,6 +33,8 @@ def render_cadastro_form():
         if submit_button:
             if password != confirm_password:
                 st.error("As senhas não coincidem.")
+            elif not username:
+                st.error("Nome de usuário inválido. Use apenas letras minúsculas e números, sem acentos ou caracteres especiais.")
             else:
                 # Preparar dados para enviar à API
                 user_data = {
