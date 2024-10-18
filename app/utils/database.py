@@ -16,7 +16,7 @@
 
 import logging
 
-from pymongo import MongoClient
+from pymongo import MongoClient, DESCENDING
 from pymongo.errors import PyMongoError
 from utils.globals import create_global_variables
 from config.variaveis_globais import streamlit_secret
@@ -96,7 +96,7 @@ def create_document(collection_name, document):
         logger.error(f"Failed to create document in {collection_name}: {e}")
         raise
 
-def read_documents(collection_name, query=None, limit=None):
+def read_documents(collection_name, query=None, limit=None, sort_by=None):
     """
     Lê documentos de uma coleção específica.
 
@@ -104,6 +104,7 @@ def read_documents(collection_name, query=None, limit=None):
         collection_name (str): Nome da coleção.
         query (dict, optional): Filtro de consulta. Defaults to None.
         limit (int, optional): Número máximo de documentos a retornar. Defaults to None.
+        sort_by (list of tuple, optional): Lista de tuplas para ordenação. Defaults to None.
 
     Returns:
         list: Lista de documentos encontrados.
@@ -114,8 +115,17 @@ def read_documents(collection_name, query=None, limit=None):
     try:
         logger.info(f"Attempting to read documents from collection: {collection_name}")
         collection = get_collection(collection_name)
-        logger.info(f"Query: {query}, Limit: {limit}")
-        documents = list(collection.find(query, limit=limit))
+        logger.info(f"Query: {query}, Limit: {limit}, Sort: {sort_by}")
+        
+        cursor = collection.find(query)
+        
+        if sort_by:
+            cursor = cursor.sort(sort_by)
+        
+        if limit:
+            cursor = cursor.limit(limit)
+        
+        documents = list(cursor)
         logger.info(f"Found {len(documents)} documents")
         return documents
     except PyMongoError as e:
