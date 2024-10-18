@@ -3,6 +3,14 @@ import re
 import unicodedata
 from datetime import datetime
 from api import api_request
+from utils.mail import enviar_email
+from utils.globals import create_global_variables
+
+from config.variaveis_globais import (
+    streamlit_secret
+)
+
+config_vars = create_global_variables(streamlit_secret)
 
 def normalize_username(username):
     # Remover acentos
@@ -17,16 +25,16 @@ def render_cadastro_form():
     with st.form("register_form"):
         col1, col2 = st.columns(2)
         with col1:
-            raw_username = st.text_input("Nome de usuário")
+            raw_username = st.text_input("Nome de usuário", key="username")
             username = normalize_username(raw_username)  # Normalizar o nome de usuário
-            email = st.text_input("E-mail")
-            password = st.text_input("Senha", type="password")
-            confirm_password = st.text_input("Confirme a senha", type="password")
+            email = st.text_input("E-mail", key="email")
+            password = st.text_input("Senha", type="password", key="password")
+            confirm_password = st.text_input("Confirme a senha", type="password", key="confirm_password")
         with col2:
-            first_name = st.text_input("Nome")
-            last_name = st.text_input("Sobrenome")
-            birth_date = st.date_input("Data de nascimento")
-            phone = st.text_input("Telefone")
+            first_name = st.text_input("Nome", key="first_name")
+            last_name = st.text_input("Sobrenome", key="last_name")
+            birth_date = st.date_input("Data de nascimento", key="birth_date")
+            phone = st.text_input("Telefone", key="phone")
         
         submit_button = st.form_submit_button("Cadastrar")
         
@@ -62,7 +70,37 @@ def render_cadastro_form():
                 
                 if response.get("status") == "success":
                     st.success("Cadastro realizado com sucesso!")
-                    st.session_state.show_cadastro = False
+                    
+                    # Limpar os campos do formulário
+                    st.session_state.username = ""
+                    st.session_state.email = ""
+                    st.session_state.password = ""
+                    st.session_state.confirm_password = ""
+                    st.session_state.first_name = ""
+                    st.session_state.last_name = ""
+                    st.session_state.birth_date = datetime.now()
+                    st.session_state.phone = ""
+                    
+                    # Enviar email de confirmação
+                    email_content = f"""
+                    <h3>Cadastro realizado com sucesso!</h3>
+                    <p>Obrigado por se cadastrar. Aqui estão os seus dados:</p>
+                    <ul>
+                        <li>Nome de usuário: {username}</li>
+                        <li>E-mail: {email}</li>
+                        <li>Nome: {first_name} {last_name}</li>
+                        <li>Data de nascimento: {birth_date.strftime("%d/%m/%Y")}</li>
+                        <li>Telefone: {phone}</li>
+                    </ul>
+                    <p>Por favor, guarde este e-mail para referência futura.</p>
+                    """
+                    enviar_email(
+                        smtp_password=config_vars['apikey_sendgrid'],
+                        from_email=config_vars['mail_sender'],
+                        to_email=email,
+                        subject="Confirmação de Cadastro",
+                        html_content=email_content
+                    )
                 else:
                     st.error(f"Erro ao cadastrar: {response.get('detail', 'Erro desconhecido')}")
     
