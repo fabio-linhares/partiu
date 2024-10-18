@@ -16,7 +16,7 @@
 
 import logging
 
-from pymongo import MongoClient, DESCENDING
+from pymongo import MongoClient
 from pymongo.errors import PyMongoError
 from utils.globals import create_global_variables
 from config.variaveis_globais import streamlit_secret
