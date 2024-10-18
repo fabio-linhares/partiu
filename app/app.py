@@ -158,6 +158,7 @@ if not st.session_state.get('logged_in', False):
                 if result.get('status') == 'success':
                     st.session_state.logged_in = True
                     st.session_state.user = result.get('user', {})
+                    st.session_state.user_email = result.get('user', {}).get('email', '') 
                     st.rerun()
                 else:
                     st.error(f"Erro de login: {result.get('detail', 'Usuário ou senha incorretos')}")
@@ -172,8 +173,8 @@ else:
     if st.sidebar.button("Logout", use_container_width=True):
         st.session_state.logged_in = False
         st.session_state.user = None
+        st.session_state.user_email = None
         st.rerun()
-
 #################################################################################
 ############################     CONTEÚDO PRINCIPAL     #########################
 #################################################################################
@@ -302,32 +303,32 @@ else:
                             st.write(f"Economia: {pacote['economia']}")
                         
                         if st.session_state.get('logged_in', False):
-                            user_email = st.session_state.user_email
+                            user_email = st.session_state.get('user_email', '')
                             if st.button("Selecionar", key=f"select_{i}"):
-
-                                mail_subject = f"{config_vars['mail_subjectp1']} {pacote['titulo']} {config_vars['mail_subjectp2']}"
 
 #################################################################################
 ############################           EMAIL          ###########################
 #################################################################################
-                            
-                                if config_vars['apikey_sendgrid']:
-                                    with st.spinner("Efetuando a reserva..."):
-                                        resultado = enviar_email(config_vars['apikey_sendgrid'], config_vars['mail_sender'], user_email, mail_subject, config_vars['mail_content1'])
-        
-                                        if resultado["status"] == "success":
-                                            st.info("Um e-mail de confirmação foi enviado para você.", icon="ℹ️")
-        
-                                        else:
-                                            st.error(f"Erro ao enviar email: {resultado['message']}")
-                                    
+
+                                if user_email:
+                                    mail_subject = f"{config_vars['mail_subjectp1']} {pacote['titulo']} {config_vars['mail_subjectp2']}"
+
+                                    if config_vars['apikey_sendgrid']:
+                                        with st.spinner("Efetuando a reserva..."):
+                                            resultado = enviar_email(config_vars['apikey_sendgrid'], config_vars['mail_sender'], user_email, mail_subject, config_vars['mail_content1'])
+                                            
+                                            if resultado["status"] == "success":
+                                                st.info("Um e-mail de confirmação foi enviado para você.", icon="ℹ️")
+                                            else:
+                                                st.error(f"Erro ao enviar email: {resultado['message']}")
+                                    else:
+                                        st.error("Senha SMTP do SendGrid não encontrada. Verifique o arquivo de configuração.")
+
+                                    st.write("""
+                                    Nota: O email enviado pode cair na caixa de spam. Verifique lá se não o encontrar na caixa de entrada.
+                                    """)
                                 else:
-                                    st.error("Senha SMTP do SendGrid não encontrada. Verifique o arquivo de configuração.")
-
-                                st.write("""
-                                Nota: O email enviado pode cair na caixa de spam. Verifique lá se não o encontrar na caixa de entrada.
-                                """)  
-
+                                    st.error("E-mail do usuário não encontrado. Por favor, faça login novamente.")
                         else:
                             st.info("Faça login para selecionar este pacote", icon="ℹ️")
 
