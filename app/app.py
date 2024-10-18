@@ -206,5 +206,6 @@ if dev_data:
                 unsafe_allow_html=True
 )
 
+
 else:
     st.error("Não foi possível recuperar os dados do usuário.")
