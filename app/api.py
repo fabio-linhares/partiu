@@ -15,7 +15,7 @@
 ###############################################################################
 
 from fastapi import FastAPI, Form, HTTPException
-from pymongo import MongoClient
+from pymongo import MongoClient, DESCENDING
 
 from pydantic import BaseModel
 from utils.database import (create_document,
@@ -107,6 +107,7 @@ def get_sections_from_api(database, collection):
 
 
 
+
 #################################################################################
 ############################           ROTAS          ###########################
 #################################################################################
@@ -135,14 +136,15 @@ async def create(collection: str, document: Document):
     
 
 
+
 @app.get("/read/{collection}")
-async def read(collection: str, limit: int = 10):
+async def read(collection: str, limit: int = 100):
     """
-    Lê documentos da coleção especificada.
+    Lê os 100 documentos mais recentes da coleção especificada.
 
     Args:
         collection (str): Nome da coleção.
-        limit (int, optional): Número máximo de documentos a retornar. Padrão é 10.
+        limit (int, optional): Número máximo de documentos a retornar. Padrão é 100.
 
     Returns:
         dict: Documentos lidos da coleção.
@@ -152,7 +154,11 @@ async def read(collection: str, limit: int = 10):
     """
     try:
         logger.info(f"Received request to read from collection: {collection}")
-        documents = read_documents(collection, limit=limit)
+        documents = read_documents(
+            collection, 
+            limit=limit,
+            sort_by=[("data_extracao", DESCENDING), ("hora_extracao", DESCENDING)]
+        )
         logger.info(f"Successfully read {len(documents)} documents")
         return {"documents": json.loads(json.dumps(documents, default=str))}
     except PyMongoError as e:
@@ -161,7 +167,6 @@ async def read(collection: str, limit: int = 10):
     except Exception as e:
         logger.error(f"Unexpected error reading documents: {e}")
         raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
-    
 
 
 @app.put("/update/{collection}/{id}")
