@@ -12,7 +12,7 @@ def enviar_email(smtp_password, from_email, to_email, subject, html_content):
     message.attach(part)
 
     try:
-        with smtplib.SMTP("smtp.sendgrid.net", 465) as server:
+        with smtplib.SMTP("smtp.sendgrid.net", 587) as server:
             server.starttls()
             server.login("apikey", smtp_password)
             server.sendmail(from_email, to_email, message.as_string())
