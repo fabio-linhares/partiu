@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import requests
 import time
+import streamlit as st
 
 
 from config.variaveis_globais import (
