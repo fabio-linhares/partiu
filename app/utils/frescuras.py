@@ -87,3 +87,31 @@ def exibir_grafico_precos(dados):
 # exibir_grafico_precos(dados)
 
 ############################################################################################################
+
+
+def get_tab_names(config_vars, prefix):
+    tab_names = []
+    i = 1
+    while True:
+        key = f'{prefix}_{i}'
+        if key in config_vars:
+            tab_names.append(config_vars[key])
+            i += 1
+        else:
+            break
+    return tab_names
+
+
+def contar_itens_config(config_vars, radical):
+    count = 0
+    i = 1
+    
+    while True:
+        key = f'{radical}_{i}'
+        if key in config_vars:
+            count += 1
+            i += 1
+        else:
+            break  
+    
+    return count
