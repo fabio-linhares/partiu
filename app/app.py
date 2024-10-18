@@ -16,6 +16,9 @@
 
 # Built-in libraries
 import json
+import threading
+import time
+from datetime import datetime, timedelta
 
 # Third-party libraries
 import matplotlib.pyplot as plt
@@ -49,7 +52,7 @@ from utils.loadfile import load_json_data, save_uploaded_file
 from utils.mail import enviar_email
 from utils.markdown import read_markdown_file
 from utils.mongo2 import load_database_config
-from utils.scrapy  import get_pacotes_viagem
+from utils.scrapy  import get_pacotes_viagem, atualizar_pacotes
 from utils.scraper import run_scraper
 from utils.security import login_user
 from utils.title import get_random_title
@@ -186,6 +189,13 @@ else:
     capa_site = random_image_path
     st.image(capa_site, use_column_width=True)
 
+    if 'pacotes' not in st.session_state:
+        st.session_state.pacotes = get_pacotes_viagem()
+
+    # Inicie a thread de atualização
+    thread = threading.Thread(target=atualizar_pacotes, daemon=True)
+    thread.start()
+
 
 #################################################################################
 ############################           ABAS           ###########################
@@ -271,22 +281,17 @@ else:
 ############################           APP            ###########################
 #################################################################################
     with main_tab3:
-        # abas secundárias
         sub_tab_b1, sub_tab_b2, sub_tab_b3 = st.tabs(["Home", "Área Restrita", "API Teste"])
 
         with sub_tab_b1:
             st.markdown(f"#### Pacotes de Viagem")
-            st.write("Aqui você encontra os pacotes de viagem que copiamos da 'decolar.com'.")
+            st.write("Aqui você encontra os pacotes de viagem mais recentes da 'decolar.com'.")
 
-            pacotes = get_pacotes_viagem()
-        
-            cols = st.columns(3) 
+            cols = st.columns(3)
             
-            for i, pacote in enumerate(pacotes):
+            for i, pacote in enumerate(st.session_state.pacotes):
                 with cols[i % 3]:
-
                     with st.container():
-
                         try:
                             response = requests.get(f"https:{pacote['imagem']}")
                             img = Image.open(io.BytesIO(response.content))
@@ -301,6 +306,8 @@ else:
                         
                         if pacote.get('economia'):
                             st.write(f"Economia: {pacote['economia']}")
+                        
+                        st.write(f"Última atualização: {pacote['data_extracao']} às {pacote['hora_extracao']}")
                         
                         if st.session_state.get('logged_in', False):
                             user_email = st.session_state.get('user_email', '')
