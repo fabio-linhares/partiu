@@ -1,10 +1,7 @@
 import json
-import threading
-import time
-from datetime import datetime, timedelta
+
 
 # Third-party libraries
-import matplotlib.pyplot as plt
 import streamlit as st
 
 import requests
@@ -12,15 +9,9 @@ from PIL import Image
 import io
 
 # Local modules
-from api import api_request, get_sections_from_api, api_request_cached
+from api import get_sections_from_api, api_request_cached
 from config.variaveis_globais import (
     streamlit_secret, 
-    image_directory, 
-    infnet_image, 
-    mec_image, 
-    arquivo_de_apresentacao, 
-    arquivo_de_teste, 
-    arquivo_de_rubrica,
     arquivo_de_resposta1,
     arquivo_de_resposta2,
     arquivo_de_resposta3,
@@ -30,18 +21,15 @@ from config.variaveis_globais import (
 
 
 from utils.markdown import read_markdown_file
-from utils.background import get_random_image, get_cached_random_image
-from utils.cadastro import render_cadastro_form
+
 from utils.globals import create_global_variables
 from utils.database import get_user_data
-from utils.loadfile import load_json_data, save_uploaded_file
+from utils.loadfile import save_uploaded_file
 from utils.mail import enviar_email
 from utils.markdown import read_markdown_file
 from utils.mongo2 import load_database_config
-from utils.scrapy  import get_pacotes_viagem, atualizar_pacotes
 from utils.scraper import run_scraper
 from utils.security import login_user
-from utils.title import get_random_title
 from utils.frescuras import (gerar_nuvem_palavras,
                              get_tab_names,
                              exibir_grafico_precos,
@@ -54,17 +42,6 @@ from utils.frescuras import (gerar_nuvem_palavras,
 
 config_vars = create_global_variables(streamlit_secret)
 
-if config_vars.get('environment_env') == 'dev':
-    print("Variáveis carregadas do arquivo TOML:")
-    for var_name, value in config_vars.items():
-        if var_name != 'environment_env':
-            print(f"{var_name} = {value}")
-
-    uri = load_database_config(streamlit_secret)
-    print("URI do banco de dados:", uri)
-
-#config_vars['collections_dev']
-
 #################################################################################
 ############################         VARIÁVEIS        ###########################
 #################################################################################
@@ -75,17 +52,10 @@ dev_data = get_user_data(database_name=config_vars['database_user'],
 menu_dados = get_sections_from_api(config_vars['database_main'], 
                                    config_vars['collections_menu'])
 
-main_tab_names = get_tab_names(config_vars, 'main_tab')
-sub_tab_names = get_tab_names(config_vars, 'sub_tab')
-
-main_tabs = st.tabs(main_tab_names)
-sub_tabs = {name: st.empty() for name in sub_tab_names}
-
 
 #################################################################################
 ############################            ABAS          ###########################
 #################################################################################
-
 
 def criar_abas_principais(config_vars):
     main_tab_names = [config_vars[f'main_tab_{i}'] for i in range(1, len(config_vars) + 1) if f'main_tab_{i}' in config_vars]
@@ -110,7 +80,10 @@ def adicionar_conteudo(conteudo, *args, **kwargs):
             st.write(conteudo)
     except Exception as e:
         st.error(f"Erro ao adicionar conteúdo: {str(e)}")
-        print(f"Erro ao adicionar conteúdo: {str(e)}")  # Para log no console
+        print(f"Erro ao adicionar conteúdo: {str(e)}")  
+
+
+
 #################################################################################
 ############################        RESPOSTAS         ###########################
 #################################################################################
