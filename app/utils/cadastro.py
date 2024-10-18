@@ -23,19 +23,31 @@ def normalize_username(username):
 def render_cadastro_form():
     st.markdown(f"##### Cadastre-se! É rápido e fácil.")
 
+    if 'form_data' not in st.session_state:
+        st.session_state.form_data = {
+            "username": "",
+            "email": "",
+            "password": "",
+            "confirm_password": "",
+            "first_name": "",
+            "last_name": "",
+            "birth_date": datetime.now(),
+            "phone": ""
+        }
+
     with st.form("register_form"):
         col1, col2 = st.columns(2)
         with col1:
-            raw_username = st.text_input("Nome de usuário", key="username")
+            raw_username = st.text_input("Nome de usuário", key="form_data.username")
             username = normalize_username(raw_username)  # Normalizar o nome de usuário
-            email = st.text_input("E-mail", key="email")
-            password = st.text_input("Senha", type="password", key="password")
-            confirm_password = st.text_input("Confirme a senha", type="password", key="confirm_password")
+            email = st.text_input("E-mail", key="form_data.email")
+            password = st.text_input("Senha", type="password", key="form_data.password")
+            confirm_password = st.text_input("Confirme a senha", type="password", key="form_data.confirm_password")
         with col2:
-            first_name = st.text_input("Nome", key="first_name")
-            last_name = st.text_input("Sobrenome", key="last_name")
-            birth_date = st.date_input("Data de nascimento", key="birth_date")
-            phone = st.text_input("Telefone", key="phone")
+            first_name = st.text_input("Nome", key="form_data.first_name")
+            last_name = st.text_input("Sobrenome", key="form_data.last_name")
+            birth_date = st.date_input("Data de nascimento", key="form_data.birth_date")
+            phone = st.text_input("Telefone", key="form_data.phone")
         
         submit_button = st.form_submit_button("Cadastrar")
         
@@ -94,7 +106,8 @@ def render_cadastro_form():
                     )
                     
                     # Redefinir estado do formulário
-                    st.experimental_rerun()
+                    for key in st.session_state.form_data.keys():
+                        st.session_state.form_data[key] = "" if key != "birth_date" else datetime.now()
                 else:
                     st.error(f"Erro ao cadastrar: {response.get('detail', 'Erro desconhecido')}")
     
