@@ -46,7 +46,7 @@ st.set_page_config(
     layout=config_vars['app_layout']
 )
 
-from utils.render import render_main_image, render_tabs
+from utils.render import render_main_image, render_tabs, render_alterar_senha_form
 
 #################################################################################
 ############################       SECRETS.TOML       ###########################
@@ -171,12 +171,30 @@ if not st.session_state.get('logged_in', False):
                 st.rerun()
 
 else:
-    st.sidebar.write(f"Bem-vindo, {st.session_state.user['profile']['first_name']}!")
-    if st.sidebar.button("Logout", use_container_width=True):
-        st.session_state.logged_in = False
-        st.session_state.user = None
-        st.session_state.user_email = None
-        st.rerun()
+    if st.session_state.get('logged_in', False):
+        st.sidebar.write(f"Bem-vindo, {st.session_state.user['profile']['first_name']}!")
+        
+        if st.sidebar.button("Alterar Senha", use_container_width=True):
+            st.session_state.show_alterar_senha = True
+            st.rerun()
+
+        if st.sidebar.button("Logout", use_container_width=True):
+            st.session_state.logged_in = False
+            st.session_state.user = None
+            st.session_state.user_email = None
+            st.session_state.show_alterar_senha = False
+            st.rerun()
+
+    # Renderizar o formulário de alteração de senha
+    if st.session_state.get('show_alterar_senha', False):
+        render_alterar_senha_form()
+
+    # st.sidebar.write(f"Bem-vindo, {st.session_state.user['profile']['first_name']}!")    
+    # if st.sidebar.button("Logout", use_container_width=True):
+    #     st.session_state.logged_in = False
+    #     st.session_state.user = None
+    #     st.session_state.user_email = None
+    #     st.rerun()
 #################################################################################
 ############################     CONTEÚDO PRINCIPAL     #########################
 #################################################################################
