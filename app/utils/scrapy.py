@@ -10,23 +10,26 @@ from config.variaveis_globais import (
 def atualizar_pacotes():
     while True:
         st.session_state.pacotes = get_pacotes_viagem()
-        time.sleep(300)  # Atualiza a cada 5 minutos
+        time.sleep(300)  # 5 minutos
 
 def get_pacotes_viagem():
     try:
-        # só os pacotes mais recentes
-        response = requests.get(f"{API_BASE_URL}/read/pacotes_viagem?sort=-data_extracao,-hora_extracao&limit=50")
+        response = requests.get(f"{API_BASE_URL}/read/pacotes_viagem")
         response.raise_for_status()
         pacotes = response.json()['documents']
         
-        # tenta agrupar pacotes por título e seleciona o mais recente de cada
+        # ordena pela data e hora de extração mais recente
+        pacotes_ordenados = sorted(
+            pacotes,
+            key=lambda x: datetime.strptime(f"{x['data_extracao']} {x['hora_extracao']}", "%Y-%m-%d %H:%M:%S"),
+            reverse=True
+        )
+        
+        # Agrupa por título e seleciona o mais recente de cada
         pacotes_recentes = {}
-        for pacote in pacotes:
+        for pacote in pacotes_ordenados:
             titulo = pacote['titulo']
-            if titulo not in pacotes_recentes or (
-                pacote['data_extracao'] + ' ' + pacote['hora_extracao'] >
-                pacotes_recentes[titulo]['data_extracao'] + ' ' + pacotes_recentes[titulo]['hora_extracao']
-            ):
+            if titulo not in pacotes_recentes:
                 pacotes_recentes[titulo] = pacote
         
         return list(pacotes_recentes.values())
