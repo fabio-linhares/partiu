@@ -16,6 +16,7 @@
 
 from fastapi import FastAPI, Form, HTTPException
 from pymongo import MongoClient, DESCENDING
+from datetime import datetime
 
 from pydantic import BaseModel
 from utils.database import (create_document,
@@ -37,6 +38,8 @@ from config.variaveis_globais import streamlit_secret, API_BASE_URL
 
 from pymongo import MongoClient
 from pymongo.errors import PyMongoError
+from typing import List, Dict
+
 from utils.database import get_connection_string
 
 from utils.security import hash_password
@@ -55,11 +58,26 @@ logger = logging.getLogger(__name__)
 
 
 
+class Profile(BaseModel):
+    first_name: str
+    last_name: str
+    birth_date: str
+    phone: str
+
+class Settings(BaseModel):
+    theme: str
+    notifications: bool
+
 class User(BaseModel):
     username: str
     email: str
     password: str
-    profile: dict
+    created_at: str
+    last_login: str
+    is_active: bool
+    roles: List[str]
+    profile: Profile
+    settings: Settings
 
 
 
@@ -72,17 +90,37 @@ class Document(BaseModel):
 ############################         FUNCTIONS        ###########################
 #################################################################################
 
-def api_request(method, endpoint, data=None):
+# def api_request(method, endpoint, data=None):
+#     url = f"{API_BASE_URL}{endpoint}"
+#     try:
+#         if method == "GET":
+#             response = requests.get(url)
+#         elif method == "POST":
+#             response = requests.post(url, data=data)
+#         elif method == "PUT":
+#             response = requests.put(url, json=data)
+#         elif method == "DELETE":
+#             response = requests.delete(url)
+        
+#         response.raise_for_status()
+#         return response.json()
+#     except requests.RequestException as e:
+#         logger.error(f"API request error: {e}")
+#         if hasattr(e, 'response') and e.response is not None:
+#             return {"status": "error", "detail": e.response.text}
+#         return {"status": "error", "detail": str(e)}
+
+def api_request(method, endpoint, data=None, timeout=10):
     url = f"{API_BASE_URL}{endpoint}"
     try:
         if method == "GET":
-            response = requests.get(url)
+            response = requests.get(url, timeout=timeout)
         elif method == "POST":
-            response = requests.post(url, data=data)
+            response = requests.post(url, json=data, timeout=timeout)  # Use json=data
         elif method == "PUT":
-            response = requests.put(url, json=data)
+            response = requests.put(url, json=data, timeout=timeout)
         elif method == "DELETE":
-            response = requests.delete(url)
+            response = requests.delete(url, timeout=timeout)
         
         response.raise_for_status()
         return response.json()
