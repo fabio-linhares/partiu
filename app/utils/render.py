@@ -1,5 +1,8 @@
 # Third-party libraries
 import streamlit as st
+import bcrypt
+from utils.database import update_document, get_collection
+
 
 
 # Local modules
@@ -80,3 +83,34 @@ def render_tabs(selected_section, menu_dados):
                             elif j == 2:
                                 adicionar_conteudo(exibir_api_teste)
     return tab_contents
+
+def render_alterar_senha_form():
+    st.markdown("##### Alterar Senha")
+
+    with st.form("alterar_senha_form"):
+        senha_atual = st.text_input("Senha Atual", type="password")
+        nova_senha = st.text_input("Nova Senha", type="password")
+        confirmar_nova_senha = st.text_input("Confirme a Nova Senha", type="password")
+        
+        submit_button = st.form_submit_button("Alterar Senha")
+        
+        if submit_button:
+            if nova_senha != confirmar_nova_senha:
+                st.error("As senhas não coincidem.")
+            else:
+                # Verificar a senha atual
+                user = st.session_state.user
+                collection = get_collection('tp_users')
+                user_record = collection.find_one({'username': user['username']})
+
+                if user_record and bcrypt.checkpw(senha_atual.encode('utf-8'), user_record['password'].encode('utf-8')):
+                    # Atualizar com a nova senha
+                    hashed_password = bcrypt.hashpw(nova_senha.encode('utf-8'), bcrypt.gensalt())
+                    update_document(
+                        collection_name='tp_users',
+                        query={'username': user['username']},
+                        update={'password': hashed_password.decode('utf-8')}
+                    )
+                    st.success("Senha alterada com sucesso!")
+                else:
+                    st.error("Senha atual incorreta.")
