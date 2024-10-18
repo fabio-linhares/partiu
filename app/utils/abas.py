@@ -1,12 +1,15 @@
+# Built-in libraries
 import json
-
+import io
+import os
+from datetime import datetime
 
 # Third-party libraries
 import streamlit as st
-
 import requests
 from PIL import Image
-import io
+
+from jinja2 import Environment, FileSystemLoader
 
 # Local modules
 from api import get_sections_from_api, api_request_cached
@@ -16,25 +19,23 @@ from config.variaveis_globais import (
     arquivo_de_resposta2,
     arquivo_de_resposta3,
     arquivo_de_resposta4,
-    arquivo_de_palavras
+    arquivo_de_palavras,
+    template_email
 )
-
-
-from utils.markdown import read_markdown_file
-
-from utils.globals import create_global_variables
 from utils.database import get_user_data
+from utils.frescuras import (
+    gerar_nuvem_palavras,
+    get_tab_names,
+    exibir_grafico_precos,
+    exibir_tabela_ofertas
+)
+from utils.globals import create_global_variables
 from utils.loadfile import save_uploaded_file
 from utils.mail import enviar_email
 from utils.markdown import read_markdown_file
 from utils.mongo2 import load_database_config
 from utils.scraper import run_scraper
 from utils.security import login_user
-from utils.frescuras import (gerar_nuvem_palavras,
-                             get_tab_names,
-                             exibir_grafico_precos,
-                             exibir_tabela_ofertas)
-
 
 #################################################################################
 ############################       SECRETS.TOML       ###########################
@@ -51,6 +52,7 @@ dev_data = get_user_data(database_name=config_vars['database_user'],
 
 menu_dados = get_sections_from_api(config_vars['database_main'], 
                                    config_vars['collections_menu'])
+
 
 
 #################################################################################
@@ -137,8 +139,78 @@ def exibir_respostas(selected_section, menu_dados):
     else:
         st.write("Por favor, selecione uma seção no menu lateral.")
 
+# def exibir_pacotes_viagem():
+
+
+#     st.markdown(f"#### Pacotes de Viagem")
+#     st.write("Aqui você encontra os pacotes de viagem mais recentes que 'raspamos' da 'decolar.com'. Xiuuu! kkkkkk")
+
+#     cols = st.columns(3)
+                
+#     for i, pacote in enumerate(st.session_state.pacotes):
+#         with cols[i % 3]:
+#             with st.container():
+#                 try:
+#                     response = requests.get(f"https:{pacote['imagem']}")
+#                     img = Image.open(io.BytesIO(response.content))
+#                     st.image(img, use_column_width=True)
+#                 except:
+#                     st.image("https://via.placeholder.com/300x200?text=Imagem+não+disponível", use_column_width=True)
+                
+#                 st.subheader(pacote['titulo'])
+#                 st.write(f"Preço: R$ {pacote['preco_atual']}")
+#                 st.write(f"Duração: {pacote['duracao']}")
+#                 st.write(f"Datas: {pacote['datas']}")
+                
+#                 if pacote.get('economia'):
+#                     st.write(f"Economia: {pacote['economia']}")
+
+#                 data_hora = datetime.strptime(f"{pacote['data_extracao']} {pacote['hora_extracao']}", "%Y-%m-%d %H:%M:%S")
+#                 data_hora_formatada = data_hora.strftime("%d/%m/%Y às %H:%M:%S")
+
+#                 st.write(f"Última atualização: {data_hora_formatada}")
+#                 if st.session_state.get('logged_in', False):
+#                     user_email = st.session_state.get('user_email', '')
+#                     if st.button("Selecionar", key=f"select_{i}"):
+
+# #################################################################################
+# ############################           EMAIL          ###########################
+# #################################################################################
+
+#                         if user_email:
+#                             mail_subject = f"{config_vars['mail_subjectp1']} {pacote['titulo']} {config_vars['mail_subjectp2']}"
+
+#                             if config_vars['apikey_sendgrid']:
+#                                 with st.spinner("Efetuando a reserva..."):
+#                                     resultado = enviar_email(config_vars['apikey_sendgrid'], config_vars['mail_sender'], user_email, mail_subject, config_vars['mail_content1'])
+                                    
+#                                     if resultado["status"] == "success":
+#                                         st.info("Um e-mail de confirmação foi enviado para você.", icon="ℹ️")
+#                                     else:
+#                                         st.error(f"Erro ao enviar email: {resultado['message']}")
+#                             else:
+#                                 st.error("Senha SMTP do SendGrid não encontrada. Verifique o arquivo de configuração.")
+
+#                             st.write("""
+#                             Nota: O email enviado pode cair na caixa de spam. Verifique lá se não o encontrar na caixa de entrada.
+#                             """)
+#                         else:
+#                             st.error("E-mail do usuário não encontrado. Por favor, faça login novamente.")
+#                 else:
+#                     st.info("Faça login para selecionar este pacote", icon="ℹ️")
+
+
+
+from datetime import datetime
+import streamlit as st
+import requests
+from PIL import Image
+import io
+from utils.mail import enviar_email
+from utils.database import get_user_data
+
 def exibir_pacotes_viagem():
-    st.markdown(f"#### Pacotes de Viagem")
+    st.markdown("#### Pacotes de Viagem")
     st.write("Aqui você encontra os pacotes de viagem mais recentes que 'raspamos' da 'decolar.com'. Xiuuu! kkkkkk")
 
     cols = st.columns(3)
@@ -160,38 +232,88 @@ def exibir_pacotes_viagem():
                 
                 if pacote.get('economia'):
                     st.write(f"Economia: {pacote['economia']}")
-                
-                st.write(f"Última atualização: {pacote['data_extracao']} às {pacote['hora_extracao']}")
-                
+
+                data_hora = datetime.strptime(f"{pacote['data_extracao']} {pacote['hora_extracao']}", "%Y-%m-%d %H:%M:%S")
+                data_hora_formatada = data_hora.strftime("%d/%m/%Y às %H:%M:%S")
+
+                st.write(f"Última atualização: {data_hora_formatada}")
                 if st.session_state.get('logged_in', False):
                     user_email = st.session_state.get('user_email', '')
                     if st.button("Selecionar", key=f"select_{i}"):
-
-#################################################################################
-############################           EMAIL          ###########################
-#################################################################################
-
                         if user_email:
-                            mail_subject = f"{config_vars['mail_subjectp1']} {pacote['titulo']} {config_vars['mail_subjectp2']}"
+                            # pega os dados do usuário
+                            user_data = st.session_state.get('user', {})
+                            if user_data:
+                                email_content = criar_conteudo_email(pacote, user_data)
+                                
+                                mail_subject = f"Confirmação de Reserva - {pacote['titulo']}"
 
-                            if config_vars['apikey_sendgrid']:
-                                with st.spinner("Efetuando a reserva..."):
-                                    resultado = enviar_email(config_vars['apikey_sendgrid'], config_vars['mail_sender'], user_email, mail_subject, config_vars['mail_content1'])
-                                    
-                                    if resultado["status"] == "success":
-                                        st.info("Um e-mail de confirmação foi enviado para você.", icon="ℹ️")
-                                    else:
-                                        st.error(f"Erro ao enviar email: {resultado['message']}")
+                                if config_vars['apikey_sendgrid']:
+                                    with st.spinner("Efetuando a reserva..."):
+                                        resultado = enviar_email(
+                                            config_vars['apikey_sendgrid'],
+                                            config_vars['mail_sender'],
+                                            user_email,
+                                            f"Confirmação de Reserva - {pacote['titulo']}",
+                                            email_content  # conteúdo HTML
+                                        )
+                                        
+                                        if resultado["status"] == "success":
+                                            st.success("Um e-mail de confirmação foi enviado para você.", icon="✅")
+                                        else:
+                                            st.error(f"Erro ao enviar email: {resultado['message']}")
+                                else:
+                                    st.error("Chave API do SendGrid não encontrada. Verifique o arquivo de configuração.")
+
+                                st.info("Nota: O email enviado pode cair na caixa de spam. Verifique lá se não o encontrar na caixa de entrada.")
                             else:
-                                st.error("Senha SMTP do SendGrid não encontrada. Verifique o arquivo de configuração.")
-
-                            st.write("""
-                            Nota: O email enviado pode cair na caixa de spam. Verifique lá se não o encontrar na caixa de entrada.
-                            """)
+                                st.error("Dados do usuário não encontrados. Por favor, faça login novamente.")
                         else:
                             st.error("E-mail do usuário não encontrado. Por favor, faça login novamente.")
                 else:
                     st.info("Faça login para selecionar este pacote", icon="ℹ️")
+
+def criar_conteudo_email(pacote, user_data):
+    # Configurar o ambiente do Jinja2
+    env = Environment(loader=FileSystemLoader(os.path.dirname(template_email)))
+    template = env.get_template(os.path.basename(template_email))
+
+    # Configurar os dados
+    data_extracao = datetime.strptime(pacote['data_extracao'], "%Y-%m-%d").strftime("%d/%m/%Y")
+    profile = user_data.get('profile', {})
+    first_name = profile.get('first_name', 'Cliente')
+    last_name = profile.get('last_name', '')
+    email = user_data.get('email', 'Não fornecido')
+    phone = profile.get('phone', 'Não fornecido')
+    birth_date = profile.get('birth_date')
+    data_nascimento = datetime.strptime(birth_date, "%Y-%m-%d").strftime("%d/%m/%Y") if birth_date else 'Não fornecido'
+    settings = user_data.get('settings', {})
+    notifications = 'Ativadas' if settings.get('notifications', False) else 'Desativadas'
+
+    # Assegurar que a URL da imagem é absoluta
+    imagem_url = f"https:{pacote['imagem']}" if not pacote['imagem'].startswith('http') else pacote['imagem']
+
+    # Renderizar o template com os dados
+    return template.render(
+        first_name=first_name,
+        last_name=last_name,
+        destino=pacote['titulo'],
+        preco_atual=pacote['preco_atual'],
+        preco_original=pacote.get('preco_original', 'Não especificado'),
+        economia=pacote.get('economia', 'Não especificado'),
+        duracao=pacote['duracao'],
+        datas=pacote['datas'],
+        cidade_saida=pacote.get('cidade_saida', 'Indisponível'),
+        servicos_incluidos=pacote.get('servicos_incluidos', 'Não especificado'),
+        imagem=imagem_url,
+        data_extracao=data_extracao,
+        hora_extracao=pacote['hora_extracao'],
+        email=email,
+        phone=phone,
+        data_nascimento=data_nascimento,
+        notifications=notifications
+    )
+
 
 def exibir_area_restrita():
     if not st.session_state.logged_in:
