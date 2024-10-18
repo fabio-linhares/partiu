@@ -44,27 +44,48 @@ from config.variaveis_globais import (
     arquivo_de_resposta4,
     arquivo_de_palavras
 )
+
+from utils.globals import create_global_variables
+config_vars = create_global_variables(streamlit_secret)
+st.set_page_config(page_title=config_vars['app_title'], page_icon=config_vars['app_icon'], layout=config_vars['app_layout'])
+#config_vars['collections_dev']
+
+from utils.abas import (criar_abas_principais, 
+                        criar_abas_secundarias, 
+                        adicionar_conteudo,
+                        criar_exibidor_respostas,
+                        exibir_respostas,
+                        exibir_pacotes_viagem,
+                        exibir_area_restrita,
+                        exibir_api_teste,)
+
+from utils.markdown import read_markdown_file
 from utils.background import get_random_image, get_cached_random_image
 from utils.cadastro import render_cadastro_form
-from utils.globals import create_global_variables
+
 from utils.database import get_user_data
 from utils.loadfile import load_json_data, save_uploaded_file
 from utils.mail import enviar_email
 from utils.markdown import read_markdown_file
 from utils.mongo2 import load_database_config
+
+from utils.render import render_main_image, render_tabs
 from utils.scrapy  import get_pacotes_viagem, atualizar_pacotes
 from utils.scraper import run_scraper
 from utils.security import login_user
 from utils.title import get_random_title
 from utils.frescuras import (gerar_nuvem_palavras,
+                             contar_itens_config,
+                             get_tab_names,
                              exibir_grafico_precos,
                              exibir_tabela_ofertas)
+
+
 
 #################################################################################
 ############################       SECRETS.TOML       ###########################
 #################################################################################
 
-config_vars = create_global_variables(streamlit_secret)
 
 if config_vars.get('environment_env') == 'dev':
     print("Variáveis carregadas do arquivo TOML:")
@@ -75,7 +96,6 @@ if config_vars.get('environment_env') == 'dev':
     uri = load_database_config(streamlit_secret)
     print("URI do banco de dados:", uri)
 
-#config_vars['collections_dev']
 
 #################################################################################
 ############################         VARIÁVEIS        ###########################
@@ -87,25 +107,15 @@ dev_data = get_user_data(database_name=config_vars['database_user'],
 menu_dados = get_sections_from_api(config_vars['database_main'], 
                                    config_vars['collections_menu'])
 
-#################################################################################
-############################          PACOTES         ###########################
-#################################################################################
-
-if 'pacotes' not in st.session_state:
-    st.session_state.pacotes = get_pacotes_viagem()
-
-if 'thread_atualizar_pacotes' not in st.session_state:
-    st.session_state.thread_atualizar_pacotes = threading.Thread(target=atualizar_pacotes, daemon=True)
-    st.session_state.thread_atualizar_pacotes.start()
-
-
+num_main_tabs = contar_itens_config(config_vars, 'main_tab')
+num_sub_tabs = contar_itens_config(config_vars, 'sub_tab')
+num_sub_tabs_test = contar_itens_config(config_vars, 'sub_tab_test')
 
 
 #################################################################################
 ############################           TÍTULO         ###########################
 #################################################################################
 
-st.set_page_config(page_title=config_vars['app_title'], page_icon=config_vars['app_icon'], layout=config_vars['app_layout'])
 
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
@@ -121,7 +131,21 @@ try:
     st.title(random_title)
 except Exception as e:
     st.error(f"Erro ao buscar título aleatório: {str(e)}")
-    st.title("Bem-vindo ao aplicativo")
+    st.title("Bem-vindo ao aplicativo")  
+
+
+
+#################################################################################
+############################          PACOTES         ###########################
+#################################################################################
+
+if 'pacotes' not in st.session_state:
+    st.session_state.pacotes = get_pacotes_viagem()
+
+if 'thread_atualizar_pacotes' not in st.session_state:
+    st.session_state.thread_atualizar_pacotes = threading.Thread(target=atualizar_pacotes, daemon=True)
+    st.session_state.thread_atualizar_pacotes.start()
+
 
 #################################################################################
 ############################           MENUS          ###########################
@@ -199,305 +223,9 @@ else:
 if st.session_state.show_cadastro:
     render_cadastro_form()
 else:
-    random_image_path = get_cached_random_image(image_directory)
-    capa_site = random_image_path
-    st.image(capa_site, use_column_width=True)
-
-
-#################################################################################
-############################           ABAS           ###########################
-#################################################################################
-
-    # abas principais
-    main_tab1, main_tab2, main_tab3 = st.tabs(["O Projeto", "O Teste", "O App"])
-
-    with main_tab1:
-        texto_em_markdown = read_markdown_file(arquivo_de_apresentacao)
-        st.markdown(texto_em_markdown)
-                
-    with main_tab2:
-
-        # abas secundárias
-        sub_tab_a1, sub_tab_a2, sub_tab_a3 = st.tabs(["Atividades", "Competências", "Respostas"])
-
-        with sub_tab_a1:
-
-            texto_em_markdown = read_markdown_file(arquivo_de_teste)
-            st.markdown(texto_em_markdown)
-
-        with sub_tab_a2:
-
-            texto_em_markdown = read_markdown_file(arquivo_de_rubrica)
-            st.markdown(texto_em_markdown)
-
-#################################################################################
-############################        RESPOSTAS         ###########################
-#################################################################################
-
-        with sub_tab_a3:
-            if selected_section:
-                selected_questions = next((item['questions'] for item in menu_dados if item['section'] == selected_section), [])
-                st.write(f"## {selected_section}")
-                for question in selected_questions:
-                    st.write(question)
-
-                if selected_section == "Configuração do Ambiente de Desenvolvimento":
-
-                    texto_em_markdown = read_markdown_file(arquivo_de_resposta1)
-                    st.markdown(texto_em_markdown)
-
-                elif selected_section == "Implementação de Interface de Usuário Dinâmica":
-
-                    texto_em_markdown = read_markdown_file(arquivo_de_resposta2)
-                    st.markdown(texto_em_markdown)
-
-                elif selected_section == "Extração de Conteúdo da Web para Alimentar a Aplicação":
-
-                    texto_em_markdown = read_markdown_file(arquivo_de_resposta3)
-                    st.markdown(texto_em_markdown)
-                    
-                    with open(arquivo_de_palavras, 'r', encoding='utf-8') as file:
-                        dados = json.load(file)
-
-                    st.markdown(f"###### Nuvem de Palavras dos Pacotes de Viagem:")
-                    gerar_nuvem_palavras(dados)
-
-                    st.markdown(f"###### Últimos dados extraídos:")
-                    
-                    with st.expander("Exibir dados do arquivo JSON"):
-                        st.json(dados)  
-
-                elif selected_section == "Cache e Estado de Sessão":
-
-                    texto_em_markdown = read_markdown_file(arquivo_de_resposta4)
-                    st.markdown(texto_em_markdown)
-
-                elif selected_section == "Serviço de Upload e Download de Arquivos":
-
-                    st.markdown(f"###### Foi implementado no APP")
-
-                elif selected_section == "Finalização do Project Charter e Data Summary Report":
-                    pass
-
-
-            else:
-                st.write("Por favor, selecione uma seção no menu lateral.")
-                
-
-#################################################################################
-############################           APP            ###########################
-#################################################################################
-    with main_tab3:
-        sub_tab_b1, sub_tab_b2, sub_tab_b3 = st.tabs(["Home", "Área Restrita", "API Teste"])
-
-        with sub_tab_b1:
-            st.markdown(f"#### Pacotes de Viagem")
-            st.write("Aqui você encontra os pacotes de viagem mais recentes da 'decolar.com'.")
-
-            cols = st.columns(3)
-            
-            for i, pacote in enumerate(st.session_state.pacotes):
-                with cols[i % 3]:
-                    with st.container():
-                        try:
-                            response = requests.get(f"https:{pacote['imagem']}")
-                            img = Image.open(io.BytesIO(response.content))
-                            st.image(img, use_column_width=True)
-                        except:
-                            st.image("https://via.placeholder.com/300x200?text=Imagem+não+disponível", use_column_width=True)
-                        
-                        st.subheader(pacote['titulo'])
-                        st.write(f"Preço: R$ {pacote['preco_atual']}")
-                        st.write(f"Duração: {pacote['duracao']}")
-                        st.write(f"Datas: {pacote['datas']}")
-                        
-                        if pacote.get('economia'):
-                            st.write(f"Economia: {pacote['economia']}")
-                        
-                        st.write(f"Última atualização: {pacote['data_extracao']} às {pacote['hora_extracao']}")
-                        
-                        if st.session_state.get('logged_in', False):
-                            user_email = st.session_state.get('user_email', '')
-                            if st.button("Selecionar", key=f"select_{i}"):
-
-#################################################################################
-############################           EMAIL          ###########################
-#################################################################################
-
-                                if user_email:
-                                    mail_subject = f"{config_vars['mail_subjectp1']} {pacote['titulo']} {config_vars['mail_subjectp2']}"
-
-                                    if config_vars['apikey_sendgrid']:
-                                        with st.spinner("Efetuando a reserva..."):
-                                            resultado = enviar_email(config_vars['apikey_sendgrid'], config_vars['mail_sender'], user_email, mail_subject, config_vars['mail_content1'])
-                                            
-                                            if resultado["status"] == "success":
-                                                st.info("Um e-mail de confirmação foi enviado para você.", icon="ℹ️")
-                                            else:
-                                                st.error(f"Erro ao enviar email: {resultado['message']}")
-                                    else:
-                                        st.error("Senha SMTP do SendGrid não encontrada. Verifique o arquivo de configuração.")
-
-                                    st.write("""
-                                    Nota: O email enviado pode cair na caixa de spam. Verifique lá se não o encontrar na caixa de entrada.
-                                    """)
-                                else:
-                                    st.error("E-mail do usuário não encontrado. Por favor, faça login novamente.")
-                        else:
-                            st.info("Faça login para selecionar este pacote", icon="ℹ️")
-
-        with sub_tab_b2:
-            if not st.session_state.logged_in:
-                st.title("Login")
-                
-                username = st.text_input("Usuário")
-                password = st.text_input("Senha", type="password")
-
-                if st.button("Login", key="login_button"):
-                    result = login_user(username, password)
-                    if result.get('status') == 'success':
-                        st.session_state.logged_in = True
-                        st.session_state.user = result.get('user', {})
-                        st.rerun()
-                    else:
-                        st.error(f"Erro de login: {result.get('detail', 'Usuário ou senha incorretos')}")
-            else:
-                if st.session_state.user and 'roles' in st.session_state.user and 'admin' in st.session_state.user['roles']:
-                    st.write("Área administrativa")
-                    st.write(f"Bem-vindo, {st.session_state.user['profile']['first_name']}")
-                    if st.button("Logout", key="logout_admin"):
-                        st.session_state.logged_in = False
-                        st.session_state.user = None
-                        st.rerun()
-
-#################################################################################
-########################     OPERAÇÕES ADMINISTRATIVAS     ######################
-#################################################################################
-                    #
-                    if 'dados' not in st.session_state:
-                        st.session_state.dados = None
-
-                    option = st.radio(
-                        "Escolha uma opção:",
-                        ("Carregar arquivo JSON existente", "Executar novo scraping")
-                    )
-
-                    if option == "Carregar arquivo JSON existente":
-                        uploaded_file = st.file_uploader("Escolha um arquivo JSON", type="json")
-                        if uploaded_file is not None:
-                            # Salva o arquivo uploadado no local desejado
-                            if save_uploaded_file(uploaded_file):
-                                st.success(f"Arquivo JSON salvo com sucesso em {arquivo_de_palavras}")
-                            # Carrega os dados do arquivo salvo
-                            with open(arquivo_de_palavras, 'r', encoding='utf-8') as file:
-                                st.session_state.dados = json.load(file)
-
-                    if option == "Executar novo scraping":
-                        if st.button("Executar Scraper"):
-                            with st.spinner("Executando o scraper..."):
-                                run_scraper()
-                            st.success("Scraping concluído!")
-                            # Carregando os dados do arquivo gerado pelo scraper
-                            with open(arquivo_de_palavras, 'r', encoding='utf-8') as file:
-                                st.session_state.dados = json.load(file)
-
-                    # Exibição dos dados
-                    if st.session_state.dados is not None:
-                        st.markdown("##### Tabela de Ofertas:")
-                        exibir_tabela_ofertas(st.session_state.dados)
-
-                        st.markdown("##### Gráfico de Preços:")
-                        exibir_grafico_precos(st.session_state.dados)
-
-                        with st.expander("Exibir dados do arquivo JSON"):
-                            st.json(st.session_state.dados)
-
-                        # Botão de download
-                        with open(arquivo_de_palavras, 'r', encoding='utf-8') as file:
-                            json_string = file.read()
-                        
-                        st.download_button(
-                            label="Clique para baixar o JSON",
-                            data=json_string,
-                            file_name="dados_scraping.json",
-                            mime="application/json"
-                        )
-
-                    else:
-                        st.info("Carregue um arquivo JSON ou execute o scraper para visualizar os dados.")
-
-                else:
-                    st.warning("Você não tem permissão para acessar esta área")
-
-        with sub_tab_b3:
-            
-            operation = st.selectbox("Select operation", ["Create", "Read", "Update", "Delete", "Get Main Collection"])
-
-            if operation == "Create":
-                collection = st.text_input("Collection name")
-                data = st.text_area("Document data (JSON format)")
-                if st.button("Create Document"):
-                    try:
-                        json_data = json.loads(data)
-                        result = api_request_cached("POST", f"/create/{collection}", {"data": json_data})
-                        if result:
-                            st.success(f"Document created with ID: {result['id']}")
-                    except json.JSONDecodeError:
-                        st.error("Invalid JSON format")
-                    except Exception as e:
-                        st.error(f"An error occurred: {str(e)}")
-
-            elif operation == "Read":
-                collection = st.text_input("Collection name")
-                limit = st.number_input("Limit", min_value=1, value=10)
-                if st.button("Read Documents"):
-                    try:
-                        result = api_request_cached("GET", f"/read/{collection}?limit={limit}")
-                        if result:
-                            st.json(result)
-                        else:
-                            st.warning("No documents found or empty result.")
-                    except Exception as e:
-                        st.error(f"An error occurred: {str(e)}")
-                        if hasattr(e, 'response'):
-                            st.error(f"Response content: {e.response.content}")
-
-            elif operation == "Update":
-                collection = st.text_input("Collection name")
-                doc_id = st.text_input("Document ID")
-                data = st.text_area("Updated data (JSON format)")
-                if st.button("Update Document"):
-                    try:
-                        json_data = json.loads(data)
-                        result = api_request_cached("PUT", f"/update/{collection}/{doc_id}", {"data": json_data})
-                        if result:
-                            st.success("Document updated successfully")
-                    except json.JSONDecodeError:
-                        st.error("Invalid JSON format")
-                    except Exception as e:
-                        st.error(f"An error occurred: {str(e)}")
-
-            elif operation == "Delete":
-                collection = st.text_input("Collection name")
-                doc_id = st.text_input("Document ID")
-                if st.button("Delete Document"):
-                    try:
-                        result = api_request_cached("DELETE", f"/delete/{collection}/{doc_id}")
-                        if result:
-                            st.success("Document deleted successfully")
-                    except Exception as e:
-                        st.error(f"An error occurred: {str(e)}")
-
-            elif operation == "Get Main Collection":
-                if st.button("Get Main Collection"):
-                    try:
-                        result = api_request_cached("GET", "/main_collection")
-                        if result:
-                            st.json(result)
-                    except Exception as e:
-                        st.error(f"An error occurred: {str(e)}")
-
-
+    render_main_image()
+    tabs_content = render_tabs(selected_section, menu_dados)
+    tabs_content()
 #################################################################################
 ############################           RODAPÉ         ###########################
 #################################################################################
