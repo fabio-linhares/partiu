@@ -37,6 +37,7 @@ from utils.mongo2 import load_database_config
 from utils.scraper import run_scraper
 from utils.security import login_user
 
+
 #################################################################################
 ############################       SECRETS.TOML       ###########################
 #################################################################################
@@ -53,6 +54,9 @@ dev_data = get_user_data(database_name=config_vars['database_user'],
 menu_dados = get_sections_from_api(config_vars['database_main'], 
                                    config_vars['collections_menu'])
 
+if dev_data:
+    support_mail_ = dev_data.get('email', config_vars['developer_email'])
+    support_phone_ = dev_data.get('telefone', config_vars['developer_phone']) 
 
 
 #################################################################################
@@ -83,8 +87,6 @@ def adicionar_conteudo(conteudo, *args, **kwargs):
     except Exception as e:
         st.error(f"Erro ao adicionar conteúdo: {str(e)}")
         print(f"Erro ao adicionar conteúdo: {str(e)}")  
-
-
 
 #################################################################################
 ############################        RESPOSTAS         ###########################
@@ -139,75 +141,7 @@ def exibir_respostas(selected_section, menu_dados):
     else:
         st.write("Por favor, selecione uma seção no menu lateral.")
 
-# def exibir_pacotes_viagem():
 
-
-#     st.markdown(f"#### Pacotes de Viagem")
-#     st.write("Aqui você encontra os pacotes de viagem mais recentes que 'raspamos' da 'decolar.com'. Xiuuu! kkkkkk")
-
-#     cols = st.columns(3)
-                
-#     for i, pacote in enumerate(st.session_state.pacotes):
-#         with cols[i % 3]:
-#             with st.container():
-#                 try:
-#                     response = requests.get(f"https:{pacote['imagem']}")
-#                     img = Image.open(io.BytesIO(response.content))
-#                     st.image(img, use_column_width=True)
-#                 except:
-#                     st.image("https://via.placeholder.com/300x200?text=Imagem+não+disponível", use_column_width=True)
-                
-#                 st.subheader(pacote['titulo'])
-#                 st.write(f"Preço: R$ {pacote['preco_atual']}")
-#                 st.write(f"Duração: {pacote['duracao']}")
-#                 st.write(f"Datas: {pacote['datas']}")
-                
-#                 if pacote.get('economia'):
-#                     st.write(f"Economia: {pacote['economia']}")
-
-#                 data_hora = datetime.strptime(f"{pacote['data_extracao']} {pacote['hora_extracao']}", "%Y-%m-%d %H:%M:%S")
-#                 data_hora_formatada = data_hora.strftime("%d/%m/%Y às %H:%M:%S")
-
-#                 st.write(f"Última atualização: {data_hora_formatada}")
-#                 if st.session_state.get('logged_in', False):
-#                     user_email = st.session_state.get('user_email', '')
-#                     if st.button("Selecionar", key=f"select_{i}"):
-
-# #################################################################################
-# ############################           EMAIL          ###########################
-# #################################################################################
-
-#                         if user_email:
-#                             mail_subject = f"{config_vars['mail_subjectp1']} {pacote['titulo']} {config_vars['mail_subjectp2']}"
-
-#                             if config_vars['apikey_sendgrid']:
-#                                 with st.spinner("Efetuando a reserva..."):
-#                                     resultado = enviar_email(config_vars['apikey_sendgrid'], config_vars['mail_sender'], user_email, mail_subject, config_vars['mail_content1'])
-                                    
-#                                     if resultado["status"] == "success":
-#                                         st.info("Um e-mail de confirmação foi enviado para você.", icon="ℹ️")
-#                                     else:
-#                                         st.error(f"Erro ao enviar email: {resultado['message']}")
-#                             else:
-#                                 st.error("Senha SMTP do SendGrid não encontrada. Verifique o arquivo de configuração.")
-
-#                             st.write("""
-#                             Nota: O email enviado pode cair na caixa de spam. Verifique lá se não o encontrar na caixa de entrada.
-#                             """)
-#                         else:
-#                             st.error("E-mail do usuário não encontrado. Por favor, faça login novamente.")
-#                 else:
-#                     st.info("Faça login para selecionar este pacote", icon="ℹ️")
-
-
-
-from datetime import datetime
-import streamlit as st
-import requests
-from PIL import Image
-import io
-from utils.mail import enviar_email
-from utils.database import get_user_data
 
 def exibir_pacotes_viagem():
     st.markdown("#### Pacotes de Viagem")
@@ -274,11 +208,11 @@ def exibir_pacotes_viagem():
                     st.info("Faça login para selecionar este pacote", icon="ℹ️")
 
 def criar_conteudo_email(pacote, user_data):
-    # Configurar o ambiente do Jinja2
+
     env = Environment(loader=FileSystemLoader(os.path.dirname(template_email)))
     template = env.get_template(os.path.basename(template_email))
 
-    # Configurar os dados
+    # recupera os dados
     data_extracao = datetime.strptime(pacote['data_extracao'], "%Y-%m-%d").strftime("%d/%m/%Y")
     profile = user_data.get('profile', {})
     first_name = profile.get('first_name', 'Cliente')
@@ -290,10 +224,9 @@ def criar_conteudo_email(pacote, user_data):
     settings = user_data.get('settings', {})
     notifications = 'Ativadas' if settings.get('notifications', False) else 'Desativadas'
 
-    # Assegurar que a URL da imagem é absoluta
+    # URL absoluta
     imagem_url = f"https:{pacote['imagem']}" if not pacote['imagem'].startswith('http') else pacote['imagem']
 
-    # Renderizar o template com os dados
     return template.render(
         first_name=first_name,
         last_name=last_name,
@@ -311,7 +244,9 @@ def criar_conteudo_email(pacote, user_data):
         email=email,
         phone=phone,
         data_nascimento=data_nascimento,
-        notifications=notifications
+        notifications=notifications,
+        support_mail=support_mail_,
+        support_phone=support_phone_
     )
 
 
