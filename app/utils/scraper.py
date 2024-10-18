@@ -1,4 +1,7 @@
 from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
+
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -38,7 +41,9 @@ def extrair_dados_completos(url):
     options.add_argument('--disable-dev-shm-usage')
     options.add_argument("--start-maximized")
     
-    driver = uc.Chrome(options=options)
+    #driver = uc.Chrome(options=options)
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=options)
     
     try:
         driver.get(url)
