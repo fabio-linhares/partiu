@@ -88,6 +88,20 @@ menu_dados = get_sections_from_api(config_vars['database_main'],
                                    config_vars['collections_menu'])
 
 #################################################################################
+############################          PACOTES         ###########################
+#################################################################################
+
+if 'pacotes' not in st.session_state:
+    st.session_state.pacotes = get_pacotes_viagem()
+
+if 'thread_atualizar_pacotes' not in st.session_state:
+    st.session_state.thread_atualizar_pacotes = threading.Thread(target=atualizar_pacotes, daemon=True)
+    st.session_state.thread_atualizar_pacotes.start()
+
+
+
+
+#################################################################################
 ############################           TÍTULO         ###########################
 #################################################################################
 
@@ -188,13 +202,6 @@ else:
     random_image_path = get_cached_random_image(image_directory)
     capa_site = random_image_path
     st.image(capa_site, use_column_width=True)
-
-    if 'pacotes' not in st.session_state:
-        st.session_state.pacotes = get_pacotes_viagem()
-
-    # Inicie a thread de atualização
-    thread = threading.Thread(target=atualizar_pacotes, daemon=True)
-    thread.start()
 
 
 #################################################################################
