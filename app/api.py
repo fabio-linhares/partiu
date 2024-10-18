@@ -39,6 +39,8 @@ from pymongo import MongoClient
 from pymongo.errors import PyMongoError
 from utils.database import get_connection_string
 
+from utils.security import hash_password
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -48,10 +50,18 @@ app = FastAPI()
 config_vars = create_global_variables(streamlit_secret)
 
 
-
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+
+class User(BaseModel):
+    username: str
+    email: str
+    password: str
+    profile: dict
+
+
 
 class Document(BaseModel):
     data: dict
@@ -347,6 +357,48 @@ async def login(username: str = Form(...), password: str = Form(...)):
     finally:
         if 'client' in locals():
             client.close()
+
+
+@app.post("/register")
+async def register_user(user: User):
+    try:
+        # Conectar ao banco de dados
+        connection_string = get_connection_string()
+        client = MongoClient(connection_string)
+        db = client[config_vars['database_main']]
+        users_collection = db[config_vars['collections_users']]
+
+        # Verificar se o usuário já existe
+        if users_collection.find_one({"username": user.username}):
+            raise HTTPException(status_code=400, detail="Username already exists")
+        if users_collection.find_one({"email": user.email}):
+            raise HTTPException(status_code=400, detail="Email already exists")
+
+        # Hash da senha do usuário
+        hashed_password = hash_password(user.password)
+
+        # Criar o documento do usuário
+        user_document = {
+            "username": user.username,
+            "email": user.email,
+            "password": hashed_password.decode('utf-8'),
+            "created_at": datetime.now().isoformat(),
+            "last_login": datetime.now().isoformat(),
+            "is_active": True,
+            "roles": ["user"],
+            "profile": user.profile,
+            "settings": {
+                "theme": "default",
+                "notifications": True
+            }
+        }
+
+        # Inserir o documento no banco de dados
+        result = create_document("tp_users", user_document)
+        return {"status": "success", "id": str(result.inserted_id)}
+    except Exception as e:
+        logger.error(f"Error registering user: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 
