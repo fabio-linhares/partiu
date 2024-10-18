@@ -424,11 +424,8 @@ async def register_user(user: User):
             "last_login": datetime.now().isoformat(),
             "is_active": True,
             "roles": ["user"],
-            "profile": user.profile,
-            "settings": {
-                "theme": "default",
-                "notifications": True
-            }
+            "profile": user.profile.dict(),  # Converte o modelo Profile para dict
+            "settings": user.settings.dict()  # Converte o modelo Settings para dict
         }
 
         # Inserir o documento no banco de dados
