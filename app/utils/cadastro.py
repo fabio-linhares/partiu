@@ -12,6 +12,7 @@ from config.variaveis_globais import (
 
 config_vars = create_global_variables(streamlit_secret)
 
+
 def normalize_username(username):
     # Remover acentos
     username = unicodedata.normalize('NFKD', username).encode('ASCII', 'ignore').decode('ASCII')
@@ -41,7 +42,7 @@ def render_cadastro_form():
         if submit_button:
             if password != confirm_password:
                 st.error("As senhas não coincidem.")
-            elif not username:
+            elif raw_username != username:
                 st.error("Nome de usuário inválido. Use apenas letras minúsculas e números, sem acentos ou caracteres especiais.")
             else:
                 # Preparar dados para enviar à API
@@ -71,16 +72,6 @@ def render_cadastro_form():
                 if response.get("status") == "success":
                     st.success("Cadastro realizado com sucesso!")
                     
-                    # Limpar os campos do formulário
-                    st.session_state.username = ""
-                    st.session_state.email = ""
-                    st.session_state.password = ""
-                    st.session_state.confirm_password = ""
-                    st.session_state.first_name = ""
-                    st.session_state.last_name = ""
-                    st.session_state.birth_date = datetime.now()
-                    st.session_state.phone = ""
-                    
                     # Enviar email de confirmação
                     email_content = f"""
                     <h3>Cadastro realizado com sucesso!</h3>
@@ -101,6 +92,9 @@ def render_cadastro_form():
                         subject="Confirmação de Cadastro",
                         html_content=email_content
                     )
+                    
+                    # Redefinir estado do formulário
+                    st.experimental_rerun()
                 else:
                     st.error(f"Erro ao cadastrar: {response.get('detail', 'Erro desconhecido')}")
     
