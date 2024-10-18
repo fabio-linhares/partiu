@@ -1,5 +1,6 @@
 import streamlit as st
-
+from datetime import datetime
+from api import api_request
 
 def render_cadastro_form():
     st.markdown(f"##### Cadastre-se! É rápido e fácil.")
@@ -23,10 +24,35 @@ def render_cadastro_form():
             if password != confirm_password:
                 st.error("As senhas não coincidem.")
             else:
-                # Aqui você chamaria a API para registrar o usuário
-                # Por enquanto, apenas mostraremos uma mensagem de sucesso
-                st.success("Cadastro realizado com sucesso!")
-                st.session_state.show_cadastro = False
+                # Preparar dados para enviar à API
+                user_data = {
+                    "username": username,
+                    "email": email,
+                    "password": password,
+                    "created_at": datetime.now().isoformat(),
+                    "last_login": datetime.now().isoformat(),
+                    "is_active": True,
+                    "roles": ["user"],
+                    "profile": {
+                        "first_name": first_name,
+                        "last_name": last_name,
+                        "birth_date": birth_date.strftime("%Y-%m-%d"),
+                        "phone": phone
+                    },
+                    "settings": {
+                        "theme": "default",
+                        "notifications": True
+                    }
+                }
+                
+                # Fazer a solicitação à API para criar o usuário
+                response = api_request("POST", "/register", data=user_data)
+                
+                if response.get("status") == "success":
+                    st.success("Cadastro realizado com sucesso!")
+                    st.session_state.show_cadastro = False
+                else:
+                    st.error(f"Erro ao cadastrar: {response.get('detail', 'Erro desconhecido')}")
     
     if st.button("Não quero me cadastrar!"):
         st.session_state.show_cadastro = False
