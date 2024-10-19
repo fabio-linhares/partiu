@@ -68,10 +68,23 @@ def get_wikipedia_summary(location):
 def prepare_travel_data(pacotes):
     texts = []
     metadatas = []
-    for pacote in pacotes:
-        text = f"{pacote['titulo']} - Preço: R$ {pacote['preco_atual']}, Duração: {pacote['duracao']}, Datas: {pacote['datas']}"
+
+    # Introdução ao texto
+    introducao = "Atualmente, dispomos das seguintes opções de pacotes de viagem:"
+    texts.append(introducao)
+    metadatas.append({})  # Adiciona um metadata vazio correspondente à introdução
+
+    # Enumerar as opções de pacotes
+    for i, pacote in enumerate(pacotes, start=1):
+        text = (
+            f"Opção {i}: {pacote['titulo']} - "
+            f"Preço Atual: R$ {pacote['preco_atual']}, "
+            f"Duração: {pacote['duracao']}, "
+            f"Datas Disponíveis: {pacote['datas']}."
+        )
         texts.append(text)
         metadatas.append(pacote)
+    
     return texts, metadatas
 
 def create_knowledge_base(texts, metadatas):
