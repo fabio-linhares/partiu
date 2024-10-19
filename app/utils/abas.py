@@ -37,6 +37,9 @@ from utils.mongo2 import load_database_config
 from utils.scraper import run_scraper
 from utils.security import login_user
 
+from utils.llm import setup_retrieval_qa, create_knowledge_base, prepare_travel_data
+
+
 
 #################################################################################
 ############################       SECRETS.TOML       ###########################
@@ -142,10 +145,53 @@ def exibir_respostas(selected_section, menu_dados):
         st.write("Por favor, selecione uma seção no menu lateral.")
 
 
-
 def exibir_pacotes_viagem():
     st.markdown("#### Pacotes de Viagem")
     st.write("Aqui você encontra os pacotes de viagem mais recentes que 'raspamos' da 'decolar.com'. Xiuuu! kkkkkk")
+
+    with st.expander("Preciso de ajuda para fugir!"):
+        search_query = st.text_input("Diga-me por que quer fugir que te indico o melhor destino, ou como não ser encontrado! kkkk")
+        if st.button("Buscar"):
+            if search_query:
+                try:
+                    st.write(f"Processando a consulta: {search_query}")
+                    texts, metadatas = prepare_travel_data(st.session_state.pacotes)
+                    st.write(f"Dados preparados. Número de pacotes: {len(texts)}")
+                    knowledge_base = create_knowledge_base(texts, metadatas)
+                    st.write("Base de conhecimento criada.")
+                    qa = setup_retrieval_qa(knowledge_base)
+                    st.write("Sistema de QA configurado.")
+
+                    # Criar o contexto a partir dos pacotes disponíveis
+                    pacotes_texto = "\n".join([
+                        f"{pacote['titulo']} - Preço: R$ {pacote['preco_atual']}, Duração: {pacote['duracao']}, Datas: {pacote['datas']}"
+                        for pacote in st.session_state.pacotes[:10]  # Limita para os 10 primeiros pacotes
+                    ])
+                    contexto = f"Pacotes disponíveis:\n{pacotes_texto}"
+
+                    # Configurar a consulta
+                    prompt = f"""Com base nas informações dos pacotes de viagem disponíveis e na consulta do usuário, recomende o melhor pacote de viagem. Considere o destino, preço, duração e datas ao fazer a recomendação.
+
+                    Consulta do usuário: {search_query}
+
+                    {contexto}
+
+                    Recomendação:"""
+
+                    # Executar o pipeline de QA
+                    resultado = qa({"query": prompt})
+                    
+                    st.write("Recomendação:")
+                    st.write(resultado['result'])
+                except IndexError:
+                    st.error("Desculpe, ocorreu um erro ao processar sua solicitação. Por favor, tente novamente com uma pergunta diferente.")
+                except Exception as e:
+                    st.error(f"Ocorreu um erro inesperado: {str(e)}")
+                    st.error(f"Tipo do erro: {type(e).__name__}")
+                    import traceback
+                    st.error(f"Traceback: {traceback.format_exc()}")
+            else:
+                st.warning("Por favor, insira uma consulta antes de buscar.")
 
     cols = st.columns(3)
                 
