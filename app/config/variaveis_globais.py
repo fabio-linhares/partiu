@@ -24,3 +24,5 @@ API_BASE_URL = "http://179.124.242.238:8000"
 url_decolar = "https://www.decolar.com/pacotes/viagens-baratas/pacotes-prontos"
 
 template_email = os.path.join(os.path.dirname(__file__), '../../data/templates/template_email.html')
+
+template_email_cadastro = os.path.join(os.path.dirname(__file__), '../../data/templates/template_email_cadastro.html')

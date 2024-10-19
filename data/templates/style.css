@@ -22,11 +22,11 @@ body {
 
 /* Cabeçalho */
 .header {
-    background: linear-gradient(90deg, #007BFF, #00BFFF);
+    background: linear-gradient(90deg, #28a745, #20c997);
     color: #fff;
     padding: 30px 20px;
     text-align: center;
-    border-bottom: 5px solid #0056b3;
+    border-bottom: 5px solid #218838;
 }
 
 .header h1 {
@@ -41,24 +41,10 @@ body {
     padding: 30px 20px;
 }
 
-.content img {
-    width: 100%;
-    height: auto;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
 .content p {
     font-size: 16px;
     margin-bottom: 20px;
-}
-
-.content h3 {
-    color: #007BFF;
-    font-size: 20px;
-    margin-top: 20px;
-    font-weight: 500;
+    color: #555;
 }
 
 .content ul {
@@ -79,7 +65,7 @@ body {
 
 .content ul li strong {
     font-weight: 500;
-    color: #007BFF;
+    color: #28a745;
 }
 
 /* Rodapé */

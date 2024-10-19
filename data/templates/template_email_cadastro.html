@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmação de Cadastro</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Confirmação de Cadastro</h1>
+        </div>
+        <div class="content">
+            <p>Olá, <strong>{{ first_name }} {{ last_name }}</strong>,</p>
+            <p>Obrigado por se cadastrar! Aqui estão os detalhes do seu cadastro:</p>
+            <ul>
+                <li><strong>Nome de usuário:</strong> {{ username }}</li>
+                <li><strong>E-mail:</strong> {{ email }}</li>
+                <li><strong>Nome Completo:</strong> {{ first_name }} {{ last_name }}</li>
+                <li><strong>Data de Nascimento:</strong> {{ birth_date }}</li>
+                <li><strong>Telefone:</strong> {{ phone }}</li>
+            </ul>
+            <p>Por favor, guarde este e-mail para referência futura. Caso tenha dúvidas ou precise de mais informações, estamos à disposição.</p>
+        </div>
+        <div class="footer">
+            <p>Equipe de Suporte<br>
+            Partiu Viagens<br>
+            {{ support_mail }} | {{ support_phone }}</p>
+        </div>
+    </div>
+</body>
+</html>
