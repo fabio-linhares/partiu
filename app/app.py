@@ -47,6 +47,8 @@ st.set_page_config(
 )
 
 from utils.render import render_main_image, render_tabs, render_alterar_senha_form
+from utils.abas import exibir_pacotes_viagem  # e outras funções necessárias
+from utils.llm import setup_retrieval_qa, create_knowledge_base, prepare_travel_data
 
 #################################################################################
 ############################       SECRETS.TOML       ###########################
