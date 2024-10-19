@@ -32,18 +32,18 @@ dev_data = get_user_data(database_name=config_vars['database_user'],
 menu_dados = get_sections_from_api(config_vars['database_main'], 
                                    config_vars['collections_menu'])
 
-
-
-
 if dev_data:
     support_mail_ = dev_data.get('email', config_vars['developer_email'])
     support_phone_ = dev_data.get('telefone', config_vars['developer_phone']) 
 
 
+
+
+
 def normalize_username(username):
-    # Remover acentos
+    # acentos
     username = unicodedata.normalize('NFKD', username).encode('ASCII', 'ignore').decode('ASCII')
-    # Converter para minúsculas e remover caracteres especiais
+    # converte para minúsculas e remove especiais
     username = re.sub(r'[^a-z0-9]', '', username.lower())
     return username
 
@@ -58,7 +58,7 @@ def render_cadastro_form():
             "confirm_password": "",
             "first_name": "",
             "last_name": "",
-            "birth_date": datetime.now(),
+            "birth_date": datetime.now().date(),
             "phone": ""
         }
 
@@ -73,7 +73,12 @@ def render_cadastro_form():
         with col2:
             first_name = st.text_input("Nome", key="form_data.first_name")
             last_name = st.text_input("Sobrenome", key="form_data.last_name")
-            birth_date = st.date_input("Data de nascimento", key="form_data.birth_date")
+            birth_date_str = st.text_input("Data de nascimento (dd/mm/aaaa)", key="form_data.birth_date_str")
+            try:
+                birth_date = datetime.strptime(birth_date_str, "%d/%m/%Y").date()
+            except ValueError:
+                birth_date = None
+                
             phone = st.text_input("Telefone", key="form_data.phone")
         
         submit_button = st.form_submit_button("Cadastrar")
@@ -84,7 +89,8 @@ def render_cadastro_form():
             elif raw_username != username:
                 st.error("Nome de usuário inválido. Use apenas letras minúsculas e números, sem acentos ou caracteres especiais.")
             else:
-                # Preparar dados para enviar à API
+
+                # envia para a rota
                 user_data = {
                     "username": username,
                     "email": email,
@@ -105,42 +111,44 @@ def render_cadastro_form():
                     }
                 }
                 
-                # Fazer a solicitação à API para criar o usuário
                 response = api_request("POST", "/register", data=user_data)
                 
                 if response.get("status") == "success":
                     st.success("Cadastro realizado com sucesso!")
+
+                    enviar_email_confirmacao_cadastro(user_data)
                     
-                    # Enviar email de confirmação
-                    email_content = f"""
-                    <h3>Cadastro realizado com sucesso!</h3>
-                    <p>Obrigado por se cadastrar. Aqui estão os seus dados:</p>
-                    <ul>
-                        <li>Nome de usuário: {username}</li>
-                        <li>E-mail: {email}</li>
-                        <li>Nome: {first_name} {last_name}</li>
-                        <li>Data de nascimento: {birth_date.strftime("%d/%m/%Y")}</li>
-                        <li>Telefone: {phone}</li>
-                    </ul>
-                    <p>Por favor, guarde este e-mail para referência futura.</p>
-                    """
-                    enviar_email(
-                        smtp_password=config_vars['apikey_sendgrid'],
-                        from_email=config_vars['mail_sender'],
-                        to_email=email,
-                        subject="Confirmação de Cadastro",
-                        html_content=email_content
-                    )
-                    
-                    # Limpar os campos do formulário
-                    for key in st.session_state.form_data:
-                        if key == "birth_date":
-                            st.session_state.form_data[key] = datetime.now()
-                        else:
-                            st.session_state.form_data[key] = ""
                 else:
                     st.error(f"Erro ao cadastrar: {response.get('detail', 'Erro desconhecido')}")
+
     
     if st.button("Fechar!"):
         st.session_state.show_cadastro = False
         st.rerun()
+
+
+def enviar_email_confirmacao_cadastro(user_data):
+    env = Environment(loader=FileSystemLoader(os.path.dirname(template_email_cadastro)))
+    template = env.get_template(os.path.basename(template_email_cadastro))
+
+    birth_date = user_data['profile']['birth_date']
+    formatted_birth_date = datetime.strptime(birth_date, "%Y-%m-%d").strftime("%d/%m/%Y") if birth_date else 'Não fornecido'
+    
+    email_content = template.render(
+        first_name=user_data['profile']['first_name'],
+        last_name=user_data['profile']['last_name'],
+        username=user_data['username'],
+        email=user_data['email'],
+        birth_date=formatted_birth_date, 
+        phone=user_data['profile']['phone'],
+        support_mail=support_mail_,
+        support_phone=support_phone_
+    )
+
+    enviar_email(
+        smtp_password=config_vars['apikey_sendgrid'],
+        from_email=config_vars['mail_sender'],
+        to_email=user_data['email'],
+        subject=f"{config_vars['app_title']}! Confirmação de Cadastro",
+        html_content=email_content
+    )
