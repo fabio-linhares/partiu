@@ -21,6 +21,7 @@ arquivo_de_resposta4 = os.path.join(os.path.dirname(__file__), '../../data/inter
 
 
 API_BASE_URL = "http://179.124.242.238:8000"
+OLLAMA_API_URL = "http://179.124.242.238:11434/api/generate"
 url_decolar = "https://www.decolar.com/pacotes/viagens-baratas/pacotes-prontos"
 
 template_email = os.path.join(os.path.dirname(__file__), '../../data/templates/template_email.html')
