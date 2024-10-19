@@ -20,7 +20,8 @@ from config.variaveis_globais import (
     arquivo_de_resposta3,
     arquivo_de_resposta4,
     arquivo_de_palavras,
-    template_email
+    template_email,
+    OLLAMA_API_URL
 )
 from utils.database import get_user_data
 from utils.frescuras import (
@@ -39,6 +40,8 @@ from utils.security import login_user
 
 from utils.llm import setup_retrieval_qa, create_knowledge_base, prepare_travel_data
 
+from utils.ollama import get_llama3_response
+from utils.format_resposta import extrair_resposta
 
 
 #################################################################################
@@ -145,46 +148,48 @@ def exibir_respostas(selected_section, menu_dados):
         st.write("Por favor, selecione uma seção no menu lateral.")
 
 
+
 def exibir_pacotes_viagem():
     st.markdown("#### Pacotes de Viagem")
     st.write("Aqui você encontra os pacotes de viagem mais recentes que 'raspamos' da 'decolar.com'. Xiuuu! kkkkkk")
 
-    with st.expander("Preciso de ajuda para fugir!"):
-        search_query = st.text_input("Diga-me por que quer fugir que te indico o melhor destino, ou como não ser encontrado! kkkk")
+    with st.expander("Preciso de ajuda para escolher um pacote!"):
+        search_query = st.text_input("Diga-me o que você está procurando em uma viagem e eu te ajudarei a escolher o melhor pacote!")
         if st.button("Buscar"):
             if search_query:
                 try:
                     st.write(f"Processando a consulta: {search_query}")
-                    texts, metadatas = prepare_travel_data(st.session_state.pacotes)
-                    st.write(f"Dados preparados. Número de pacotes: {len(texts)}")
-                    knowledge_base = create_knowledge_base(texts, metadatas)
-                    st.write("Base de conhecimento criada.")
-                    qa = setup_retrieval_qa(knowledge_base)
-                    st.write("Sistema de QA configurado.")
-
-                    # Criar o contexto a partir dos pacotes disponíveis
+                    
+                    # contexto a partir dos pacotes disponíveis
                     pacotes_texto = "\n".join([
                         f"{pacote['titulo']} - Preço: R$ {pacote['preco_atual']}, Duração: {pacote['duracao']}, Datas: {pacote['datas']}"
-                        for pacote in st.session_state.pacotes[:10]  # Limita para os 10 primeiros pacotes
+                        for pacote in st.session_state.pacotes[:1000]  #top 1000 pacotes
                     ])
                     contexto = f"Pacotes disponíveis:\n{pacotes_texto}"
 
-                    # Configurar a consulta
-                    prompt = f"""Com base nas informações dos pacotes de viagem disponíveis e na consulta do usuário, recomende o melhor pacote de viagem. Considere o destino, preço, duração e datas ao fazer a recomendação.
 
-                    Consulta do usuário: {search_query}
+                    prompt = f"""Considere que dispomos destas opções de pacotes de viagens: {contexto}; Considere isto: {search_query}; Utilize seu conhecimento para recomendar o melhor pacote ou destino de viagem."""
+                    #print(prompt)
 
-                    {contexto}
+                    #resultado = get_llama3_response(prompt)
 
-                    Recomendação:"""
+                    headers = {'Content-Type': 'application/json'}
 
-                    # Executar o pipeline de QA
-                    resultado = qa({"query": prompt})
+                    # Criando o dicionário com o modelo e o prompt
+                    payload = {
+                        "model": "llama3.2:1b",
+                        "prompt": prompt
+                    }
+
+                    #print(payload)
+
+                    resultado = requests.post(OLLAMA_API_URL, json=payload, headers=headers)
                     
+                    resposta_concatenada = extrair_resposta(resultado.text)
+
                     st.write("Recomendação:")
-                    st.write(resultado['result'])
-                except IndexError:
-                    st.error("Desculpe, ocorreu um erro ao processar sua solicitação. Por favor, tente novamente com uma pergunta diferente.")
+                    st.write(resposta_concatenada)
+
                 except Exception as e:
                     st.error(f"Ocorreu um erro inesperado: {str(e)}")
                     st.error(f"Tipo do erro: {type(e).__name__}")
@@ -252,6 +257,13 @@ def exibir_pacotes_viagem():
                             st.error("E-mail do usuário não encontrado. Por favor, faça login novamente.")
                 else:
                     st.info("Faça login para selecionar este pacote", icon="ℹ️")
+
+
+
+
+
+
+
 
 def criar_conteudo_email(pacote, user_data):
 
