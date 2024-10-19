@@ -141,6 +141,6 @@ def render_cadastro_form():
                 else:
                     st.error(f"Erro ao cadastrar: {response.get('detail', 'Erro desconhecido')}")
     
-    if st.button("Não quero me cadastrar!"):
+    if st.button("Fechar!"):
         st.session_state.show_cadastro = False
         st.rerun()
