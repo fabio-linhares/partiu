@@ -21,7 +21,8 @@ from config.variaveis_globais import (
     arquivo_de_resposta4,
     arquivo_de_palavras,
     template_email,
-    OLLAMA_API_URL
+    OLLAMA_API_URL,
+    GOOGLE_API_URL
 )
 from utils.database import get_user_data
 from utils.frescuras import (
@@ -41,7 +42,7 @@ from utils.security import login_user
 from utils.llm import setup_retrieval_qa, create_knowledge_base, prepare_travel_data
 
 from utils.ollama import get_llama3_response
-from utils.format_resposta import extrair_resposta
+from utils.format_resposta import extrair_resposta, extrair_resposta_gemmini
 
 
 #################################################################################
@@ -158,7 +159,7 @@ def exibir_pacotes_viagem():
         if st.button("Buscar"):
             if search_query:
                 try:
-                    st.write(f"Processando a consulta: {search_query}")
+                    #st.write(f"Processando a consulta: {search_query}")
                     
                     # contexto a partir dos pacotes disponíveis
                     pacotes_texto = "\n".join([
@@ -167,28 +168,54 @@ def exibir_pacotes_viagem():
                     ])
                     contexto = f"Pacotes disponíveis:\n{pacotes_texto}"
 
-
                     prompt = f"""Considere que dispomos destas opções de pacotes de viagens: {contexto}; Considere isto: {search_query}; Utilize seu conhecimento para recomendar o melhor pacote ou destino de viagem."""
-                    #print(prompt)
-
+                    
                     #resultado = get_llama3_response(prompt)
 
-                    headers = {'Content-Type': 'application/json'}
+                    # header do ollama
+                    #headers = {'Content-Type': 'application/json'}
 
-                    # Criando o dicionário com o modelo e o prompt
+                    # payload do ollama e o prompt
+                    # payload = {
+                    #     "model": "llama3.2:1b",
+                    #     "prompt": prompt
+                    # }
+
+                    #resultado = requests.post(OLLAMA_API_URL, json=payload, headers=headers)
+
+                    # payload da API do Google
                     payload = {
-                        "model": "llama3.2:1b",
-                        "prompt": prompt
+                        "contents": [
+                            {
+                                "parts": [
+                                    {
+                                        "text": prompt
+                                    }
+                                ]
+                            }
+                        ]
                     }
 
-                    #print(payload)
+                    # Cabeçalhos da requisição
+                    headers = {'Content-Type': 'application/json'}
 
-                    resultado = requests.post(OLLAMA_API_URL, json=payload, headers=headers)
-                    
-                    resposta_concatenada = extrair_resposta(resultado.text)
+                    # Enviando a requisição POST
+                    response = requests.post(GOOGLE_API_URL, json=payload, headers=headers)
 
-                    st.write("Recomendação:")
-                    st.write(resposta_concatenada)
+                    # Verificando a resposta
+                    if response.status_code == 200:
+                        resultado = response.json()
+                        print(resultado)
+                        resposta_concatenada = extrair_resposta_gemmini(resultado)  # Passa o dicionário diretamente
+                        #st.write("Recomendação:")
+                        st.write(resposta_concatenada)
+                    else:
+                        print(f"Erro: {response.status_code} - {response.text}")
+
+                    # resposta_concatenada = extrair_resposta(resultado.text)
+
+                    # st.write("Recomendação:")
+                    # st.write(resposta_concatenada)
 
                 except Exception as e:
                     st.error(f"Ocorreu um erro inesperado: {str(e)}")
