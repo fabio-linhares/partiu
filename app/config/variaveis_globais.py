@@ -1,4 +1,11 @@
 import os
+from utils.globals import create_global_variables
+
+#################################################################################
+############################       SECRETS.TOML       ###########################
+#################################################################################
+
+
 
 streamlit_secret = os.path.join(os.path.dirname(__file__), '../../.streamlit/secrets.toml')
 
@@ -19,9 +26,13 @@ arquivo_de_resposta2 = os.path.join(os.path.dirname(__file__), '../../data/inter
 arquivo_de_resposta3 = os.path.join(os.path.dirname(__file__), '../../data/interim/answers/resposta3.txt')
 arquivo_de_resposta4 = os.path.join(os.path.dirname(__file__), '../../data/interim/answers/resposta4.txt')
 
+config_vars = create_global_variables(streamlit_secret)
 
 API_BASE_URL = "http://179.124.242.238:8000"
 OLLAMA_API_URL = "http://179.124.242.238:11434/api/generate"
+GOOGLE_API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={config_vars['apikey_gemini']}"
+
+
 url_decolar = "https://www.decolar.com/pacotes/viagens-baratas/pacotes-prontos"
 
 template_email = os.path.join(os.path.dirname(__file__), '../../data/templates/template_email.html')
