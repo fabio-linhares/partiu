@@ -112,15 +112,15 @@ def exibir_respostas(selected_section, menu_dados):
         for question in selected_questions:
             st.write(question)
 
-        if selected_section == "Configuração do Ambiente de Desenvolvimento":
+        if selected_section == "TP2 - Configuração do Ambiente de Desenvolvimento":
             texto_em_markdown = read_markdown_file(arquivo_de_resposta1)
             st.markdown(texto_em_markdown)
 
-        elif selected_section == "Implementação de Interface de Usuário Dinâmica":
+        elif selected_section == "TP2 - Implementação de Interface de Usuário Dinâmica":
             texto_em_markdown = read_markdown_file(arquivo_de_resposta2)
             st.markdown(texto_em_markdown)
 
-        elif selected_section == "Extração de Conteúdo da Web para Alimentar a Aplicação":
+        elif selected_section == "TP2 - Extração de Conteúdo da Web para Alimentar a Aplicação":
             texto_em_markdown = read_markdown_file(arquivo_de_resposta3)
             st.markdown(texto_em_markdown)
             
@@ -135,14 +135,14 @@ def exibir_respostas(selected_section, menu_dados):
             with st.expander("Exibir dados do arquivo JSON"):
                 st.json(dados)  
 
-        elif selected_section == "Cache e Estado de Sessão":
+        elif selected_section == "TP2 - Cache e Estado de Sessão":
             texto_em_markdown = read_markdown_file(arquivo_de_resposta4)
             st.markdown(texto_em_markdown)
 
-        elif selected_section == "Serviço de Upload e Download de Arquivos":
+        elif selected_section == "TP2 - Serviço de Upload e Download de Arquivos":
             st.markdown(f"###### Foi implementado no APP")
 
-        elif selected_section == "Finalização do Project Charter e Data Summary Report":
+        elif selected_section == "TP2 - Finalização do Project Charter e Data Summary Report":
             pass
 
     else:
