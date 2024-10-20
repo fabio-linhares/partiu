@@ -8,7 +8,7 @@ def extrair_resposta(texto):
             dados = json.loads(linha)
             resposta_concatenada += dados.get('response', '')
         except json.JSONDecodeError:
-            continue  # Ignora linhas que não são JSON válido
+            continue  
     return resposta_concatenada.strip()
 
 def extrair_resposta_gemmini(resultado):
@@ -23,7 +23,6 @@ def extrair_resposta_gemmini(resultado):
     """
     resposta_concatenada = ''
 
-    # Verifica se a estrutura contém 'candidates' e navega até 'text'
     if 'candidates' in resultado:
         for candidate in resultado['candidates']:
             content = candidate.get('content', {})
