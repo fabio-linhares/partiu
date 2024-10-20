@@ -11,6 +11,7 @@ from utils.globals import create_global_variables
 from jinja2 import Environment, FileSystemLoader
 import os
 
+
 from config.variaveis_globais import (
     streamlit_secret,
     template_email_cadastro
@@ -152,3 +153,68 @@ def enviar_email_confirmacao_cadastro(user_data):
         subject=f"{config_vars['app_title']}! Confirmação de Cadastro",
         html_content=email_content
     )
+
+
+
+def render_add_question_form():
+    st.markdown("##### Adicionar Nova Questão")
+
+    if 'question_form_data' not in st.session_state:
+        st.session_state.question_form_data = {
+            "tp": "TP1",
+            "section": "",
+            "question": ""
+        }
+
+    with st.form("add_question_form"):
+        col1, col2 = st.columns([1, 3])
+        
+        with col1:
+            tp = st.selectbox("TP", ["TP1", "TP2", "TP3", "TP4", "TP5"], key="question_form_data.tp")
+        
+        with col2:
+            section_suffix = st.text_input("Seção", key="question_form_data.section")
+        
+        question = st.text_area("Questão", key="question_form_data.question")
+        
+        submit_button = st.form_submit_button("Adicionar Questão")
+        
+        if submit_button:
+            full_section = f"{tp} - {section_suffix}"
+            
+            if not section_suffix:
+                st.error("A seção não pode estar vazia.")
+            elif not question:
+                st.error("A questão não pode estar vazia.")
+            else:
+                # Prepara os dados para enviar à API
+                question_data = {
+                    "section": full_section,
+                    "questions": [question]
+                }
+                
+                # Envia para a rota da API
+                response = api_request("POST", "/add_question", data=question_data)
+                
+                if response.get("status") == "success":
+                    st.success("Questão adicionada com sucesso!")
+                    # Limpa o formulário
+                    st.session_state.question_form_data = {
+                        "tp": tp,
+                        "section": "",
+                        "question": ""
+                    }
+                else:
+                    st.error(f"Erro ao adicionar questão: {response.get('detail', 'Erro desconhecido')}")
+
+    if st.button("Fechar"):
+        st.session_state.show_add_question = False
+        st.rerun()
+
+# No seu código principal
+if __name__ == "__main__":
+    if st.button("Adicionar Nova Questão"):
+        st.session_state.show_add_question = True
+
+    if st.session_state.get('show_add_question', False):
+        render_add_question_form()
