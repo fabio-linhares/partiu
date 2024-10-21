@@ -31,3 +31,17 @@ def extrair_resposta_gemmini(resultado):
                 resposta_concatenada += part.get('text', '')
 
     return resposta_concatenada.strip()
+
+def extrair_resposta_gpt(resultado):
+    """
+    Extrai o conteúdo gerado pelo GPT da resposta JSON retornada pela API.
+
+    Parâmetros:
+    - resultado (dict): O dicionário JSON retornado pela API.
+
+    Retorna:
+    - str: O texto extraído do dicionário.
+    """
+    if 'choices' in resultado and resultado['choices']:
+        return resultado['choices'][0]['message']['content'].strip()
+    return "Nenhuma resposta gerada pela API."
