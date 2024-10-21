@@ -487,24 +487,6 @@ async def get_total_users():
         if 'client' in locals():
             client.close()
 
-@app.get("/total_pacotes")
-async def get_total_pacotes():
-    try:
-        client = MongoClient(get_connection_string())
-        db = client[config_vars['database_main']]
-        pacotes_collection = db[config_vars['collections_pacotes']]
-        total_pacotes = pacotes_collection.count_documents({})
-        return {"total_pacotes": total_pacotes}
-    except Exception as e:
-        logger.error(f"Error getting total pacotes: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-    finally:
-        if 'client' in locals():
-            client.close()
-
-
-
-
 @app.get("/count_users")
 async def count_users():
     try:
@@ -518,6 +500,24 @@ async def count_users():
         return {"total_users": total_users}
     except Exception as e:
         logger.error(f"Error counting users: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if 'client' in locals():
+            client.close()
+
+@app.get("/count_pacotes")
+async def count_pacotes():
+    try:
+        connection_string = get_connection_string()
+        client = MongoClient(connection_string)
+        db = client[config_vars['database_main']]
+        pacotes_collection = db[config_vars['collections_pacotes_viagem']]
+        
+        total_pacotes = pacotes_collection.count_documents({})
+        
+        return {"total_pacotes": total_pacotes}
+    except Exception as e:
+        logger.error(f"Error counting pacotes: {e}")
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         if 'client' in locals():
