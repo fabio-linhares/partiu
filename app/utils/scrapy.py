@@ -19,14 +19,12 @@ def get_pacotes_viagem():
         response.raise_for_status()
         pacotes = response.json()['documents']
         
-        # ordena pela data e hora de extração mais recente
         pacotes_ordenados = sorted(
             pacotes,
             key=lambda x: datetime.strptime(f"{x['data_extracao']} {x['hora_extracao']}", "%Y-%m-%d %H:%M:%S"),
             reverse=True
         )
         
-        # Agrupa por título e seleciona o mais recente de cada
         pacotes_recentes = {}
         for pacote in pacotes_ordenados:
             titulo = pacote['titulo']
