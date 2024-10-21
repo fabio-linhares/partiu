@@ -79,7 +79,9 @@ class User(BaseModel):
     profile: Profile
     settings: Settings
 
-
+class QuestionData(BaseModel):
+    section: str
+    questions: List[str]
 
 class Document(BaseModel):
     data: dict
@@ -434,6 +436,57 @@ async def register_user(user: User):
     except Exception as e:
         logger.error(f"Error registering user: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
+
+
+@app.post("/add_question")
+async def add_question(question_data: QuestionData):
+    """
+    Adiciona uma nova questão à coleção de questões.
+
+    Args:
+        question_data (QuestionData): Dados da questão a serem adicionados.
+
+    Returns:
+        dict: Status da operação e ID do documento criado.
+
+    Raises:
+        HTTPException: Se ocorrer um erro durante a criação do documento.
+    """
+    try:
+        connection_string = get_connection_string()
+        client = MongoClient(connection_string)
+        db = client[config_vars['database_main']]
+        questions_collection = db[config_vars['collections_questions']]
+
+        question_document = question_data.dict()
+
+        result = questions_collection.insert_one(question_document)
+        return {"status": "success", "id": str(result.inserted_id)}
+    except Exception as e:
+        logger.error(f"Error adding question: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if 'client' in locals():
+            client.close()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
