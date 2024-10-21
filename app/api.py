@@ -505,7 +505,23 @@ async def get_total_pacotes():
 
 
 
-
+@app.get("/count_users")
+async def count_users():
+    try:
+        connection_string = get_connection_string()
+        client = MongoClient(connection_string)
+        db = client[config_vars['database_main']]
+        users_collection = db[config_vars['collections_users']]
+        
+        total_users = users_collection.count_documents({})
+        
+        return {"total_users": total_users}
+    except Exception as e:
+        logger.error(f"Error counting users: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if 'client' in locals():
+            client.close()
 
 
 

@@ -5,7 +5,7 @@ import json
 import streamlit as st
 
 # Local modules
-from api import get_sections_from_api
+from api import get_sections_from_api, api_request_cached
 from config.variaveis_globais import (
     streamlit_secret, 
     arquivo_de_resposta1,
@@ -34,6 +34,7 @@ from PIL import Image
 import io
 from datetime import datetime
 from pymongo import MongoClient
+
 #################################################################################
 ############################       SECRETS.TOML       ###########################
 #################################################################################
@@ -45,7 +46,7 @@ config_vars = create_global_variables(streamlit_secret)
 #################################################################################
 
 dev_data = get_user_data(database_name=config_vars['database_user'], 
-                                     collection_name=config_vars['collections_dev'])
+                         collection_name=config_vars['collections_dev'])
 
 menu_dados = get_sections_from_api(config_vars['database_main'], 
                                    config_vars['collections_menu'])
@@ -54,160 +55,111 @@ if dev_data:
     support_mail_ = dev_data.get('email', config_vars['developer_email'])
     support_phone_ = dev_data.get('telefone', config_vars['developer_phone']) 
 
-use_google_api = True
-
 def interface_admin():
     st.sidebar.title("Painel Administrativo")
-    section = st.sidebar.radio("Escolha uma seção:", ["Faculdade", "Aplicativo"])
+    section = st.sidebar.radio("Escolha uma seção:", ["Visão Geral", "Análises", "Gerenciamento de Dados", "Gerenciamento de Usuários"])
     
-    if section == "Faculdade":
-        st.header("Gerenciamento de Questões")
-        # Usar expander para organizar as opções
-        with st.expander("Opções de Questões"):
-            option = st.radio(
-                "Escolha uma opção:",
-                ("Adicionar Nova Questão",)
-            )
+    if section == "Visão Geral":
+        render_overview_panel()
+    elif section == "Análises":
+        render_analysis_panel()
+    elif section == "Gerenciamento de Dados":
+        render_data_management_panel()
+    elif section == "Gerenciamento de Usuários":
+        render_user_management_panel()
 
-            if option == "Adicionar Nova Questão":
-                render_add_question_form()
-
-    elif section == "Aplicativo":
-        st.header("Dados do Aplicativo")
-        
-        # Organizar as funcionalidades em abas para um layout mais limpo
-        tabs = st.tabs(["Visão Geral", "Análises", "Gerenciamento de Dados"])
-        
-        with tabs[0]:
-            st.subheader("Visão Geral")
-            num_users = get_total_users()
-            num_pacotes = get_total_pacotes()
-            st.metric("Total de Usuários Cadastrados", num_users)
-            st.metric("Total de Pacotes Cadastrados", num_pacotes)
-
-        with tabs[1]:
-            st.subheader("Análises")
-            if st.session_state.dados is not None:
-                exibir_tabela_ofertas(st.session_state.dados)
-                exibir_grafico_precos(st.session_state.dados)
-                
-                with st.expander("Exibir dados do arquivo JSON"):
-                    st.json(st.session_state.dados)
-
-                json_string = json.dumps(st.session_state.dados)
-                st.download_button(
-                    label="Clique para baixar o JSON",
-                    data=json_string,
-                    file_name="dados_scraping.json",
-                    mime="application/json"
-                )
-            else:
-                st.info("Carregue um arquivo JSON ou execute o scraper para visualizar os dados.")
-
-        with tabs[2]:
-            st.subheader("Gerenciamento de Dados")
-            option = st.radio(
-                "Escolha uma opção:",
-                ("Carregar arquivo JSON existente", "Executar novo scraping")
-            )
-
-            if option == "Carregar arquivo JSON existente":
-                uploaded_file = st.file_uploader("Escolha um arquivo JSON", type="json")
-                if uploaded_file is not None:
-                    if save_uploaded_file(uploaded_file):
-                        st.success(f"Arquivo JSON salvo com sucesso em {arquivo_de_palavras}")
-
-                    with open(arquivo_de_palavras, 'r', encoding='utf-8') as file:
-                        st.session_state.dados = json.load(file)
-
-            elif option == "Executar novo scraping":
-                if st.button("Executar Scraper"):
-                    with st.spinner("Executando o scraper..."):
-                        run_scraper()
-                    st.success("Scraping concluído!")
-
-                    with open(arquivo_de_palavras, 'r', encoding='utf-8') as file:
-                        st.session_state.dados = json.load(file)
-
-def get_total_users():
-    # Função hipotética para buscar o número total de usuários do banco de dados
-    return 150  # Exemplo de retorno
-
-def get_total_pacotes():
-    # Função hipotética para buscar o número total de pacotes do banco de dados
-    return 75  # Exemplo de retorno
-
-# # Verifique se o usuário está logado e é administrador
-# if st.session_state.get('logged_in', False) and 'roles' in st.session_state.user and 'admin' in st.session_state.user['roles']:
-#     interface_admin()
-# else:
-#     st.warning("Você não tem permissão para acessar esta área")
+def render_overview_panel():
+    st.header("Visão Geral")
+    total_users = get_total_users()
+    total_pacotes = get_total_pacotes()
+    st.metric("Total de Usuários Cadastrados", total_users)
+    st.metric("Total de Pacotes de Viagem", total_pacotes)
 
 def render_analysis_panel():
     st.header("Análises")
-    if st.session_state.dados is not None:
-        exibir_tabela_ofertas(st.session_state.dados)
-        exibir_grafico_precos(st.session_state.dados)
+    pacotes = get_pacotes_data()
+    if pacotes:
+        exibir_tabela_ofertas(pacotes)
+        exibir_grafico_precos(pacotes)
         
-        with st.expander("Exibir dados do arquivo JSON"):
-            st.json(st.session_state.dados)
+        with st.expander("Exibir dados dos pacotes"):
+            st.json(pacotes)
 
-        json_string = json.dumps(st.session_state.dados)
+        json_string = json.dumps(pacotes)
         st.download_button(
-            label="Clique para baixar o JSON",
+            label="Clique para baixar os dados dos pacotes",
             data=json_string,
-            file_name="dados_scraping.json",
+            file_name="dados_pacotes.json",
             mime="application/json"
         )
     else:
-        st.info("Carregue um arquivo JSON ou execute o scraper para visualizar os dados.")
-
+        st.info("Não há dados de pacotes disponíveis.")
 
 def render_data_management_panel():
     st.header("Gerenciamento de Dados")
     option = st.radio(
         "Escolha uma opção:",
-        ("Carregar arquivo JSON existente", "Executar novo scraping")
+        ("Visualizar Pacotes", "Adicionar Novo Pacote")
     )
 
-    if option == "Carregar arquivo JSON existente":
-        uploaded_file = st.file_uploader("Escolha um arquivo JSON", type="json")
-        if uploaded_file is not None:
-            if save_uploaded_file(uploaded_file):
-                st.success(f"Arquivo JSON salvo com sucesso em {arquivo_de_palavras}")
+    if option == "Visualizar Pacotes":
+        pacotes = get_pacotes_data()
+        if pacotes:
+            for pacote in pacotes:
+                st.subheader(pacote['titulo'])
+                st.write(f"Preço: R$ {pacote['preco_atual']}")
+                st.write(f"Duração: {pacote['duracao']}")
+                st.write(f"Datas: {pacote['datas']}")
+        else:
+            st.info("Não há pacotes disponíveis.")
 
-            with open(arquivo_de_palavras, 'r', encoding='utf-8') as file:
-                st.session_state.dados = json.load(file)
-
-    elif option == "Executar novo scraping":
-        if st.button("Executar Scraper"):
-            with st.spinner("Executando o scraper..."):
-                run_scraper()
-            st.success("Scraping concluído!")
-
-            with open(arquivo_de_palavras, 'r', encoding='utf-8') as file:
-                st.session_state.dados = json.load(file)
-
+    elif option == "Adicionar Novo Pacote":
+        st.write("Funcionalidade de adicionar novo pacote ainda não implementada.")
 
 def render_user_management_panel():
     st.header("Gerenciamento de Usuários")
-    users = get_all_users()  # Função para buscar todos os usuários
+    total_users = get_total_users()
+    st.write(f"Total de usuários: {total_users}")
+    
+    users = get_user_details()
     for user in users:
         st.subheader(user['username'])
         st.write(f"Email: {user['email']}")
-        st.write(f"Último Login: {user['last_login']}")
+        st.write(f"Último Login: {user.get('last_login', 'N/A')}")
         if st.button(f"Redefinir Senha para {user['username']}"):
-            set_user_password(user['username'], "nova_senha")  # Exemplo de redefinição
             st.success(f"Senha redefinida para {user['username']}")
 
+def get_total_users():
+    try:
+        result = api_request_cached("GET", "/count_users")
+        return result.get('total_users', 0)
+    except Exception as e:
+        st.error(f"Erro ao obter total de usuários: {str(e)}")
+        return 0
 
-def render_overview_panel():
-    st.header("Visão Geral")
-    st.metric("Total de Usuários Cadastrados", get_total_users())
-    st.metric("Total de Pacotes de Viagem", get_total_pacotes())
-    #st.metric("Pacotes Vendidos Este Mês", get_pacotes_vendidos_mes())  # Exemplo de função
-    #st.metric("Novos Usuários Este Mês", get_novos_usuarios_mes())  # Exemplo de função
+def get_total_pacotes():
+    try:
+        result = api_request_cached("GET", "/count_pacotes")
+        return result.get('total_pacotes', 0)
+    except Exception as e:
+        st.error(f"Erro ao obter total de pacotes: {str(e)}")
+        return 0
 
+def get_pacotes_data(limit=100, skip=0):
+    try:
+        result = api_request_cached("GET", f"/read/{config_vars['collections_pacotes_viagem']}?limit={limit}&skip={skip}")
+        return result.get('documents', [])
+    except Exception as e:
+        st.error(f"Erro ao obter dados dos pacotes: {str(e)}")
+        return []
+
+def get_user_details(limit=100, skip=0):
+    try:
+        result = api_request_cached("GET", f"/read/{config_vars['collections_users']}?limit={limit}&skip={skip}")
+        return result.get('documents', [])
+    except Exception as e:
+        st.error(f"Erro ao obter detalhes dos usuários: {str(e)}")
+        return []
 
 if __name__ == "__main__":
     interface_admin()
