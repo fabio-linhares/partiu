@@ -22,8 +22,10 @@ from config.variaveis_globais import (
     arquivo_de_palavras,
     template_email,
     OLLAMA_API_URL,
-    GOOGLE_API_URL
+    GOOGLE_API_URL,
+    GPT3_API_URL
 )
+from utils.cadastro import render_add_question_form
 from utils.database import get_user_data
 from utils.frescuras import (
     gerar_nuvem_palavras,
@@ -39,10 +41,14 @@ from utils.mongo2 import load_database_config
 from utils.scraper import run_scraper
 from utils.security import login_user
 
-from utils.llm import setup_retrieval_qa, create_knowledge_base, prepare_travel_data
+from utils.llm import (setup_retrieval_qa, 
+                       create_knowledge_base, 
+                       prepare_travel_data)
 
 from utils.ollama import get_llama3_response
-from utils.format_resposta import extrair_resposta, extrair_resposta_gemmini
+from utils.format_resposta import (extrair_resposta, 
+                                   extrair_resposta_gemmini, 
+                                   extrair_resposta_gpt)
 
 #################################################################################
 ############################       SECRETS.TOML       ###########################
@@ -63,6 +69,8 @@ menu_dados = get_sections_from_api(config_vars['database_main'],
 if dev_data:
     support_mail_ = dev_data.get('email', config_vars['developer_email'])
     support_phone_ = dev_data.get('telefone', config_vars['developer_phone']) 
+
+use_google_api = True
 
 
 #################################################################################
@@ -161,6 +169,67 @@ def render_search_expander():
             if st.button("Buscar"):
                 process_search_query(search_query)
 
+# utiliza a API do Google e do GPT, alternando entre elas.
+def process_search_query_2(search_query):
+    global use_google_api  
+
+    if search_query:
+        try:
+            pacotes_texto = "\n".join([
+                f"{pacote['titulo']} - Preço: R$ {pacote['preco_atual']}, Duração: {pacote['duracao']}, Datas: {pacote['datas']}"
+                for pacote in st.session_state.pacotes[:1000]
+            ])
+            contexto = f"Pacotes disponíveis:\n{pacotes_texto}"
+            prompt = f"""Considere que dispomos destas opções de pacotes de viagens: {contexto}; Considere isto: {search_query}; Considerando essas informações, utilize seu conhecimento para recomendar os 3 melhores pacotes ou destinos de viagem. Justifique sua escolha. Apresente algum conhecimento que possa aumentar o interesse pela sua recomandação. Não seja repetitivo ou prolixo. Seja sucinto."""
+
+            headers = {'Content-Type': 'application/json'}
+
+            if use_google_api:
+                print("Usando a API do Google")
+                payload = {
+                    "contents": [{"parts": [{"text": prompt}]}]
+                }
+                response = requests.post(GOOGLE_API_URL, json=payload, headers=headers)
+
+                if response.status_code == 200:
+                    resultado = response.json()
+                    resposta_concatenada = extrair_resposta_gemmini(resultado)
+                    st.write(resposta_concatenada)
+                else:
+                    st.error(f"Erro na API Google: {response.status_code} - {response.text}")
+
+            else:
+                # Chamada à API do GPT
+                payload = {
+                    #"model": "gpt-3.5-turbo",  # Modelo apropriado
+                    "model_type": "text-davinci-002",
+                    "messages": [{"role": "user", "content": prompt}]
+                }
+                headers['Authorization'] = f"Bearer {config_vars['apikey_chatgpt']}"
+                response = requests.post(GPT3_API_URL, json=payload, headers=headers)
+
+                if response.status_code == 200:
+                    resultado = response.json()
+                    resposta_concatenada = extrair_resposta_gpt(resultado)
+                    st.write(resposta_concatenada)
+                elif response.status_code == 429:
+                    st.error("Erro 429: Limite de uso da API GPT excedido. Verifique seu plano e detalhes de faturamento.")
+                else:
+                    st.error(f"Erro na API GPT: {response.status_code} - {response.text}")
+
+            use_google_api = not use_google_api
+
+        except Exception as e:
+            st.error(f"Ocorreu um erro inesperado: {str(e)}")
+            st.error(f"Tipo do erro: {type(e).__name__}")
+            import traceback
+            st.error(f"Traceback: {traceback.format_exc()}")
+    else:
+        st.warning("Por favor, insira uma consulta antes de buscar.")
+
+
+
+# utiliza apenas a API do Google e do Ollama.
 def process_search_query(search_query):
     if search_query:
         try:
@@ -336,61 +405,68 @@ def exibir_area_restrita():
 ########################     OPERAÇÕES ADMINISTRATIVAS     ######################
 #################################################################################
             #
-            if 'dados' not in st.session_state:
-                st.session_state.dados = None
-
-            option = st.radio(
-                "Escolha uma opção:",
-                ("Carregar arquivo JSON existente", "Executar novo scraping")
-            )
-
-            if option == "Carregar arquivo JSON existente":
-                uploaded_file = st.file_uploader("Escolha um arquivo JSON", type="json")
-                if uploaded_file is not None:
-                    # Salva o arquivo uploadado no local desejado
-                    if save_uploaded_file(uploaded_file):
-                        st.success(f"Arquivo JSON salvo com sucesso em {arquivo_de_palavras}")
-                    # Carrega os dados do arquivo salvo
-                    with open(arquivo_de_palavras, 'r', encoding='utf-8') as file:
-                        st.session_state.dados = json.load(file)
-
-            if option == "Executar novo scraping":
-                if st.button("Executar Scraper"):
-                    with st.spinner("Executando o scraper..."):
-                        run_scraper()
-                    st.success("Scraping concluído!")
-                    # Carregando os dados do arquivo gerado pelo scraper
-                    with open(arquivo_de_palavras, 'r', encoding='utf-8') as file:
-                        st.session_state.dados = json.load(file)
-
-            # Exibição dos dados
-            if st.session_state.dados is not None:
-                st.markdown("##### Tabela de Ofertas:")
-                exibir_tabela_ofertas(st.session_state.dados)
-
-                st.markdown("##### Gráfico de Preços:")
-                exibir_grafico_precos(st.session_state.dados)
-
-                with st.expander("Exibir dados do arquivo JSON"):
-                    st.json(st.session_state.dados)
-
-                # Botão de download
-                with open(arquivo_de_palavras, 'r', encoding='utf-8') as file:
-                    json_string = file.read()
+            if st.session_state.get('logged_in', False) and 'roles' in st.session_state.user and 'admin' in st.session_state.user['roles']:
                 
-                st.download_button(
-                    label="Clique para baixar o JSON",
-                    data=json_string,
-                    file_name="dados_scraping.json",
-                    mime="application/json"
+                if 'dados' not in st.session_state:
+                    st.session_state.dados = None
+
+                option = st.radio(
+                    "Escolha uma opção:",
+                    ("Carregar arquivo JSON existente", "Executar novo scraping", "Adicionar Nova Questão")
                 )
 
+                if option == "Carregar arquivo JSON existente":
+                    uploaded_file = st.file_uploader("Escolha um arquivo JSON", type="json")
+                    if uploaded_file is not None:
+
+                        if save_uploaded_file(uploaded_file):
+                            st.success(f"Arquivo JSON salvo com sucesso em {arquivo_de_palavras}")
+
+                        with open(arquivo_de_palavras, 'r', encoding='utf-8') as file:
+                            st.session_state.dados = json.load(file)
+
+                elif option == "Executar novo scraping":
+                    if st.button("Executar Scraper"):
+                        with st.spinner("Executando o scraper..."):
+                            run_scraper()
+                        st.success("Scraping concluído!")
+
+                        with open(arquivo_de_palavras, 'r', encoding='utf-8') as file:
+                            st.session_state.dados = json.load(file)
+
+                elif option == "Adicionar Nova Questão":
+                    render_add_question_form()
+
+                if st.session_state.dados is not None:
+                    st.markdown("##### Tabela de Ofertas:")
+                    exibir_tabela_ofertas(st.session_state.dados)
+
+                    st.markdown("##### Gráfico de Preços:")
+                    exibir_grafico_precos(st.session_state.dados)
+
+                    with st.expander("Exibir dados do arquivo JSON"):
+                        st.json(st.session_state.dados)
+
+                    # Botão de download
+                    with open(arquivo_de_palavras, 'r', encoding='utf-8') as file:
+                        json_string = file.read()
+                    
+                    st.download_button(
+                        label="Clique para baixar o JSON",
+                        data=json_string,
+                        file_name="dados_scraping.json",
+                        mime="application/json"
+                    )
+
+                else:
+                    st.info("Carregue um arquivo JSON ou execute o scraper para visualizar os dados.")
+
             else:
-                st.info("Carregue um arquivo JSON ou execute o scraper para visualizar os dados.")
+                st.warning("Você não tem permissão para acessar esta área")
 
-        else:
-            st.warning("Você não tem permissão para acessar esta área")
-
+#################################################################################
+########################            TESTE DE API           ######################
+#################################################################################
 
 def exibir_api_teste():
     operation = st.selectbox("Select operation", ["Create", "Read", "Update", "Delete", "Get Main Collection"])
