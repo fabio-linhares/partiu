@@ -511,7 +511,7 @@ async def count_pacotes():
         connection_string = get_connection_string()
         client = MongoClient(connection_string)
         db = client[config_vars['database_main']]
-        pacotes_collection = db[config_vars['collections_pacotes_viagem']]
+        pacotes_collection = db[config_vars['collections_pacotes']]
         
         total_pacotes = pacotes_collection.count_documents({})
         
