@@ -31,7 +31,7 @@ config_vars = create_global_variables(streamlit_secret)
 API_BASE_URL = "http://179.124.242.238:8000"
 OLLAMA_API_URL = "http://179.124.242.238:11434/api/generate"
 GOOGLE_API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={config_vars['apikey_gemini']}"
-
+GPT3_API_URL = f"https://api.openai.com/v1/chat/completions"
 
 url_decolar = "https://www.decolar.com/pacotes/viagens-baratas/pacotes-prontos"
 
