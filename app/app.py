@@ -37,7 +37,6 @@ from utils.security import login_user
 
 from utils.title import get_random_title
 
-# Inicialização de variáveis globais e configuração do Streamlit
 config_vars = create_global_variables(streamlit_secret)
 
 st.set_page_config(
@@ -47,8 +46,6 @@ st.set_page_config(
 )
 
 from utils.render import render_main_image, render_tabs, render_alterar_senha_form
-from utils.abas import exibir_pacotes_viagem  # e outras funções necessárias
-from utils.llm import setup_retrieval_qa, create_knowledge_base, prepare_travel_data
 
 #################################################################################
 ############################       SECRETS.TOML       ###########################
@@ -187,16 +184,10 @@ else:
             st.session_state.show_alterar_senha = False
             st.rerun()
 
-    # Renderizar o formulário de alteração de senha
     if st.session_state.get('show_alterar_senha', False):
         render_alterar_senha_form()
 
-    # st.sidebar.write(f"Bem-vindo, {st.session_state.user['profile']['first_name']}!")    
-    # if st.sidebar.button("Logout", use_container_width=True):
-    #     st.session_state.logged_in = False
-    #     st.session_state.user = None
-    #     st.session_state.user_email = None
-    #     st.rerun()
+
 #################################################################################
 ############################     CONTEÚDO PRINCIPAL     #########################
 #################################################################################
@@ -225,7 +216,6 @@ if dev_data:
                 """.format(user_name, user_email),
                 unsafe_allow_html=True
 )
-
 
 else:
     st.error("Não foi possível recuperar os dados do usuário.")

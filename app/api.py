@@ -440,8 +440,6 @@ async def register_user(user: User):
 
 
 
-
-
 @app.post("/add_question")
 async def add_question(question_data: QuestionData):
     """
@@ -474,9 +472,35 @@ async def add_question(question_data: QuestionData):
             client.close()
 
 
+@app.get("/total_users")
+async def get_total_users():
+    try:
+        client = MongoClient(get_connection_string())
+        db = client[config_vars['database_main']]
+        users_collection = db[config_vars['collections_users']]
+        total_users = users_collection.count_documents({})
+        return {"total_users": total_users}
+    except Exception as e:
+        logger.error(f"Error getting total users: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if 'client' in locals():
+            client.close()
 
-
-
+@app.get("/total_pacotes")
+async def get_total_pacotes():
+    try:
+        client = MongoClient(get_connection_string())
+        db = client[config_vars['database_main']]
+        pacotes_collection = db[config_vars['collections_pacotes']]
+        total_pacotes = pacotes_collection.count_documents({})
+        return {"total_pacotes": total_pacotes}
+    except Exception as e:
+        logger.error(f"Error getting total pacotes: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if 'client' in locals():
+            client.close()
 
 
 

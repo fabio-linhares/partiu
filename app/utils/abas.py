@@ -25,29 +25,14 @@ from config.variaveis_globais import (
     GOOGLE_API_URL,
     GPT3_API_URL
 )
-from utils.cadastro import render_add_question_form
 from utils.database import get_user_data
-from utils.frescuras import (
-    gerar_nuvem_palavras,
-    get_tab_names,
-    exibir_grafico_precos,
-    exibir_tabela_ofertas
-)
+from utils.interface_admin import interface_admin
+from utils.frescuras import (gerar_nuvem_palavras,)
 from utils.globals import create_global_variables
-from utils.loadfile import save_uploaded_file
 from utils.mail import enviar_email
 from utils.markdown import read_markdown_file
-from utils.mongo2 import load_database_config
-from utils.scraper import run_scraper
 from utils.security import login_user
-
-from utils.llm import (setup_retrieval_qa, 
-                       create_knowledge_base, 
-                       prepare_travel_data)
-
-from utils.ollama import get_llama3_response
-from utils.format_resposta import (extrair_resposta, 
-                                   extrair_resposta_gemmini, 
+from utils.format_resposta import (extrair_resposta_gemmini, 
                                    extrair_resposta_gpt)
 
 #################################################################################
@@ -406,63 +391,69 @@ def exibir_area_restrita():
 #################################################################################
             #
             if st.session_state.get('logged_in', False) and 'roles' in st.session_state.user and 'admin' in st.session_state.user['roles']:
-                
+
+                # Inicialize o session_state se não estiver definido
                 if 'dados' not in st.session_state:
-                    st.session_state.dados = None
-
-                option = st.radio(
-                    "Escolha uma opção:",
-                    ("Carregar arquivo JSON existente", "Executar novo scraping", "Adicionar Nova Questão")
-                )
-
-                if option == "Carregar arquivo JSON existente":
-                    uploaded_file = st.file_uploader("Escolha um arquivo JSON", type="json")
-                    if uploaded_file is not None:
-
-                        if save_uploaded_file(uploaded_file):
-                            st.success(f"Arquivo JSON salvo com sucesso em {arquivo_de_palavras}")
-
-                        with open(arquivo_de_palavras, 'r', encoding='utf-8') as file:
-                            st.session_state.dados = json.load(file)
-
-                elif option == "Executar novo scraping":
-                    if st.button("Executar Scraper"):
-                        with st.spinner("Executando o scraper..."):
-                            run_scraper()
-                        st.success("Scraping concluído!")
-
-                        with open(arquivo_de_palavras, 'r', encoding='utf-8') as file:
-                            st.session_state.dados = json.load(file)
-
-                elif option == "Adicionar Nova Questão":
-                    render_add_question_form()
-
-                if st.session_state.dados is not None:
-                    st.markdown("##### Tabela de Ofertas:")
-                    exibir_tabela_ofertas(st.session_state.dados)
-
-                    st.markdown("##### Gráfico de Preços:")
-                    exibir_grafico_precos(st.session_state.dados)
-
-                    with st.expander("Exibir dados do arquivo JSON"):
-                        st.json(st.session_state.dados)
-
-                    # Botão de download
-                    with open(arquivo_de_palavras, 'r', encoding='utf-8') as file:
-                        json_string = file.read()
+                    st.session_state.dados = None  # ou uma lista vazia, se for mais apropriado []
                     
-                    st.download_button(
-                        label="Clique para baixar o JSON",
-                        data=json_string,
-                        file_name="dados_scraping.json",
-                        mime="application/json"
-                    )
+                interface_admin()
+                
+            #     if 'dados' not in st.session_state:
+            #         st.session_state.dados = None
 
-                else:
-                    st.info("Carregue um arquivo JSON ou execute o scraper para visualizar os dados.")
+            #     option = st.radio(
+            #         "Escolha uma opção:",
+            #         ("Carregar arquivo JSON existente", "Executar novo scraping", "Adicionar Nova Questão")
+            #     )
 
-            else:
-                st.warning("Você não tem permissão para acessar esta área")
+            #     if option == "Carregar arquivo JSON existente":
+            #         uploaded_file = st.file_uploader("Escolha um arquivo JSON", type="json")
+            #         if uploaded_file is not None:
+
+            #             if save_uploaded_file(uploaded_file):
+            #                 st.success(f"Arquivo JSON salvo com sucesso em {arquivo_de_palavras}")
+
+            #             with open(arquivo_de_palavras, 'r', encoding='utf-8') as file:
+            #                 st.session_state.dados = json.load(file)
+
+            #     elif option == "Executar novo scraping":
+            #         if st.button("Executar Scraper"):
+            #             with st.spinner("Executando o scraper..."):
+            #                 run_scraper()
+            #             st.success("Scraping concluído!")
+
+            #             with open(arquivo_de_palavras, 'r', encoding='utf-8') as file:
+            #                 st.session_state.dados = json.load(file)
+
+            #     elif option == "Adicionar Nova Questão":
+            #         render_add_question_form()
+
+            #     if st.session_state.dados is not None:
+            #         st.markdown("##### Tabela de Ofertas:")
+            #         exibir_tabela_ofertas(st.session_state.dados)
+
+            #         st.markdown("##### Gráfico de Preços:")
+            #         exibir_grafico_precos(st.session_state.dados)
+
+            #         with st.expander("Exibir dados do arquivo JSON"):
+            #             st.json(st.session_state.dados)
+
+            #         # Botão de download
+            #         with open(arquivo_de_palavras, 'r', encoding='utf-8') as file:
+            #             json_string = file.read()
+                    
+            #         st.download_button(
+            #             label="Clique para baixar o JSON",
+            #             data=json_string,
+            #             file_name="dados_scraping.json",
+            #             mime="application/json"
+            #         )
+
+            #     else:
+            #         st.info("Carregue um arquivo JSON ou execute o scraper para visualizar os dados.")
+
+            # else:
+            #     st.warning("Você não tem permissão para acessar esta área")
 
 #################################################################################
 ########################            TESTE DE API           ######################
