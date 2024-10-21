@@ -38,7 +38,9 @@ if dev_data:
     support_phone_ = dev_data.get('telefone', config_vars['developer_phone']) 
 
 
-
+#################################################################################
+############################        NOVO USUÀRIO      ###########################
+#################################################################################
 
 
 def normalize_username(username):
@@ -154,6 +156,9 @@ def enviar_email_confirmacao_cadastro(user_data):
         html_content=email_content
     )
 
+#################################################################################
+############################         QUESTÔES         ###########################
+#################################################################################
 
 
 def render_add_question_form():
@@ -161,18 +166,22 @@ def render_add_question_form():
 
     if 'question_form_data' not in st.session_state:
         st.session_state.question_form_data = {
-            "tp": "TP1",
+            "type": "TP",
+            "number": "1",
             "section": "",
             "question": ""
         }
 
     with st.form("add_question_form"):
-        col1, col2 = st.columns([1, 3])
+        col1, col2, col3 = st.columns([1, 1, 3])
         
         with col1:
-            tp = st.selectbox("TP", ["TP1", "TP2", "TP3", "TP4", "TP5"], key="question_form_data.tp")
+            tipo = st.selectbox("Tipo", ["TP", "AT"], key="question_form_data.type")
         
         with col2:
+            numero = st.text_input("Número", key="question_form_data.number")
+        
+        with col3:
             section_suffix = st.text_input("Seção", key="question_form_data.section")
         
         question = st.text_area("Questão", key="question_form_data.question")
@@ -180,7 +189,7 @@ def render_add_question_form():
         submit_button = st.form_submit_button("Adicionar Questão")
         
         if submit_button:
-            full_section = f"{tp} - {section_suffix}"
+            full_section = f"{tipo}{numero} - {section_suffix}"
             
             if not section_suffix:
                 st.error("A seção não pode estar vazia.")
@@ -200,7 +209,8 @@ def render_add_question_form():
                     st.success("Questão adicionada com sucesso!")
                     # Limpa o formulário
                     st.session_state.question_form_data = {
-                        "tp": tp,
+                        "type": tipo,
+                        "number": numero,
                         "section": "",
                         "question": ""
                     }
@@ -211,7 +221,8 @@ def render_add_question_form():
         st.session_state.show_add_question = False
         st.rerun()
 
-# No seu código principal
+#################################################################################
+
 if __name__ == "__main__":
     if st.button("Adicionar Nova Questão"):
         st.session_state.show_add_question = True
