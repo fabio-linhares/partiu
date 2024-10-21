@@ -147,7 +147,7 @@ def get_total_pacotes():
 
 def get_pacotes_data(limit=100, skip=0):
     try:
-        result = api_request_cached("GET", f"/read/{config_vars['collections_pacotes_viagem']}?limit={limit}&skip={skip}")
+        result = api_request_cached("GET", f"/read/{config_vars['collections_pacotes']}?limit={limit}&skip={skip}")
         return result.get('documents', [])
     except Exception as e:
         st.error(f"Erro ao obter dados dos pacotes: {str(e)}")
