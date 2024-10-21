@@ -1,0 +1,19 @@
+Nossa aplicação evoluiu para uma estrutura de múltiplas páginas, implementada através do uso de abas no Streamlit. Isso foi alcançado com as seguintes implementações:
+
+1. **Estrutura de Abas Principais e Secundárias:**
+   - Utilizamos as funções `criar_abas_principais()` e `criar_abas_secundarias()` para gerar uma interface de navegação intuitiva.
+   - As abas são dinamicamente criadas com base nas configurações definidas em `config_vars`.
+
+2. **Renderização de Conteúdo:**
+   - A função `adicionar_conteudo()` foi implementada para renderizar diferentes tipos de conteúdo de forma flexível.
+   - Isso permite a exibição de texto markdown, funções callable, e outros tipos de dados.
+
+3. **Organização do Conteúdo:**
+   - O conteúdo está organizado em seções como "O Projeto", "O Teste", e "O App", cada um com suas próprias subseções.
+   - Utilizamos expanders para organizar informações relacionadas, como os detalhes dos TPs.
+
+4. **Navegação Intuitiva:**
+   - A estrutura de abas permite aos usuários navegar facilmente entre diferentes seções da aplicação.
+   - Cada aba principal contém subabas relevantes, melhorando a organização e a experiência do usuário.
+
+Esta implementação melhora significativamente a usabilidade e a organização da nossa aplicação, permitindo uma navegação mais intuitiva e uma melhor apresentação das diferentes funcionalidades e informações do projeto.

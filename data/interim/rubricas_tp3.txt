@@ -1,0 +1,29 @@
+## Rubricas de Avaliação
+
+As rubricas a seguir foram estabelecidas para avaliar o desempenho e a qualidade do trabalho desenvolvido no TP3. Cada rubrica representa uma competência avançada essencial para o sucesso do projeto, refletindo habilidades técnicas mais complexas e preparação para integração de IA.
+
+### 1. Implementação de Aplicação Multi-página
+**Importância:** Demonstra capacidade de criar interfaces mais complexas e organizadas.
+
+### 2. Desenvolvimento de API com FastAPI
+**Importância:** Mostra habilidades em criar serviços web robustos e eficientes.
+
+### 3. Web Scraping Avançado
+**Importância:** Evidencia capacidade de extrair dados de fontes web mais complexas e dinâmicas.
+
+### 4. Preparação para Integração de IA
+**Importância:** Demonstra compreensão e planejamento para uso de tecnologias avançadas de IA.
+
+### 5. Atualização da Documentação
+**Importância:** Reflete a capacidade de manter a documentação atualizada em projetos em evolução.
+
+### 6. Otimização de Performance
+**Importância:** Mostra habilidades em melhorar a eficiência e a escalabilidade da aplicação.
+
+### 7. Integração de Novas Funcionalidades
+**Importância:** Avalia a capacidade de incorporar novos recursos de forma coesa à aplicação existente.
+
+### 8. Qualidade e Limpeza do Código
+**Importância:** Demonstra boas práticas de programação e facilita a manutenção futura.
+
+Cada uma dessas rubricas é fundamental para avaliar o progresso do projeto em direção a uma aplicação mais sofisticada e preparada para integrar tecnologias avançadas de IA, abrangendo desde o desenvolvimento técnico até a documentação e planejamento estratégico.

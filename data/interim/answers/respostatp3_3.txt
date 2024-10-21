@@ -1,0 +1,32 @@
+Implementamos uma API robusta usando FastAPI para gerenciar operações de backend e interações com o banco de dados. Principais características:
+
+1. **Estrutura da API:**
+   - Utilizamos FastAPI para criar endpoints RESTful.
+   - Implementamos operações CRUD (Create, Read, Update, Delete) para várias coleções.
+
+2. **Endpoints Principais:**
+   - `/create/{collection}`: Para inserir novos documentos em coleções específicas.
+   - `/read/{collection}`: Para ler documentos de coleções, com suporte a paginação.
+   - `/update/{collection}/{id}`: Para atualizar documentos existentes.
+   - `/delete/{collection}/{id}`: Para remover documentos.
+   - Endpoints específicos como `/count_users`, `/count_pacotes`, `/add_question` para operações customizadas.
+
+3. **Integração com MongoDB:**
+   - Utilizamos PyMongo para interagir com o banco de dados MongoDB.
+   - Implementamos funções como `get_database()`, `get_collection()` para gerenciar conexões e operações no banco.
+
+4. **Segurança e Autenticação:**
+   - Implementamos rotas para registro e login de usuários.
+   - Utilizamos bcrypt para hash de senhas, garantindo a segurança dos dados dos usuários.
+
+5. **Tratamento de Erros:**
+   - Implementamos tratamento de exceções robusto para lidar com erros de banco de dados e outras falhas.
+   - Utilizamos logging para registrar erros e facilitar o debugging.
+
+6. **Modelos de Dados:**
+   - Definimos modelos Pydantic (como `User`, `QuestionData`) para validação de dados de entrada.
+
+7. **Configuração Flexível:**
+   - Utilizamos variáveis de ambiente e configurações carregadas de arquivos externos para maior flexibilidade.
+
+Esta API fornece uma base sólida para as operações de backend da nossa aplicação, permitindo uma comunicação eficiente entre o frontend Streamlit e o banco de dados MongoDB, além de fornecer endpoints para funcionalidades específicas do nosso projeto.

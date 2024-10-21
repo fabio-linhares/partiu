@@ -1,7 +1,3 @@
-# Projeto de Ciência de Dados Aplicada: Teste de Performance 2 (TP2)
-
-As rubricas a seguir foram estabelecidas para avaliar o desempenho e a qualidade do trabalho desenvolvido no TP2. Cada rubrica representa uma competência essencial para o sucesso do projeto, refletindo as habilidades técnicas e de gestão necessárias para um cientista de dados eficaz.
-
 ## Rubricas de Avaliação
 
 1. **Configuração do Ambiente de Desenvolvimento**

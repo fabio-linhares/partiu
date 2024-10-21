@@ -1,5 +1,7 @@
 # Projeto de Ciência de Dados Aplicada: Teste de Performance 2 (TP2)
 
+## Visão Geral
+
 Nesta segunda etapa do projeto, nosso foco é evoluir significativamente a aplicação desenvolvida anteriormente. O objetivo é implementar funcionalidades mais avançadas, melhorar a interatividade e a eficiência da aplicação, além de integrar dados externos. As atividades propostas visam ampliar as capacidades técnicas e proporcionar uma experiência de usuário mais rica e dinâmica.
 
 ## Atividades Propostas

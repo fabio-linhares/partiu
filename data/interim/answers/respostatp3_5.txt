@@ -1,0 +1,35 @@
+Realizamos uma revisão abrangente e atualização da documentação do projeto para refletir as novas funcionalidades e melhorias implementadas no TP3. Principais pontos:
+
+1. **Atualização do Project Charter:**
+   - Revisamos os objetivos do projeto para incluir as novas funcionalidades de múltiplas páginas, web scraping avançado e integração de IA.
+   - Atualizamos o escopo do projeto para refletir a expansão das capacidades da aplicação.
+   - Revisamos a lista de stakeholders para incluir possíveis interessados nas novas funcionalidades de IA e análise de dados.
+
+2. **Expansão do Data Summary Report:**
+   - Incluímos detalhes sobre as novas fontes de dados, especialmente os dados extraídos via web scraping da Decolar.com.
+   - Documentamos a estrutura dos dados de pacotes de viagem e como eles são armazenados e utilizados na aplicação.
+   - Adicionamos informações sobre como os dados são processados e utilizados nos modelos de IA para recomendações.
+
+3. **Documentação da API:**
+   - Criamos uma documentação detalhada de todos os endpoints da API FastAPI, incluindo exemplos de uso e formatos de resposta.
+   - Incluímos informações sobre autenticação e segurança da API.
+
+4. **Guia de Configuração:**
+   - Atualizamos as instruções de configuração do ambiente, incluindo detalhes sobre como configurar as APIs de IA (Google e GPT-3).
+   - Documentamos o processo de configuração do MongoDB e outras dependências do projeto.
+
+5. **Manual do Usuário:**
+   - Criamos um guia passo a passo sobre como navegar pela nova interface de múltiplas páginas.
+   - Incluímos instruções sobre como utilizar o assistente de IA para recomendações de viagens.
+
+6. **Documentação Técnica:**
+   - Atualizamos a documentação do código, incluindo docstrings e comentários explicativos para as novas funcionalidades.
+   - Criamos diagramas de arquitetura para ilustrar como os diferentes componentes da aplicação se integram.
+
+7. **Plano de Testes:**
+   - Desenvolvemos um plano de testes abrangendo as novas funcionalidades, incluindo testes para o web scraping e integração de IA.
+
+8. **Registro de Mudanças:**
+   - Mantivemos um changelog detalhado documentando todas as alterações e adições feitas durante o TP3.
+
+Esta atualização da documentação garante que todos os aspectos do projeto estejam bem documentados, facilitando a manutenção futura e fornecendo uma visão clara do estado atual e das capacidades da aplicação.
