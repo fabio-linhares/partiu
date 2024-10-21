@@ -57,7 +57,7 @@ if dev_data:
 
 def interface_admin():
     st.sidebar.title("Painel Administrativo")
-    section = st.sidebar.radio("Escolha uma seção:", ["Visão Geral", "Análises", "Gerenciamento de Dados", "Gerenciamento de Usuários"])
+    section = st.sidebar.radio("Escolha uma seção:", ["Visão Geral", "Análises", "Gerenciamento de Dados", "Gerenciamento de Usuários", "Operações Avançadas"])
     
     if section == "Visão Geral":
         render_overview_panel()
@@ -67,6 +67,74 @@ def interface_admin():
         render_data_management_panel()
     elif section == "Gerenciamento de Usuários":
         render_user_management_panel()
+    elif section == "Operações Avançadas":
+        render_advanced_operations_panel()
+
+def render_data_management_panel():
+    st.header("Gerenciamento de Dados")
+    option = st.radio(
+        "Escolha uma opção:",
+        ("Visualizar Pacotes", "Adicionar Novo Pacote", "Carregar arquivo JSON", "Executar novo scraping")
+    )
+
+    if option == "Visualizar Pacotes":
+        pacotes = get_pacotes_data()
+        if pacotes:
+            for pacote in pacotes:
+                st.subheader(pacote['titulo'])
+                st.write(f"Preço: R$ {pacote['preco_atual']}")
+                st.write(f"Duração: {pacote['duracao']}")
+                st.write(f"Datas: {pacote['datas']}")
+        else:
+            st.info("Não há pacotes disponíveis.")
+
+    elif option == "Adicionar Novo Pacote":
+        st.write("Funcionalidade de adicionar novo pacote ainda não implementada.")
+
+    elif option == "Carregar arquivo JSON":
+        uploaded_file = st.file_uploader("Escolha um arquivo JSON", type="json")
+        if uploaded_file is not None:
+            if save_uploaded_file(uploaded_file):
+                st.success(f"Arquivo JSON salvo com sucesso em {arquivo_de_palavras}")
+            with open(arquivo_de_palavras, 'r', encoding='utf-8') as file:
+                st.session_state.dados = json.load(file)
+            st.success("Dados carregados com sucesso!")
+
+    elif option == "Executar novo scraping":
+        if st.button("Executar Scraper"):
+            with st.spinner("Executando o scraper..."):
+                run_scraper()
+            st.success("Scraping concluído!")
+            with open(arquivo_de_palavras, 'r', encoding='utf-8') as file:
+                st.session_state.dados = json.load(file)
+
+    if 'dados' in st.session_state and st.session_state.dados is not None:
+        st.markdown("##### Tabela de Ofertas:")
+        exibir_tabela_ofertas(st.session_state.dados)
+
+        st.markdown("##### Gráfico de Preços:")
+        exibir_grafico_precos(st.session_state.dados)
+
+        with st.expander("Exibir dados do arquivo JSON"):
+            st.json(st.session_state.dados)
+
+        # Botão de download
+        json_string = json.dumps(st.session_state.dados)
+        st.download_button(
+            label="Clique para baixar o JSON",
+            data=json_string,
+            file_name="dados_scraping.json",
+            mime="application/json"
+        )
+def render_advanced_operations_panel():
+    st.header("Operações Avançadas")
+    option = st.radio(
+        "Escolha uma opção:",
+        ("Adicionar Nova Questão",)
+    )
+
+    if option == "Adicionar Nova Questão":
+        render_add_question_form()
 
 def render_overview_panel():
     st.header("Visão Geral")
@@ -162,4 +230,6 @@ def get_user_details(limit=100, skip=0):
         return []
 
 if __name__ == "__main__":
+    if 'dados' not in st.session_state:
+        st.session_state.dados = None
     interface_admin()
