@@ -3,37 +3,31 @@ import json
 
 # Third-party libraries
 import streamlit as st
+from streamlit_option_menu import option_menu
+import pandas as pd
+import plotly.express as px
+from datetime import date
 
 # Local modules
 from api import get_sections_from_api, api_request_cached
 from config.variaveis_globais import (
     streamlit_secret, 
-    arquivo_de_resposta1,
-    arquivo_de_resposta2,
-    arquivo_de_resposta3,
-    arquivo_de_resposta4,
     arquivo_de_palavras,
-    template_email,
-    OLLAMA_API_URL,
-    GOOGLE_API_URL,
-    GPT3_API_URL
+
 )
 from utils.cadastro import render_add_question_form
 from utils.database import get_user_data
 from utils.frescuras import (
     exibir_grafico_precos,
-    exibir_tabela_ofertas
+    exibir_tabela_ofertas,
+    gerar_nuvem_palavras
 )
 from utils.globals import create_global_variables
 from utils.loadfile import save_uploaded_file
 from utils.scraper import run_scraper
 
-import streamlit as st
-import requests
-from PIL import Image
-import io
-from datetime import datetime
-from pymongo import MongoClient
+
+
 
 #################################################################################
 ############################       SECRETS.TOML       ###########################
@@ -56,9 +50,12 @@ if dev_data:
     support_phone_ = dev_data.get('telefone', config_vars['developer_phone']) 
 
 def interface_admin():
-    st.sidebar.title("Painel Administrativo")
-    section = st.sidebar.radio("Escolha uma seção:", ["Visão Geral", "Análises", "Gerenciamento de Dados", "Gerenciamento de Usuários", "Operações Avançadas"])
-    
+
+    section = option_menu("Menu", ["Visão Geral", "Análises", "Gerenciamento de Dados", 
+                                "Gerenciamento de Usuários", "Operações Avançadas"],
+                        icons=['house', 'bar-chart-line', 'database', 'people', 'gear'], 
+                        menu_icon="cast", default_index=0, orientation="vertical")
+
     if section == "Visão Geral":
         render_overview_panel()
     elif section == "Análises":
@@ -70,28 +67,73 @@ def interface_admin():
     elif section == "Operações Avançadas":
         render_advanced_operations_panel()
 
+
+
+
+def render_advanced_operations_panel():
+    st.header("Operações Avançadas")
+    option = st.radio(
+        "Escolha uma opção:",
+        ("Adicionar Nova Questão",)
+    )
+
+    if option == "Adicionar Nova Questão":
+        render_add_question_form()
+
+
+def render_analysis_panel():
+    st.header("Análises")
+    pacotes = get_pacotes_data()
+    if pacotes:
+        exibir_grafico_precos(pacotes)
+        exibir_tabela_ofertas(pacotes)
+
+        
+        with st.expander("Exibir dados dos pacotes"):
+            st.json(pacotes)
+
+        json_string = json.dumps(pacotes)
+        st.download_button(
+            label="Clique para baixar os dados dos pacotes",
+            data=json_string,
+            file_name="dados_pacotes.json",
+            mime="application/json"
+        )
+    else:
+        st.info("Não há dados de pacotes disponíveis.")
+
+def render_user_management_panel():
+    st.header("Gerenciamento de Usuários")
+
+    total_users = get_total_users()
+    st.write(f"Total de usuários: {total_users}")
+    
+    users = get_user_details()
+    
+    user_data = {
+        "Nome de Usuário": [user['username'] for user in users],
+        "Email": [user['email'] for user in users],
+        "Último Login": [user.get('last_login', 'N/A') for user in users]
+    }
+    df_users = pd.DataFrame(user_data)
+    
+    st.table(df_users.style.set_table_styles(
+        [{'selector': 'thead th', 'props': [('background-color', '#4CAF50'), ('color', 'white'), ('text-align', 'center')]},
+         {'selector': 'tbody td', 'props': [('text-align', 'center')]}]
+    ))
+
+   
 def render_data_management_panel():
     st.header("Gerenciamento de Dados")
     option = st.radio(
         "Escolha uma opção:",
-        ("Visualizar Pacotes", "Adicionar Novo Pacote", "Carregar arquivo JSON", "Executar novo scraping")
+        ("Adicionar Novo Pacote", "Carregar arquivo JSON existente", "Executar novo scraping")
     )
 
-    if option == "Visualizar Pacotes":
-        pacotes = get_pacotes_data()
-        if pacotes:
-            for pacote in pacotes:
-                st.subheader(pacote['titulo'])
-                st.write(f"Preço: R$ {pacote['preco_atual']}")
-                st.write(f"Duração: {pacote['duracao']}")
-                st.write(f"Datas: {pacote['datas']}")
-        else:
-            st.info("Não há pacotes disponíveis.")
-
-    elif option == "Adicionar Novo Pacote":
+    if option == "Adicionar Novo Pacote":
         st.write("Funcionalidade de adicionar novo pacote ainda não implementada.")
 
-    elif option == "Carregar arquivo JSON":
+    elif option == "Carregar arquivo JSON existente":
         uploaded_file = st.file_uploader("Escolha um arquivo JSON", type="json")
         if uploaded_file is not None:
             if save_uploaded_file(uploaded_file):
@@ -109,93 +151,38 @@ def render_data_management_panel():
                 st.session_state.dados = json.load(file)
 
     if 'dados' in st.session_state and st.session_state.dados is not None:
-        st.markdown("##### Tabela de Ofertas:")
-        exibir_tabela_ofertas(st.session_state.dados)
+        pacotes = st.session_state.dados
+        df_pacotes = pd.DataFrame(pacotes)
 
-        st.markdown("##### Gráfico de Preços:")
-        exibir_grafico_precos(st.session_state.dados)
+        st.subheader("Análise de Dados")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.write("Contagem de Pacotes por Cidade")
+            contagem_cidades = df_pacotes['titulo'].value_counts().reset_index()
+            contagem_cidades.columns = ['cidade', 'contagem']
+            fig = px.bar(contagem_cidades, x='cidade', y='contagem', title="Contagem de Pacotes por Cidade")
+            st.plotly_chart(fig)
+        
+        with col2:
+            st.write("Distribuição de Durações")
+            fig = px.histogram(df_pacotes, x='duracao', title="Distribuição de Durações")
+            st.plotly_chart(fig)
 
-        with st.expander("Exibir dados do arquivo JSON"):
-            st.json(st.session_state.dados)
-
-        # Botão de download
+        # Botão para baixar os dados
         json_string = json.dumps(st.session_state.dados)
         st.download_button(
-            label="Clique para baixar o JSON",
-            data=json_string,
-            file_name="dados_scraping.json",
-            mime="application/json"
-        )
-def render_advanced_operations_panel():
-    st.header("Operações Avançadas")
-    option = st.radio(
-        "Escolha uma opção:",
-        ("Adicionar Nova Questão",)
-    )
-
-    if option == "Adicionar Nova Questão":
-        render_add_question_form()
-
-def render_overview_panel():
-    st.header("Visão Geral")
-    total_users = get_total_users()
-    total_pacotes = get_total_pacotes()
-    st.metric("Total de Usuários Cadastrados", total_users)
-    st.metric("Total de Pacotes de Viagem", total_pacotes)
-
-def render_analysis_panel():
-    st.header("Análises")
-    pacotes = get_pacotes_data()
-    if pacotes:
-        exibir_tabela_ofertas(pacotes)
-        exibir_grafico_precos(pacotes)
-        
-        with st.expander("Exibir dados dos pacotes"):
-            st.json(pacotes)
-
-        json_string = json.dumps(pacotes)
-        st.download_button(
-            label="Clique para baixar os dados dos pacotes",
+            label="Baixar dados em JSON",
             data=json_string,
             file_name="dados_pacotes.json",
             mime="application/json"
         )
-    else:
-        st.info("Não há dados de pacotes disponíveis.")
 
-def render_data_management_panel():
-    st.header("Gerenciamento de Dados")
-    option = st.radio(
-        "Escolha uma opção:",
-        ("Visualizar Pacotes", "Adicionar Novo Pacote")
-    )
+        with st.expander("Exibir dados brutos"):
+            st.json(st.session_state.dados)
 
-    if option == "Visualizar Pacotes":
-        pacotes = get_pacotes_data()
-        if pacotes:
-            for pacote in pacotes:
-                st.subheader(pacote['titulo'])
-                st.write(f"Preço: R$ {pacote['preco_atual']}")
-                st.write(f"Duração: {pacote['duracao']}")
-                st.write(f"Datas: {pacote['datas']}")
-        else:
-            st.info("Não há pacotes disponíveis.")
 
-    elif option == "Adicionar Novo Pacote":
-        st.write("Funcionalidade de adicionar novo pacote ainda não implementada.")
-
-def render_user_management_panel():
-    st.header("Gerenciamento de Usuários")
-    total_users = get_total_users()
-    st.write(f"Total de usuários: {total_users}")
-    
-    users = get_user_details()
-    for user in users:
-        st.subheader(user['username'])
-        st.write(f"Email: {user['email']}")
-        st.write(f"Último Login: {user.get('last_login', 'N/A')}")
-        if st.button(f"Redefinir Senha para {user['username']}"):
-            st.success(f"Senha redefinida para {user['username']}")
 
 def get_total_users():
     try:
@@ -228,6 +215,90 @@ def get_user_details(limit=100, skip=0):
     except Exception as e:
         st.error(f"Erro ao obter detalhes dos usuários: {str(e)}")
         return []
+
+
+
+def get_total_vendas():
+    pass
+
+
+
+def render_overview_panel():
+
+    # núvem de palavras
+    gerar_nuvem_palavras(get_pacotes_data())
+
+    # Dados reais (implementado)
+    total_users = get_total_users()
+    total_pacotes = get_total_pacotes()
+    total_vendas = get_total_vendas()
+
+    # Dados simulados (serão implementados)
+    pacotes_mais_vendidos = ["Pacote Europa", "Pacote América do Sul", "Pacote Ásia"]
+    receita_total = 1250000  # Receita simulada
+    taxa_crescimento_usuarios = "5%"  # Simulada
+    taxa_conversao = "2.5%"  # Simulada
+    feedback_medio = 4.3  # Simulada
+    pacotes_rejeitados = ["Pacote África", "Pacote Caribe"]
+
+    # Criando um DataFrame para exibir como tabela
+    overview_data = {
+        "Métrica": [
+            "Total de Usuários", 
+            "Total de Pacotes de Viagem", 
+            "Total de Pacotes Vendidos", 
+            "Receita Total (Simulada)", 
+            "Taxa de Crescimento de Usuários (Simulada)", 
+            "Taxa de Conversão (Simulada)", 
+            "Feedback Médio dos Clientes (Simulada)"
+        ],
+        "Valor": [
+            total_users, 
+            total_pacotes, 
+            total_vendas, 
+            f"R$ {receita_total:,.2f}", 
+            taxa_crescimento_usuarios, 
+            taxa_conversao, 
+            feedback_medio
+        ]
+    }
+    df_overview = pd.DataFrame(overview_data)
+    
+    # Exibindo a tabela
+    st.table(df_overview.style.set_table_styles(
+        [{'selector': 'thead th', 'props': [('background-color', '#4CAF50'), ('color', 'white'), ('text-align', 'center')]},
+         {'selector': 'tbody td', 'props': [('text-align', 'center')]}]
+    ))
+
+    # Detalhes dos pacotes mais vendidos (simulado)
+    st.subheader("Pacotes Mais Vendidos (Simulado)")
+    st.write(", ".join(pacotes_mais_vendidos))
+
+    # Pacotes com maior rejeição (cancelamentos simulados)
+    st.subheader("Pacotes com Maior Rejeição (Simulado)")
+    st.write(", ".join(pacotes_rejeitados))
+
+    # Adicionando uma barra horizontal de separação
+    st.markdown("---")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 if __name__ == "__main__":
     if 'dados' not in st.session_state:

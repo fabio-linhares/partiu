@@ -19,8 +19,8 @@ def exibir_area_restrita():
                 st.error(f"Erro de login: {result.get('detail', 'Usuário ou senha incorretos')}")
     else:
         if st.session_state.user and 'roles' in st.session_state.user and 'admin' in st.session_state.user['roles']:
-            st.write("Área administrativa")
-            st.write(f"Bem-vindo, {st.session_state.user['profile']['first_name']}")
+            #st.write("Área administrativa")
+            st.write(f"Bem-vindo, {st.session_state.user['profile']['first_name']} {st.session_state.user['profile']['last_name']}")
             if st.button("Logout", key="logout_admin"):
                 st.session_state.logged_in = False
                 st.session_state.user = None
@@ -33,3 +33,5 @@ def exibir_area_restrita():
                     st.session_state.dados = None  # ou uma lista vazia, se for mais apropriado []
                     
                 interface_admin()
+
+
