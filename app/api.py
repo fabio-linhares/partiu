@@ -162,14 +162,44 @@ async def create(collection: str, document: Document):
 
 
 
+# @app.get("/read/{collection}")
+# async def read(collection: str, limit: int = 100):
+#     """
+#     Lê os 100 documentos mais recentes da coleção especificada.
+
+#     Args:
+#         collection (str): Nome da coleção.
+#         limit (int, optional): Número máximo de documentos a retornar. Padrão é 100.
+
+#     Returns:
+#         dict: Documentos lidos da coleção.
+
+#     Raises:
+#         HTTPException: Se ocorrer um erro durante a leitura dos documentos.
+#     """
+#     try:
+#         logger.info(f"Received request to read from collection: {collection}")
+#         documents = read_documents(
+#             collection, 
+#             limit=limit,
+#             sort_by=[("data_extracao", DESCENDING), ("hora_extracao", DESCENDING)]
+#         )
+#         logger.info(f"Successfully read {len(documents)} documents")
+#         return {"documents": json.loads(json.dumps(documents, default=str))}
+#     except PyMongoError as e:
+#         logger.error(f"MongoDB error reading documents: {e}")
+#         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+#     except Exception as e:
+#         logger.error(f"Unexpected error reading documents: {e}")
+#         raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
+
 @app.get("/read/{collection}")
-async def read(collection: str, limit: int = 100):
+async def read(collection: str):
     """
-    Lê os 100 documentos mais recentes da coleção especificada.
+    Lê todos os documentos da coleção especificada.
 
     Args:
         collection (str): Nome da coleção.
-        limit (int, optional): Número máximo de documentos a retornar. Padrão é 100.
 
     Returns:
         dict: Documentos lidos da coleção.
@@ -181,7 +211,6 @@ async def read(collection: str, limit: int = 100):
         logger.info(f"Received request to read from collection: {collection}")
         documents = read_documents(
             collection, 
-            limit=limit,
             sort_by=[("data_extracao", DESCENDING), ("hora_extracao", DESCENDING)]
         )
         logger.info(f"Successfully read {len(documents)} documents")
@@ -192,7 +221,9 @@ async def read(collection: str, limit: int = 100):
     except Exception as e:
         logger.error(f"Unexpected error reading documents: {e}")
         raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
+    
 
+    
 
 @app.put("/update/{collection}/{id}")
 async def update(collection: str, id: str, document: Document):
