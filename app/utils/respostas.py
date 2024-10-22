@@ -3,6 +3,7 @@ import json
 from utils.markdown import read_markdown_file
 from utils.frescuras import gerar_nuvem_palavras
 
+
 from config.variaveis_globais import (
     streamlit_secret, 
     arquivo_de_resposta1,

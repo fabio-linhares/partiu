@@ -1,4 +1,5 @@
 import smtplib
+import os
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader
 from email.mime.text import MIMEText
