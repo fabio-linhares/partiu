@@ -92,25 +92,6 @@ class Document(BaseModel):
 ############################         FUNCTIONS        ###########################
 #################################################################################
 
-# def api_request(method, endpoint, data=None):
-#     url = f"{API_BASE_URL}{endpoint}"
-#     try:
-#         if method == "GET":
-#             response = requests.get(url)
-#         elif method == "POST":
-#             response = requests.post(url, data=data)
-#         elif method == "PUT":
-#             response = requests.put(url, json=data)
-#         elif method == "DELETE":
-#             response = requests.delete(url)
-        
-#         response.raise_for_status()
-#         return response.json()
-#     except requests.RequestException as e:
-#         logger.error(f"API request error: {e}")
-#         if hasattr(e, 'response') and e.response is not None:
-#             return {"status": "error", "detail": e.response.text}
-#         return {"status": "error", "detail": str(e)}
 
 def api_request(method, endpoint, data=None, timeout=10):
     url = f"{API_BASE_URL}{endpoint}"
@@ -150,12 +131,6 @@ def get_sections_from_api(database, collection):
         if hasattr(e, 'response'):
             st.error(f"Detalhes do erro: {e.response.text}")
         return []
-
-
-
-
-
-
 
 
 #################################################################################
@@ -522,12 +497,6 @@ async def count_pacotes():
     finally:
         if 'client' in locals():
             client.close()
-
-
-
-
-
-
 
 
 if __name__ == "__main__":
