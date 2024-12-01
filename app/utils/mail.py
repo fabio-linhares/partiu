@@ -7,11 +7,13 @@ from email.mime.multipart import MIMEMultipart
 from api import get_sections_from_api
 from utils.database import get_user_data
 from utils.globals import create_global_variables
+from utils.roteiro_api import gerar_roteiro_viagem
 from config.variaveis_globais import (
     streamlit_secret, 
     template_email,
 
 )
+
 #################################################################################
 ############################       SECRETS.TOML       ###########################
 #################################################################################
@@ -54,8 +56,7 @@ def enviar_email(smtp_password, from_email, to_email, subject, html_content):
         return {"status": "error", "message": str(e)}
     
 
-def criar_conteudo_email(pacote, user_data):
-
+def criar_conteudo_email(pacote, user_data, roteiro):
     env = Environment(loader=FileSystemLoader(os.path.dirname(template_email)))
     template = env.get_template(os.path.basename(template_email))
 
@@ -92,6 +93,8 @@ def criar_conteudo_email(pacote, user_data):
         phone=phone,
         data_nascimento=data_nascimento,
         notifications=notifications,
+        roteiro_viagem=roteiro,
         support_mail=support_mail_,
         support_phone=support_phone_
     )
+    

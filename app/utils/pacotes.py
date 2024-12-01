@@ -5,6 +5,7 @@ import io
 from datetime import datetime
 from utils.mail import enviar_email, criar_conteudo_email
 from utils.format_resposta import extrair_resposta_gemmini
+from utils.roteiro_api import gerar_roteiro_viagem
 from utils.globals import create_global_variables
 from utils.format_resposta import (extrair_resposta_gemmini, 
                                    extrair_resposta_gpt)
@@ -99,12 +100,45 @@ def render_select_button(pacote, index):
     else:
         st.info("Faça login para selecionar este pacote", icon="ℹ️")
 
+# def process_package_selection(pacote, user_data, user_email):
+#     email_content = criar_conteudo_email(pacote, user_data)
+#     mail_subject = f"Confirmação da Reserva - {pacote['titulo']}"
+
+#     if config_vars['apikey_sendgrid']:
+#         with st.spinner("Efetuando a reserva..."):
+#             resultado = enviar_email(
+#                 config_vars['apikey_sendgrid'],
+#                 config_vars['mail_sender'],
+#                 user_email,
+#                 mail_subject,
+#                 email_content
+#             )
+            
+#             if resultado["status"] == "success":
+#                 st.success("Um e-mail de confirmação foi enviado para você.", icon="✅")
+#             else:
+#                 st.error(f"Erro ao enviar email: {resultado['message']}")
+#     else:
+#         st.error("Chave API do SendGrid não encontrada. Verifique o arquivo de configuração.")
+
+#     st.info("Nota: O email enviado pode cair na caixa de spam. Verifique lá se não o encontrar na caixa de entrada.")
+
 def process_package_selection(pacote, user_data, user_email):
-    email_content = criar_conteudo_email(pacote, user_data)
+    with st.spinner("Gerando seu roteiro personalizado..."):
+        roteiro = gerar_roteiro_viagem(pacote['titulo'], pacote['duracao'])
+    
+    email_content = criar_conteudo_email(pacote, user_data, roteiro)
+    mail_subject = f"Sua Aventura em {pacote['titulo']} - Roteiro Personalizado"
+  
+    if roteiro is None:
+        st.warning("Não foi possível gerar um roteiro personalizado neste momento. O e-mail será enviado sem o roteiro.")
+        roteiro = "Roteiro não disponível no momento."
+
+    email_content = criar_conteudo_email(pacote, user_data, roteiro)
     mail_subject = f"Confirmação de Reserva - {pacote['titulo']}"
 
     if config_vars['apikey_sendgrid']:
-        with st.spinner("Efetuando a reserva..."):
+        with st.spinner("Enviando e-mail de confirmação..."):
             resultado = enviar_email(
                 config_vars['apikey_sendgrid'],
                 config_vars['mail_sender'],
@@ -114,7 +148,7 @@ def process_package_selection(pacote, user_data, user_email):
             )
             
             if resultado["status"] == "success":
-                st.success("Um e-mail de confirmação foi enviado para você.", icon="✅")
+                st.success("Um e-mail de confirmação com seu roteiro personalizado foi enviado para você.", icon="✅")
             else:
                 st.error(f"Erro ao enviar email: {resultado['message']}")
     else:
