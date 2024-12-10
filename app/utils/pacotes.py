@@ -1,3 +1,6 @@
+import locale
+from time import sleep
+import io
 import streamlit as st
 import requests
 from PIL import Image
@@ -21,14 +24,27 @@ from config.variaveis_globais import (
 
 config_vars = create_global_variables(streamlit_secret)
 
+ 
 def render_search_expander():
     if not st.session_state.get('logged_in', False):
         st.info("Faça login para utilizar nosso assistente especial para fugas.", icon="ℹ️")
     else:
-        with st.expander("Precisa de ajuda para fugir?"):
+        with st.expander("Precisa de ajuda para viajar?"):
             search_query = st.text_input("Diga-me por que está aqui e eu te ajudarei a escolher o melhor destino!")
+            
+            if 'search_state' not in st.session_state:
+                st.session_state.search_state = 'idle'
+            
             if st.button("Buscar"):
-                process_search_query(search_query)
+                st.session_state.search_state = 'searching'
+                st.rerun()
+            
+            if st.session_state.search_state == 'searching':
+                with st.spinner('Buscando o melhor destino para você...'):
+                    sleep(3) 
+                    result = process_search_query(search_query)
+                    st.session_state.search_state = 'idle'
+
 
 
 def process_search_query(search_query):
@@ -36,7 +52,7 @@ def process_search_query(search_query):
         try:
             pacotes_texto = "\n".join([
                 f"{pacote['titulo']} - Preço: R$ {pacote['preco_atual']}, Duração: {pacote['duracao']}, Datas: {pacote['datas']}"
-                for pacote in st.session_state.pacotes[:1000]
+                for pacote in st.session_state.pacotes[:40]
             ])
             contexto = f"Pacotes disponíveis:\n{pacotes_texto}"
             prompt = f"""Considere que dispomos destas opções de pacotes de viagens: {contexto}; Considere isto: {search_query}; Considerando essas informações, utilize seu conhecimento para recomendar os 3 melhores pacotes ou destinos de viagem. Justifique sua escolha. Apresente algum conhecimento que possa aumentar o interesse pela sua recomandação. Não seja repetitivo ou prolixo. Seja sucinto."""
@@ -62,6 +78,9 @@ def process_search_query(search_query):
         st.warning("Por favor, insira uma consulta antes de buscar.")
 
 
+
+locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+
 def render_package_card(pacote, index):
     with st.container():
         try:
@@ -72,7 +91,17 @@ def render_package_card(pacote, index):
             st.image("https://via.placeholder.com/300x200?text=Imagem+não+disponível", use_column_width=True)
         
         st.subheader(pacote['titulo'])
-        st.write(f"Preço: R$ {pacote['preco_atual']}")
+        
+        # 1% de aumento
+        preco_original = float(pacote['preco_atual'].replace('.', '').replace(',', '.'))
+        preco_com_taxa = preco_original * 1.01
+        
+        # Formata o preço no estilo brasileiro
+        preco_formatado = locale.currency(preco_com_taxa, grouping=True, symbol='R$')
+        
+        st.markdown(f"<h3 style='color: red;'>Preço: {preco_formatado}</h3>", unsafe_allow_html=True)
+        st.markdown("- 1% de taxa de uso incluída no preço")
+        
         st.write(f"Duração: {pacote['duracao']}")
         st.write(f"Datas: {pacote['datas']}")
         
@@ -84,6 +113,7 @@ def render_package_card(pacote, index):
         st.write(f"Última atualização: {data_hora_formatada}")
 
         render_select_button(pacote, index)
+
 
 def render_select_button(pacote, index):
     if st.session_state.get('logged_in', False):
@@ -99,29 +129,6 @@ def render_select_button(pacote, index):
                 st.error("E-mail do usuário não encontrado. Por favor, faça login novamente.")
     else:
         st.info("Faça login para selecionar este pacote", icon="ℹ️")
-
-# def process_package_selection(pacote, user_data, user_email):
-#     email_content = criar_conteudo_email(pacote, user_data)
-#     mail_subject = f"Confirmação da Reserva - {pacote['titulo']}"
-
-#     if config_vars['apikey_sendgrid']:
-#         with st.spinner("Efetuando a reserva..."):
-#             resultado = enviar_email(
-#                 config_vars['apikey_sendgrid'],
-#                 config_vars['mail_sender'],
-#                 user_email,
-#                 mail_subject,
-#                 email_content
-#             )
-            
-#             if resultado["status"] == "success":
-#                 st.success("Um e-mail de confirmação foi enviado para você.", icon="✅")
-#             else:
-#                 st.error(f"Erro ao enviar email: {resultado['message']}")
-#     else:
-#         st.error("Chave API do SendGrid não encontrada. Verifique o arquivo de configuração.")
-
-#     st.info("Nota: O email enviado pode cair na caixa de spam. Verifique lá se não o encontrar na caixa de entrada.")
 
 def process_package_selection(pacote, user_data, user_email):
     with st.spinner("Gerando seu roteiro personalizado..."):
@@ -148,13 +155,16 @@ def process_package_selection(pacote, user_data, user_email):
             )
             
             if resultado["status"] == "success":
-                st.success("Um e-mail de confirmação com seu roteiro personalizado foi enviado para você.", icon="✅")
+                st.success("Um e-mail de confirmação com seu roteiro personalizado foi enviado para você. Garanta já um desconto exclisivo pagando 50% do valor em até 24h.", icon="✅")
             else:
                 st.error(f"Erro ao enviar email: {resultado['message']}")
     else:
         st.error("Chave API do SendGrid não encontrada. Verifique o arquivo de configuração.")
 
     st.info("Nota: O email enviado pode cair na caixa de spam. Verifique lá se não o encontrar na caixa de entrada.")
+
+
+
 
 def exibir_pacotes_viagem():
     st.markdown("#### Pacotes de Viagem")

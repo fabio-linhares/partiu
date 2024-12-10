@@ -2,10 +2,14 @@
 from openai import OpenAI
 import os
 
+# OBS: Abaixo mantenho a chave de API para o modelo 'nvidia/llama-3.1-nemotron-70b-instruct' da Nvidia, 
+# ambora pudesse armazená-lo no arquivo 'secrets.toml', porque precisa
+# fazer login no site da Nvidia toda vez que vou utilizá-la. Logo, não faz nenhum 'sentido' protegê-la!
+
 def gerar_roteiro_viagem(destino, duracao):
     client = OpenAI(
         base_url="https://integrate.api.nvidia.com/v1",
-       api_key="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"
+       api_key="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"
 
     )
 

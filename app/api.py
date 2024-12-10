@@ -161,38 +161,6 @@ async def create(collection: str, document: Document):
     
 
 
-
-# @app.get("/read/{collection}")
-# async def read(collection: str, limit: int = 100):
-#     """
-#     Lê os 100 documentos mais recentes da coleção especificada.
-
-#     Args:
-#         collection (str): Nome da coleção.
-#         limit (int, optional): Número máximo de documentos a retornar. Padrão é 100.
-
-#     Returns:
-#         dict: Documentos lidos da coleção.
-
-#     Raises:
-#         HTTPException: Se ocorrer um erro durante a leitura dos documentos.
-#     """
-#     try:
-#         logger.info(f"Received request to read from collection: {collection}")
-#         documents = read_documents(
-#             collection, 
-#             limit=limit,
-#             sort_by=[("data_extracao", DESCENDING), ("hora_extracao", DESCENDING)]
-#         )
-#         logger.info(f"Successfully read {len(documents)} documents")
-#         return {"documents": json.loads(json.dumps(documents, default=str))}
-#     except PyMongoError as e:
-#         logger.error(f"MongoDB error reading documents: {e}")
-#         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
-#     except Exception as e:
-#         logger.error(f"Unexpected error reading documents: {e}")
-#         raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
-
 @app.get("/read/{collection}")
 async def read(collection: str):
     """
@@ -382,7 +350,6 @@ async def login(username: str = Form(...), password: str = Form(...)):
 
         user = users_collection.find_one({"username": username})
         if user:
-            # Como a senha está vazia, vamos apenas verificar se o usuário existe
             if user['password'] == '':
                 return {
                     "status": "success",
@@ -408,22 +375,18 @@ async def login(username: str = Form(...), password: str = Form(...)):
 @app.post("/register")
 async def register_user(user: User):
     try:
-        # Conectar ao banco de dados
         connection_string = get_connection_string()
         client = MongoClient(connection_string)
         db = client[config_vars['database_main']]
         users_collection = db[config_vars['collections_users']]
 
-        # Verificar se o usuário já existe
         if users_collection.find_one({"username": user.username}):
             raise HTTPException(status_code=400, detail="Username already exists")
         if users_collection.find_one({"email": user.email}):
             raise HTTPException(status_code=400, detail="Email already exists")
 
-        # Hash da senha do usuário
         hashed_password = hash_password(user.password)
 
-        # Criar o documento do usuário
         user_document = {
             "username": user.username,
             "email": user.email,
@@ -432,11 +395,11 @@ async def register_user(user: User):
             "last_login": datetime.now().isoformat(),
             "is_active": True,
             "roles": ["user"],
-            "profile": user.profile.dict(),  # Converte o modelo Profile para dict
-            "settings": user.settings.dict()  # Converte o modelo Settings para dict
+            "profile": user.profile.dict(),  
+            "settings": user.settings.dict() 
         }
 
-        # Inserir o documento no banco de dados
+        # insere o documento no banco de dados
         result = create_document("tp_users", user_document)
         return {"status": "success", "id": str(result.inserted_id)}
     except Exception as e:
