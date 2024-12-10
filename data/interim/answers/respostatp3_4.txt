@@ -1,0 +1,31 @@
+Implementamos a base para integração de modelos de linguagem (LLMs) em nossa aplicação, focando na recomendação de pacotes de viagem. Principais aspectos:
+
+1. **Integração com APIs de IA:**
+   - Implementamos a função `process_search_query()` que utiliza a API do Google (Gemini) para processar consultas de usuários.
+   - Configuramos a capacidade de alternar entre diferentes APIs (Google e GPT-3) para flexibilidade.
+
+2. **Processamento de Contexto:**
+   - Criamos um sistema que fornece contexto relevante ao modelo de IA, incluindo informações sobre pacotes de viagem disponíveis.
+   - Utilizamos prompts estruturados para guiar o modelo na geração de recomendações personalizadas.
+
+3. **Extração e Formatação de Respostas:**
+   - Implementamos funções como `extrair_resposta_gemmini()` e `extrair_resposta_gpt()` para processar as respostas dos modelos de IA.
+   - Essas funções garantem que as respostas sejam formatadas adequadamente para exibição na interface do usuário.
+
+4. **Interface de Usuário para IA:**
+   - Criamos um expander "Precisa de ajuda para fugir?" que permite aos usuários interagir com o sistema de IA.
+   - Implementamos um campo de entrada de texto e um botão de busca para facilitar as consultas dos usuários.
+
+5. **Tratamento de Erros e Fallbacks:**
+   - Implementamos tratamento de erros robusto para lidar com falhas na API ou respostas inesperadas.
+   - Configuramos um sistema de fallback que alterna entre diferentes APIs em caso de falha.
+
+6. **Preparação de Dados:**
+   - Estruturamos os dados dos pacotes de viagem de forma a serem facilmente utilizados como contexto para os modelos de IA.
+   - Isso inclui a formatação de informações como título, preço, duração e datas dos pacotes.
+
+7. **Configuração Flexível:**
+   - Utilizamos variáveis de configuração (como `use_google_api`) para controlar qual API de IA é utilizada.
+   - Isso permite fácil ajuste e experimentação com diferentes modelos de IA.
+
+Esta preparação nos coloca em uma excelente posição para expandir o uso de IA em nossa aplicação, permitindo recomendações personalizadas e uma experiência de usuário mais rica e interativa.

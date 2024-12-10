@@ -1,11 +1,33 @@
-from api import api_request
+from utils.database import update_document, get_collection
+import bcrypt
 
 def login_user(username, password):
     try:
-        response = api_request("POST", "/login", data={"username": username, "password": password})
-        if response and response.get("status") == "success":
-            return {"status": "success", "user": response.get("user")}
+        collection = get_collection('tp_users')
+        user = collection.find_one({'username': username})
+
+        if user and bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
+            return {"status": "success", "user": user}
         else:
-            return {"status": "error", "detail": response.get("detail", "Invalid credentials")}
+            return {"status": "error", "detail": "Credenciais inválidas"}
     except Exception as e:
         return {"status": "error", "detail": str(e)}
+
+def hash_password(password):
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed
+
+def check_password(password, hashed):
+    return bcrypt.checkpw(password.encode('utf-8'), hashed)
+
+
+def set_user_password(username, plain_password):
+
+    hashed_password = bcrypt.hashpw(plain_password.encode('utf-8'), bcrypt.gensalt())
+
+    update_document(
+        collection_name='tp_users',
+        query={'username': username},
+        update={'password': hashed_password.decode('utf-8')}
+    )

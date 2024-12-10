@@ -1,0 +1,84 @@
+/* Estilos Gerais */
+body {
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+    line-height: 1.8;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+/* Container Principal */
+.container {
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto;
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding-bottom: 20px;
+}
+
+/* Cabeçalho */
+.header {
+    background: linear-gradient(90deg, #28a745, #20c997);
+    color: #fff;
+    padding: 30px 20px;
+    text-align: center;
+    border-bottom: 5px solid #218838;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+/* Conteúdo */
+.content {
+    padding: 30px 20px;
+}
+
+.content p {
+    font-size: 16px;
+    margin-bottom: 20px;
+    color: #555;
+}
+
+.content ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.content ul li {
+    background-color: #f9f9f9;
+    margin-bottom: 10px;
+    padding: 15px;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.content ul li strong {
+    font-weight: 500;
+    color: #28a745;
+}
+
+/* Rodapé */
+.footer {
+    background-color: #f1f1f1;
+    color: #666;
+    text-align: center;
+    padding: 20px;
+    border-top: 1px solid #ddd;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.footer p {
+    margin: 0;
+}

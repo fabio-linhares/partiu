@@ -1,9 +1,18 @@
 import streamlit as st  
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
+import plotly.express as px
 import pandas as pd
 import altair as alt
 from datetime import datetime
+import locale
+
+def convert_price_to_float(price_str):
+    # remove caracteres indesejados e converte para float
+    try:
+        return float(price_str.replace('R$', '').replace('.', '').replace(',', '.').strip())
+    except ValueError:
+        return None
 
 def gerar_nuvem_palavras(viagens):
 
@@ -21,7 +30,7 @@ def gerar_nuvem_palavras(viagens):
 def exibir_estatisticas(dados):
     df = pd.DataFrame(dados)
     
-    # Convertendo preço_atual para float
+    # converte para float
     df['preco_atual'] = df['preco_atual'].astype(float)
     
     st.subheader("Estatísticas de Preços")
@@ -48,42 +57,105 @@ def exibir_estatisticas(dados):
     df['mes_viagem'] = df['datas'].apply(extrair_mes)
     mes_counts = df['mes_viagem'].value_counts()
     st.write(mes_counts)
+      
 
-# Uso na interface Streamlit
-# exibir_estatisticas(dados)
+def formatar_preco(preco):
+    if isinstance(preco, str):
+        preco = preco.replace('R$', '').replace('.', '').replace(',', '.').strip()
+    try:
+        valor = float(preco)
+        return f"R$ {valor:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+    except ValueError:
+        return preco
 
-############################################################################################################    
 
 def exibir_tabela_ofertas(dados):
+    # formato nosso (brasileiro)
+    # Não achei o formato gaúcho: 'pila' kkkk
+    locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+
     df = pd.DataFrame(dados)
-    df['preco_atual'] = df['preco_atual'].astype(float)
-    df['preco_atual'] = df['preco_atual'].apply(lambda x: f'R$ {x:.2f}')
+
+    # formatar o preço
+    def formatar_preco(preco):
+        if isinstance(preco, str):
+            # Remove o 'R$' se presente e substitui '.' por ''
+            preco = preco.replace('R$', '').replace('.', '').strip()
+            # Substitui ',' por '.' para converter para float
+            preco = preco.replace(',', '.')
+        try:
+            valor = float(preco)
+            return locale.currency(valor, grouping=True, symbol='R$')
+        except ValueError:
+            return preco  # retorna o valor original se não puder ser convertido
+
+    df['preco_atual'] = df['preco_atual'].apply(formatar_preco)
+
     st.dataframe(df[['titulo', 'preco_atual', 'duracao', 'datas']])
 
-# Uso na interface Streamlit
-# st.header("Ofertas de Pacotes")
-# exibir_tabela_ofertas(dados)
+
+
 
 ############################################################################################################
-
 
 def exibir_grafico_precos(dados):
     df = pd.DataFrame(dados)
-    df['preco_atual'] = df['preco_atual'].astype(float)
     
-    chart = alt.Chart(df).mark_bar().encode(
-        x=alt.X('titulo', sort='-y'),
-        y='preco_atual',
-        tooltip=['titulo', 'preco_atual', 'duracao', 'datas']
-    ).properties(
-        width=800,
-        height=500,
-        title='Preços dos Pacotes de Viagem'
-    )
+    def limpar_preco(preco):
+        if isinstance(preco, str):
+            # Remove 'R$', pontos de milhar e substitui vírgula por ponto
+            preco = preco.replace('R$', '').replace('.', '').replace(',', '.').strip()
+        try:
+            return float(preco)
+        except ValueError:
+            return None  
+
+    df['preco_atual'] = df['preco_atual'].apply(limpar_preco)
     
-    st.altair_chart(chart)
+    df = df[df['preco_atual'].notna() & (df['preco_atual'] > 0)]
+    
+    df_max_preco = df.loc[df.groupby('titulo')['preco_atual'].idxmax()]
 
-# Uso na interface Streamlit
-# exibir_grafico_precos(dados)
+    if df_max_preco.empty:
+        st.error("Não há dados válidos para exibir o gráfico.")
+        return
+    
+    # Plotly
+    fig = px.bar(df_max_preco, x='titulo', y='preco_atual', 
+                 title='Preços dos Pacotes de Viagem',
+                 labels={'titulo': 'Destino', 'preco_atual': 'Preço (R$)'},
+                 hover_data=['duracao', 'datas'])
+    
+    fig.update_layout(xaxis_title='Destino',
+                      yaxis_title='Preço (R$)',
+                      xaxis_tickangle=-45)
+    
+    st.plotly_chart(fig)
 
-############################################################################################################
+    
+def get_tab_names(config_vars, prefix):
+    tab_names = []
+    i = 1
+    while True:
+        key = f'{prefix}_{i}'
+        if key in config_vars:
+            tab_names.append(config_vars[key])
+            i += 1
+        else:
+            break
+    return tab_names
+
+
+def contar_itens_config(config_vars, radical):
+    count = 0
+    i = 1
+    
+    while True:
+        key = f'{radical}_{i}'
+        if key in config_vars:
+            count += 1
+            i += 1
+        else:
+            break  
+    
+    return count

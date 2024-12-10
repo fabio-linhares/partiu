@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Email de Confirmação</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Confirmação de Reserva</h1>
+        </div>
+        <div class="content">
+            <img src="{{ imagem }}" alt="Imagem do Pacote"/>
+            <p>Olá, <strong>{{ first_name }} {{ last_name }}</strong>,</p>
+            <p>Estamos entusiasmados em confirmar sua reserva para o pacote de viagem escolhido! Abaixo, você encontrará os detalhes completos do pacote e as informações de seu cadastro.</p>
+            <h3>Detalhes do Pacote de Viagem:</h3>
+            <ul>
+                <li><strong>Destino:</strong> {{ destino }}</li>
+                <li><strong>Preço Atual:</strong> R$ {{ preco_atual }}</li>
+                <li><strong>Preço Original:</strong> {{ preco_original }}</li>
+                <li><strong>Economia:</strong> {{ economia }}</li>
+                <li><strong>Duração:</strong> {{ duracao }}</li>
+                <li><strong>Datas Disponíveis:</strong> {{ datas }}</li>
+                <li><strong>Cidade de Saída:</strong> {{ cidade_saida }}</li>
+                <li><strong>Serviços Incluídos:</strong> {{ servicos_incluidos }}</li>
+            </ul>
+            <h3>Última Atualização:</h3>
+            <ul>
+                <li><strong>Data de Extração:</strong> {{ data_extracao }}</li>
+                <li><strong>Hora de Extração:</strong> {{ hora_extracao }}</li>
+            </ul>
+            <h3>Dados do Usuário:</h3>
+            <ul>
+                <li><strong>Nome Completo:</strong> {{ first_name }} {{ last_name }}</li>
+                <li><strong>E-mail:</strong> {{ email }}</li>
+                <li><strong>Telefone:</strong> {{ phone }}</li>
+                <li><strong>Data de Nascimento:</strong> {{ data_nascimento }}</li>
+                <li><strong>Preferências de Notificação:</strong> {{ notifications }}</li>
+            </ul>
+            <p>Estamos ansiosos para proporcionar uma experiência inesquecível na sua viagem e por conta disso tomamos a liberdade de sugerir um excelente roteiro de viagem! Caso tenha dúvidas ou precise de mais informações, estamos à disposição.</p>
+            <h2>Seu Roteiro de Viagem Personalizado</h2>
+            <p>{{ roteiro_viagem }}</p>
+            
+            <!-- Novo bloco com link de pagamento -->
+            <div style="background-color: #f0f0f0; padding: 15px; margin-top: 20px; border-radius: 5px;">
+                <p style="font-weight: bold; color: #4a4a4a;">Oferta Especial!</p>
+                <p>Garanta já esse valor com todas as taxas inclusas pagando o valor total do pacote (com 50% de desconto) neste link:</p>
+                <a href="https://link.gerarpix.com.br/p/http-179-124-234-238-8081" style="background-color: #4CAF50; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">Pague Aqui</a>
+            </div>
+        </div>
+        <div class="footer">
+            <p>Equipe de Suporte<br>
+            Partiu Viagens<br>
+            {{ support_mail }} | {{ support_phone }}</p>
+        </div>
+    </div>
+</body>
+</html>

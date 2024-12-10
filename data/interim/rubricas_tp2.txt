@@ -1,0 +1,27 @@
+## Rubricas de Avaliação
+
+1. **Configuração do Ambiente de Desenvolvimento**
+   - Importância: Estabelece uma base sólida para o desenvolvimento colaborativo e controle de versão.
+
+2. **Evolução da Interface Streamlit**
+   - Importância: Melhora a experiência do usuário e demonstra habilidades em design de interfaces interativas.
+
+3. **Extração de Conteúdo Web**
+   - Importância: Mostra capacidade de coletar e processar dados de fontes externas, essencial para análises de dados reais.
+
+4. **Exibição de Dados Extraídos**
+   - Importância: Demonstra habilidades de visualização de dados e capacidade de apresentar informações de forma clara e útil.
+
+5. **Implementação de Cache e Estado de Sessão**
+   - Importância: Evidencia compreensão de otimização de performance em aplicações web.
+
+6. **Desenvolvimento de Serviço de Upload/Download**
+   - Importância: Mostra habilidades em manipulação de arquivos e integração de dados fornecidos pelo usuário.
+
+7. **Completude do Project Charter**
+   - Importância: Reflete a capacidade de planejar e documentar projetos de forma estruturada.
+
+8. **Elaboração do Data Summary Report**
+   - Importância: Demonstra habilidade em documentar e explicar as fontes de dados e seus objetivos no contexto do projeto.
+
+Cada uma dessas rubricas é crucial para o desenvolvimento de um projeto de ciência de dados completo e bem-sucedido, abrangendo desde aspectos técnicos até habilidades de documentação e planejamento.

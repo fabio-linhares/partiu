@@ -1,0 +1,31 @@
+# Projeto de Ciência de Dados Aplicada: Teste de Performance 3 (TP3)
+
+## Visão Geral
+
+Na terceira etapa do projeto, nosso objetivo é expandir significativamente as capacidades da aplicação, incorporando funcionalidades mais avançadas e preparando o terreno para a integração de técnicas de Inteligência Artificial. Esta fase visa aprofundar a interatividade, melhorar a robustez da aplicação e introduzir elementos que permitirão uma análise mais sofisticada dos dados.
+
+## Atividades Propostas
+
+### 1. Desenvolvimento de Aplicação com Múltiplas Páginas
+- Implementar um menu de navegação no Streamlit
+- Criar diferentes seções para funcionalidades distintas da aplicação
+
+### 2. Implementação de APIs com FastAPI
+- Desenvolver uma API simples usando FastAPI
+- Criar rotas para interagir com os dados da aplicação (GET, POST, etc.)
+
+### 3. Extração de Dados de Páginas Dinâmicas
+- Utilizar Selenium para web scraping de conteúdo dinâmico
+- Integrar os dados obtidos à aplicação existente
+
+### 4. Preparação para Uso de IA com LLMs
+- Estruturar os dados coletados para futura aplicação de modelos de linguagem
+- Planejar funcionalidades que utilizarão IA, como geração de texto ou análise de sentimentos
+
+### 5. Aprimoramento da Documentação
+- Atualizar o Project Charter com as novas funcionalidades e objetivos
+- Expandir o Data Summary Report, incluindo os novos conjuntos de dados
+
+### 6. Otimização e Testes
+- Realizar testes de performance e usabilidade
+- Otimizar o código para melhor eficiência e manutenibilidade

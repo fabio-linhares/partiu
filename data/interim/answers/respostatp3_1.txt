@@ -1,0 +1,26 @@
+Implementamos um sistema robusto de web scraping para extrair dados dinâmicos de pacotes de viagem. Principais aspectos:
+
+1. **Uso do Selenium:**
+   - Utilizamos o Selenium WebDriver para interagir com páginas dinâmicas.
+   - Implementamos a função `extrair_dados_completos()` para navegar e extrair dados da página da Decolar.com.
+
+2. **Tratamento de Elementos Dinâmicos:**
+   - Implementamos lógica para lidar com pop-ups de LGPD e botões "Ver mais ofertas".
+   - Utilizamos `WebDriverWait` e tratamento de exceções para garantir a robustez do scraping.
+
+3. **Extração Detalhada:**
+   - Extraímos informações como título, preço, descrição, duração, datas, cidade de saída, serviços incluídos, e mais.
+   - Utilizamos BeautifulSoup para parsing do HTML após o carregamento dinâmico.
+
+4. **Processamento de Dados:**
+   - Implementamos a função `processar_datas()` para formatar corretamente as informações de datas.
+   - Adicionamos timestamps de extração para rastreabilidade.
+
+5. **Armazenamento de Dados:**
+   - Os dados extraídos são salvos em um arquivo JSON local.
+   - Implementamos integração com MongoDB através de uma API, inserindo cada pacote como um documento.
+
+6. **Execução Automatizada:**
+   - A função `run_scraper()` encapsula todo o processo de scraping, permitindo fácil execução e integração com o resto da aplicação.
+
+Esta implementação nos permite coletar dados atualizados de pacotes de viagem de forma eficiente e automatizada, enriquecendo nossa aplicação com informações dinâmicas e relevantes.

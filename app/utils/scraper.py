@@ -1,4 +1,7 @@
 from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
+
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -18,6 +21,18 @@ from config.variaveis_globais import (
     API_BASE_URL
 )
 
+def processar_datas(texto_datas):
+    if texto_datas:
+        # divide o texto em duas partes: antes e depois de "Até"
+        partes = texto_datas.split("Até")
+        if len(partes) == 2:
+            parte_inicial = partes[0].strip()
+            parte_final = partes[1].strip()
+ 
+            return f"{parte_inicial} até {parte_final}"
+    return texto_datas  
+
+
 def extrair_dados_completos(url):
     options = uc.ChromeOptions()
     options.add_argument("--disable-blink-features=AutomationControlled")
@@ -26,7 +41,9 @@ def extrair_dados_completos(url):
     options.add_argument('--disable-dev-shm-usage')
     options.add_argument("--start-maximized")
     
-    driver = uc.Chrome(options=options)
+    #driver = uc.Chrome(options=options)
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=options)
     
     try:
         driver.get(url)
@@ -85,12 +102,13 @@ def extrair_dados_completos(url):
             imagem = oferta.find('img', class_='offer-card-image-main-not-eva')['src'] if oferta.find('img', class_='offer-card-image-main-not-eva') else None
             
             if titulo and preco_atual:
+                datas_processadas = processar_datas(datas.text.strip() if datas else None)
                 dados.append({
                     'titulo': titulo.text.strip(),
                     'preco_atual': preco_atual.text.strip(),
                     'descricao': descricao.text.strip() if descricao else None,
                     'duracao': duracao.text.strip() if duracao else None,
-                    'datas': datas.text.strip() if datas else None,
+                    'datas': datas_processadas,
                     'cidade_saida': cidade_saida.text.strip() if cidade_saida else None,
                     'servicos_incluidos': servicos_incluidos.text.strip() if servicos_incluidos else None,
                     'preco_original': preco_original.text.strip() if preco_original else None,

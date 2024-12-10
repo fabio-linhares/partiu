@@ -15,7 +15,8 @@
 ###############################################################################
 
 from fastapi import FastAPI, Form, HTTPException
-from pymongo import MongoClient
+from pymongo import MongoClient, DESCENDING
+from datetime import datetime
 
 from pydantic import BaseModel
 from utils.database import (create_document,
@@ -37,7 +38,11 @@ from config.variaveis_globais import streamlit_secret, API_BASE_URL
 
 from pymongo import MongoClient
 from pymongo.errors import PyMongoError
+from typing import List, Dict
+
 from utils.database import get_connection_string
+
+from utils.security import hash_password
 
 
 logging.basicConfig(level=logging.INFO)
@@ -48,10 +53,35 @@ app = FastAPI()
 config_vars = create_global_variables(streamlit_secret)
 
 
-
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+
+class Profile(BaseModel):
+    first_name: str
+    last_name: str
+    birth_date: str
+    phone: str
+
+class Settings(BaseModel):
+    theme: str
+    notifications: bool
+
+class User(BaseModel):
+    username: str
+    email: str
+    password: str
+    created_at: str
+    last_login: str
+    is_active: bool
+    roles: List[str]
+    profile: Profile
+    settings: Settings
+
+class QuestionData(BaseModel):
+    section: str
+    questions: List[str]
 
 class Document(BaseModel):
     data: dict
@@ -62,17 +92,18 @@ class Document(BaseModel):
 ############################         FUNCTIONS        ###########################
 #################################################################################
 
-def api_request(method, endpoint, data=None):
+
+def api_request(method, endpoint, data=None, timeout=10):
     url = f"{API_BASE_URL}{endpoint}"
     try:
         if method == "GET":
-            response = requests.get(url)
+            response = requests.get(url, timeout=timeout)
         elif method == "POST":
-            response = requests.post(url, data=data)
+            response = requests.post(url, json=data, timeout=timeout)  # Use json=data
         elif method == "PUT":
-            response = requests.put(url, json=data)
+            response = requests.put(url, json=data, timeout=timeout)
         elif method == "DELETE":
-            response = requests.delete(url)
+            response = requests.delete(url, timeout=timeout)
         
         response.raise_for_status()
         return response.json()
@@ -100,11 +131,6 @@ def get_sections_from_api(database, collection):
         if hasattr(e, 'response'):
             st.error(f"Detalhes do erro: {e.response.text}")
         return []
-
-
-
-
-
 
 
 #################################################################################
@@ -136,13 +162,12 @@ async def create(collection: str, document: Document):
 
 
 @app.get("/read/{collection}")
-async def read(collection: str, limit: int = 10):
+async def read(collection: str):
     """
-    Lê documentos da coleção especificada.
+    Lê todos os documentos da coleção especificada.
 
     Args:
         collection (str): Nome da coleção.
-        limit (int, optional): Número máximo de documentos a retornar. Padrão é 10.
 
     Returns:
         dict: Documentos lidos da coleção.
@@ -152,7 +177,10 @@ async def read(collection: str, limit: int = 10):
     """
     try:
         logger.info(f"Received request to read from collection: {collection}")
-        documents = read_documents(collection, limit=limit)
+        documents = read_documents(
+            collection, 
+            sort_by=[("data_extracao", DESCENDING), ("hora_extracao", DESCENDING)]
+        )
         logger.info(f"Successfully read {len(documents)} documents")
         return {"documents": json.loads(json.dumps(documents, default=str))}
     except PyMongoError as e:
@@ -163,6 +191,7 @@ async def read(collection: str, limit: int = 10):
         raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
     
 
+    
 
 @app.put("/update/{collection}/{id}")
 async def update(collection: str, id: str, document: Document):
@@ -321,7 +350,6 @@ async def login(username: str = Form(...), password: str = Form(...)):
 
         user = users_collection.find_one({"username": username})
         if user:
-            # Como a senha está vazia, vamos apenas verificar se o usuário existe
             if user['password'] == '':
                 return {
                     "status": "success",
@@ -343,6 +371,126 @@ async def login(username: str = Form(...), password: str = Form(...)):
         if 'client' in locals():
             client.close()
 
+
+@app.post("/register")
+async def register_user(user: User):
+    try:
+        connection_string = get_connection_string()
+        client = MongoClient(connection_string)
+        db = client[config_vars['database_main']]
+        users_collection = db[config_vars['collections_users']]
+
+        if users_collection.find_one({"username": user.username}):
+            raise HTTPException(status_code=400, detail="Username already exists")
+        if users_collection.find_one({"email": user.email}):
+            raise HTTPException(status_code=400, detail="Email already exists")
+
+        hashed_password = hash_password(user.password)
+
+        user_document = {
+            "username": user.username,
+            "email": user.email,
+            "password": hashed_password.decode('utf-8'),
+            "created_at": datetime.now().isoformat(),
+            "last_login": datetime.now().isoformat(),
+            "is_active": True,
+            "roles": ["user"],
+            "profile": user.profile.dict(),  
+            "settings": user.settings.dict() 
+        }
+
+        # insere o documento no banco de dados
+        result = create_document("tp_users", user_document)
+        return {"status": "success", "id": str(result.inserted_id)}
+    except Exception as e:
+        logger.error(f"Error registering user: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
+@app.post("/add_question")
+async def add_question(question_data: QuestionData):
+    """
+    Adiciona uma nova questão à coleção de questões.
+
+    Args:
+        question_data (QuestionData): Dados da questão a serem adicionados.
+
+    Returns:
+        dict: Status da operação e ID do documento criado.
+
+    Raises:
+        HTTPException: Se ocorrer um erro durante a criação do documento.
+    """
+    try:
+        connection_string = get_connection_string()
+        client = MongoClient(connection_string)
+        db = client[config_vars['database_main']]
+        questions_collection = db[config_vars['collections_menu']]
+
+        question_document = question_data.dict()
+
+        result = questions_collection.insert_one(question_document)
+        return {"status": "success", "id": str(result.inserted_id)}
+    except Exception as e:
+        logger.error(f"Error adding question: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if 'client' in locals():
+            client.close()
+
+
+@app.get("/total_users")
+async def get_total_users():
+    try:
+        client = MongoClient(get_connection_string())
+        db = client[config_vars['database_main']]
+        users_collection = db[config_vars['collections_users']]
+        total_users = users_collection.count_documents({})
+        return {"total_users": total_users}
+    except Exception as e:
+        logger.error(f"Error getting total users: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if 'client' in locals():
+            client.close()
+
+@app.get("/count_users")
+async def count_users():
+    try:
+        connection_string = get_connection_string()
+        client = MongoClient(connection_string)
+        db = client[config_vars['database_main']]
+        users_collection = db[config_vars['collections_users']]
+        
+        total_users = users_collection.count_documents({})
+        
+        return {"total_users": total_users}
+    except Exception as e:
+        logger.error(f"Error counting users: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if 'client' in locals():
+            client.close()
+
+@app.get("/count_pacotes")
+async def count_pacotes():
+    try:
+        connection_string = get_connection_string()
+        client = MongoClient(connection_string)
+        db = client[config_vars['database_main']]
+        pacotes_collection = db[config_vars['collections_pacotes']]
+        
+        total_pacotes = pacotes_collection.count_documents({})
+        
+        return {"total_pacotes": total_pacotes}
+    except Exception as e:
+        logger.error(f"Error counting pacotes: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if 'client' in locals():
+            client.close()
 
 
 if __name__ == "__main__":
