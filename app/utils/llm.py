@@ -7,27 +7,11 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
 import wikipediaapi
 from geopy.geocoders import Nominatim
 
-# # Escolha um modelo T5 para pergunta e resposta
-# model_name = "t5-small"
-
-# # Carregue o tokenizer e o modelo T5
-# tokenizer = AutoTokenizer.from_pretrained(model_name)
-# model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
 
 model_name = "google/flan-t5-base"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
 
-# # Configure o pipeline para geração de texto
-# text_generation_pipeline = pipeline(
-#     "text2text-generation",
-#     model=model,
-#     tokenizer=tokenizer,
-#     max_length=128,
-#     do_sample=True,
-#     temperature=0.7,
-#     top_p=0.95,
-# )
 
 text_generation_pipeline = pipeline(
     "text2text-generation",

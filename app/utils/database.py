@@ -193,7 +193,7 @@ def get_user_data(database_name=None, collection_name=None):
         db_name = database_name or config['database_user']
         coll_name = collection_name or config['collections_dev']
         collection = get_collection(coll_name, db_name)
-        user_data = collection.find_one({})  # queremos o primeiro documento
+        user_data = collection.find_one({})  # porque queremos o primeiro documento
         return user_data
     except PyMongoError as e:
         logger.error(f"Failed to retrieve user data: {e}")

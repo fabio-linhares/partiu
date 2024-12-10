@@ -28,9 +28,9 @@ def exibir_area_restrita():
                 
             if st.session_state.get('logged_in', False) and 'roles' in st.session_state.user and 'admin' in st.session_state.user['roles']:
 
-                # Inicialize o session_state se não estiver definido
+                # Inicialize o session_state
                 if 'dados' not in st.session_state:
-                    st.session_state.dados = None  # ou uma lista vazia, se for mais apropriado []
+                    st.session_state.dados = None 
                     
                 interface_admin()
 
